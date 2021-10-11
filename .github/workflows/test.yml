@@ -1,0 +1,21 @@
+on: 
+  push:
+    paths-ignore:
+      - "README.md"
+      - "**.json"
+      - "action.yml"
+  workflow_dispatch:
+
+jobs:
+  veracode-sca-task:
+    runs-on: ubuntu-latest
+    name: Test repository for Issues
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Run Veracode SCA
+        env:
+          SRCCLR_KEY: '${{ secrets.SRCCLR_KEY }}'
+        uses: ./
+        

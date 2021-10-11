@@ -1,0 +1,34 @@
+{
+  "name": "veracode-sca",
+  "version": "1.0.0",
+  "description": "An action to execute Veracode Software Composition Analysis Scaning as a GitHub Action",
+  "main": "./dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -rf ./dist/ || true",
+    "build": "npm run clean && ncc build ./src/action.ts --license license"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lerer/veracode-sca.git"
+  },
+  "keywords": [
+    "Veracode",
+    "SCA",
+    "Other"
+  ],
+  "author": "Yaakov Lerer",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Lerer/veracode-sca/issues"
+  },
+  "homepage": "https://github.com/Lerer/veracode-sca#readme",
+  "devDependencies": {
+    "@types/node": "^16.10.3",
+    "@vercel/ncc": "^0.31.1",
+    "typescript": "^4.4.3"
+  },
+  "dependencies": {
+    "@actions/core": "^1.6.0"
+  }
+}

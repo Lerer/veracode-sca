@@ -1,0 +1,9 @@
+# action.yml
+name: 'Veracode Software Composition Analysis'
+description: 'An action to execute Veracode Agent-Based SCA and import findings as issues'
+branding:
+  icon: 'play'
+  color: 'blue'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'

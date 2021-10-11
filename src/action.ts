@@ -6,9 +6,9 @@ import * as core from '@actions/core'
 
 try {
     core.info('Start command');
-    const stdout = execSync("ls -l", {
+    const stdout = execSync("curl -sSL https://download.sourceclear.com/install | sh -s scan . --update-advisor --json scaResults.json", {
         env: {
-            SRCCLR: "12345",
+            SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
         }
     });
 

@@ -1586,9 +1586,9 @@ const child_process_1 = __nccwpck_require__(129);
 const core = __importStar(__nccwpck_require__(186));
 try {
     core.info('Start command');
-    const stdout = (0, child_process_1.execSync)("ls -l", {
+    const stdout = (0, child_process_1.execSync)("curl -sSL https://download.sourceclear.com/install | sh -s scan . --update-advisor --json scaResults.json", {
         env: {
-            SRCCLR: "12345",
+            SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
         }
     });
     core.info(stdout.toString('utf-8'));

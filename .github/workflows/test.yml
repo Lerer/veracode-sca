@@ -16,6 +16,6 @@ jobs:
         uses: actions/checkout@v2
       - name: Run Veracode SCA
         env:
-          SRCCLR_KEY: '${{ secrets.SRCCLR_KEY }}'
+          SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
         uses: ./
         

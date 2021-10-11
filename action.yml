@@ -4,6 +4,15 @@ description: 'An action to execute Veracode Agent-Based SCA and import findings 
 branding:
   icon: 'play'
   color: 'blue'
+inputs:
+  quick:
+    description: ""
+    required: false
+    default: "false"
+  update_advisor:
+    description: "Show update advisor"
+    required: false
+    default: "false"
 runs:
   using: 'node12'
   main: 'dist/index.js'

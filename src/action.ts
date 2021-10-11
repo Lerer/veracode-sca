@@ -15,6 +15,13 @@ try {
     core.info(stdout.toString('utf-8'));
     core.info('Finish command');
 
+    const list = execSync("ls -l");
+    core.info(list.toString('utf-8'));
+
+    const view = execSync("cat scaResults.json");
+    core.info(view.toString('utf-8'));
+
+
 } catch (error:any) {
     core.setFailed(error.message);
 }

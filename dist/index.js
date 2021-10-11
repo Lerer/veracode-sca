@@ -1593,6 +1593,10 @@ try {
     });
     core.info(stdout.toString('utf-8'));
     core.info('Finish command');
+    const list = (0, child_process_1.execSync)("ls -l");
+    core.info(list.toString('utf-8'));
+    const view = (0, child_process_1.execSync)("cat scaResults.json");
+    core.info(view.toString('utf-8'));
 }
 catch (error) {
     core.setFailed(error.message);

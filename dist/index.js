@@ -1585,12 +1585,14 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const child_process_1 = __nccwpck_require__(129);
 const core = __importStar(__nccwpck_require__(186));
 try {
+    core.info('Start command');
     const stdout = (0, child_process_1.execSync)("ls -l", {
         env: {
             SRCCLR: "12345",
         }
     });
-    core.debug(stdout.toString('utf-8'));
+    core.info(stdout.toString('utf-8'));
+    core.info('Finish command');
 }
 catch (error) {
     core.setFailed(error.message);

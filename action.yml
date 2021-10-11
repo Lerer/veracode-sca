@@ -13,6 +13,14 @@ inputs:
     description: "Show update advisor"
     required: false
     default: "false"
+  min-cvss-for-issue:
+    description: "The minimum CVSS value for vulnerability to be added as an issue"
+    required: false
+    default: "0"
+  url:
+    description: "A git URL to work with in case the scan is not for the current repository"
+    required: false
+    default: ""
 runs:
   using: 'node12'
   main: 'dist/index.js'

@@ -1584,23 +1584,52 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 // import exec method from child_process module
 const child_process_1 = __nccwpck_require__(129);
 const core = __importStar(__nccwpck_require__(186));
+const _1 = __nccwpck_require__(144);
 try {
+    const o = {
+        quick: core.getBooleanInput('quick') || false,
+        updateAdvisor: core.getBooleanInput('update_advisor') || false,
+        minCVSS: parseFloat(core.getInput('min-cvss-for-issue')) || 0,
+        url: core.getInput('url', { trimWhitespace: true })
+    };
     core.info('Start command');
-    const stdout = (0, child_process_1.execSync)("curl -sSL https://download.sourceclear.com/ci.sh | sh -s scan . --quick --json scaResults.json", {
+    let extraCommands = '';
+    if (o.url.length > 0) {
+        extraCommands = `--url ${o.url} `;
+    }
+    extraCommands = `${extraCommands}${o.quick ? '--quick' : ''} ${o.updateAdvisor ? '--update-advisor' : ''}`;
+    const stdout = (0, child_process_1.execSync)(`curl -sSL https://download.sourceclear.com/ci.sh | sh -s scan . ${extraCommands} --json ${_1.SCA_OUTPUT_FILE}`, {
         env: {
             SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
         }
     });
-    core.info(stdout.toString('utf-8'));
     core.info('Finish command');
-    const list = (0, child_process_1.execSync)("ls -l");
-    core.info(list.toString('utf-8'));
-    const view = (0, child_process_1.execSync)("cat scaResults.json");
-    core.info(view.toString('utf-8'));
+    (0, _1.run)(o, core.info);
 }
 catch (error) {
     core.setFailed(error.message);
 }
+
+
+/***/ }),
+
+/***/ 144:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.run = exports.SCA_OUTPUT_FILE = void 0;
+const fs_1 = __nccwpck_require__(747);
+exports.SCA_OUTPUT_FILE = 'scaResults.json';
+function run(options, msgFunc) {
+    const scaResultsTxt = (0, fs_1.readFileSync)(exports.SCA_OUTPUT_FILE);
+    const scaResJson = JSON.parse(scaResultsTxt.toString('utf-8'));
+    const vulnerabilities = scaResJson.records[0].vulnerabilities;
+    vulnerabilities.filter((vul) => vul.severity > options.minCVSS);
+    msgFunc(JSON.stringify(vulnerabilities));
+}
+exports.run = run;
 
 
 /***/ }),

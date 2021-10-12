@@ -40,13 +40,14 @@ const addIssueToLibrary = (libId:string,lib:SCALibrary,details:any) => {
 }
 
 const createIssueDetails = (vuln: SCAVulnerability,lib: SCALibrary) => {
-    console.log(lib,vuln);
+    console.log(lib,vuln,vuln.libraries[0]);
     const sevLabel = getSeverityName(vuln.cvssScore);
     const myCVE = vuln.cve || '0000-0000';
     var title = "CVE: "+myCVE+" found in "+lib.name+" - Version: "+vuln.libraries[0].details[0].versionRange+" ["+vuln.language+"]";
     var label = "Dependency Scanning,"+myCVE+","+sevLabel;
     var description = "Veracode Software Composition Analysis  \n===============================\n  \nLanguage: "+
-        vuln.language+"  \nLibrary: "+lib.name+"  \nCVE: "+vuln.cve+"  \nVersion: "+vuln.libraries[0].details[0].versionRange+
+        vuln.language+"  \nLibrary: "+lib.name+"  \nCVE: "+vuln.cve+"  \nPresent in version/s: "+vuln.libraries[0].details[0].versionRange+
+        "  \nLibrary latest version: "+lib.latestRelease+
         "  \nDescription: "+lib.description+"  \n"+vuln.overview+"  \nFix: "+vuln.libraries[0].details[0].fixText+
         "  \nLinks:  \n"+lib.versions[0]._links.html+"  \n"+vuln._links.html+"  \n"+vuln.libraries[0].details[0].patch;
 

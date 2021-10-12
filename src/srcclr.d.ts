@@ -12,6 +12,7 @@ export interface SCALibrary {
     name: string,
     coordinate1: string,
     coordinate2: string,
+    latestRelease: string,
     versions: Array<{
         version:string,
         sha1: string,

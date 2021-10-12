@@ -36,15 +36,19 @@ export function run(options:Options, msgFunc: (msg: string) => void) {
 const addIssueToLibrary = (libId:string,lib:SCALibrary,details:any) => {
     let libWithIssues = librariesWithIssues[libId] || {lib,issues:[]};
     libWithIssues.issues.push(details);
-    librariesWithIssues[libId = libWithIssues];
+    librariesWithIssues[libId] = libWithIssues;
 }
 
 const createIssueDetails = (vuln: SCAVulnerability,lib: SCALibrary) => {
+    console.log(lib,vuln);
     const sevLabel = getSeverityName(vuln.cvssScore);
     const myCVE = vuln.cve || '0000-0000';
-    var title = "Dependency Issue - "+vuln.language+" - "+lib.name+" - Version: "+vuln.libraries[0].details[0].versionRange+" - CVE: "+myCVE;
+    var title = "CVE: "+myCVE+" found in "+lib.name+" - Version: "+vuln.libraries[0].details[0].versionRange+" ["+vuln.language+"]";
     var label = "Dependency Scanning,"+myCVE+","+sevLabel;
-    var description = "Software Composition Analysis  \n  \n  \nLanguage: "+vuln.language+"  \nLibrary: "+lib.name+"  \nCVE: "+vuln.cve+"  \nVersion: "+vuln.libraries[0].details[0].versionRange+"  \nDescription: "+lib.description+"  \n"+vuln.overview+"  \nFix: "+vuln.libraries[0].details[0].fixText+"  \nLinks: "+lib.versions[0]._links.html+"  \n"+vuln._links.html+"  \n"+vuln.libraries[0].details[0].patch;
+    var description = "Veracode Software Composition Analysis  \n===============================\n  \nLanguage: "+
+        vuln.language+"  \nLibrary: "+lib.name+"  \nCVE: "+vuln.cve+"  \nVersion: "+vuln.libraries[0].details[0].versionRange+
+        "  \nDescription: "+lib.description+"  \n"+vuln.overview+"  \nFix: "+vuln.libraries[0].details[0].fixText+
+        "  \nLinks:  \n"+lib.versions[0]._links.html+"  \n"+vuln._links.html+"  \n"+vuln.libraries[0].details[0].patch;
 
     return {
         title,description,label

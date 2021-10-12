@@ -18,9 +18,12 @@ export function run(options:Options, msgFunc: (msg: string) => void) {
     vulnerabilities
         .filter((vul:any) => vul.severity>=options.minCVSS)
         .forEach((vulr:any) => {
+            console.log('in each');
             const libref = vulr.libraries[0]._links.ref;
             const libId = libref.split('/')[4];
+            console.log(`Lib ID: ${libId}`);
             const lib = libraries[libId];
+            console.log(lib);
             const details = createIssueDetails(vulr,lib);
             console.log(details);
         });
@@ -30,7 +33,7 @@ export function run(options:Options, msgFunc: (msg: string) => void) {
 
 const createIssueDetails = (vuln: SCAVulnerability,lib: SCALibrary) => {
     return {
-        vul: vuln,
+        vuln,
         lib
     };
 }

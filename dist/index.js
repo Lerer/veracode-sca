@@ -1631,9 +1631,12 @@ function run(options, msgFunc) {
     vulnerabilities
         .filter((vul) => vul.severity >= options.minCVSS)
         .forEach((vulr) => {
+        console.log('in each');
         const libref = vulr.libraries[0]._links.ref;
         const libId = libref.split('/')[4];
+        console.log(`Lib ID: ${libId}`);
         const lib = libraries[libId];
+        console.log(lib);
         const details = createIssueDetails(vulr, lib);
         console.log(details);
     });
@@ -1642,7 +1645,7 @@ function run(options, msgFunc) {
 exports.run = run;
 const createIssueDetails = (vuln, lib) => {
     return {
-        vul: vuln,
+        vuln,
         lib
     };
 };

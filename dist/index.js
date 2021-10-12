@@ -1626,10 +1626,26 @@ function run(options, msgFunc) {
     const scaResultsTxt = (0, fs_1.readFileSync)(exports.SCA_OUTPUT_FILE);
     const scaResJson = JSON.parse(scaResultsTxt.toString('utf-8'));
     const vulnerabilities = scaResJson.records[0].vulnerabilities;
-    vulnerabilities.filter((vul) => vul.severity > options.minCVSS);
+    const libraries = scaResJson.records[0].libraries;
+    let outputLibraries = {};
+    vulnerabilities
+        .filter((vul) => vul.severity >= options.minCVSS)
+        .forEach((vulr) => {
+        const libref = vulr.libraries[0]._links.ref;
+        const libId = libref.split('/')[4];
+        const lib = libraries[libId];
+        const details = createIssueDetails(vulr, lib);
+        console.log(details);
+    });
     msgFunc(JSON.stringify(vulnerabilities));
 }
 exports.run = run;
+const createIssueDetails = (vuln, lib) => {
+    return {
+        vul: vuln,
+        lib
+    };
+};
 
 
 /***/ }),

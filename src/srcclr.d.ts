@@ -3,7 +3,7 @@ export interface SrcClrJson {
 }
 
 export interface SrcClrRes {
-    libraries: Array<SCALibrary>,
+    libraries: any,//Array<SCALibrary>,
     vulnerabilities: Array<SCAVulnerability>
 }
 
@@ -27,7 +27,7 @@ export interface SCAVulnerability {
     vulnerabilityTypes: Array<string>,
     cvssScore: number,
     libraries: Array<scaVulLib>,
-    links: {
+    _links: {
         html: string
     },
     hasExploits: boolean
@@ -35,7 +35,7 @@ export interface SCAVulnerability {
 
 export interface scaVulLib {
     details: Array<scaVulLibDetails>,
-    links: {
+    _links: {
         ref: string
     }
 }

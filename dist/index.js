@@ -1622,32 +1622,60 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = exports.SCA_OUTPUT_FILE = void 0;
 const fs_1 = __nccwpck_require__(747);
 exports.SCA_OUTPUT_FILE = 'scaResults.json';
+const librariesWithIssues = {};
 function run(options, msgFunc) {
     const scaResultsTxt = (0, fs_1.readFileSync)(exports.SCA_OUTPUT_FILE);
     const scaResJson = JSON.parse(scaResultsTxt.toString('utf-8'));
     const vulnerabilities = scaResJson.records[0].vulnerabilities;
     const libraries = scaResJson.records[0].libraries;
-    let outputLibraries = {};
     vulnerabilities
         .filter((vul) => vul.cvssScore >= options.minCVSS)
         .forEach((vulr) => {
         console.log('in each');
         const libref = vulr.libraries[0]._links.ref;
         const libId = libref.split('/')[4];
-        console.log(`Lib ID: ${libId}`);
+        //console.log(`Lib ID: ${libId}`);
         const lib = libraries[libId];
-        console.log(lib);
+        //console.log(lib);
         const details = createIssueDetails(vulr, lib);
         console.log(details);
+        addIssueToLibrary(libId, lib, details);
     });
-    msgFunc(JSON.stringify(vulnerabilities));
+    console.log('====================');
+    console.log(librariesWithIssues);
 }
 exports.run = run;
+const addIssueToLibrary = (libId, lib, details) => {
+    let libWithIssues = librariesWithIssues[libId] || { lib, issues: [] };
+    libWithIssues.issues.push(details);
+    librariesWithIssues[libId = libWithIssues];
+};
 const createIssueDetails = (vuln, lib) => {
+    const sevLabel = getSeverityName(vuln.cvssScore);
+    const myCVE = vuln.cve || '0000-0000';
+    var title = "Dependency Issue - " + vuln.language + " - " + lib.name + " - Version: " + vuln.libraries[0].details[0].versionRange + " - CVE: " + myCVE;
+    var label = "Dependency Scanning," + myCVE + "," + sevLabel;
+    var description = "Software Composition Analysis  \n  \n  \nLanguage: " + vuln.language + "  \nLibrary: " + lib.name + "  \nCVE: " + vuln.cve + "  \nVersion: " + vuln.libraries[0].details[0].versionRange + "  \nDescription: " + lib.description + "  \n" + vuln.overview + "  \nFix: " + vuln.libraries[0].details[0].fixText + "  \nLinks: " + lib.versions[0]._links.html + "  \n" + vuln._links.html + "  \n" + vuln.libraries[0].details[0].patch;
     return {
-        vuln,
-        lib
+        title, description, label
     };
+};
+const getSeverityName = (cvss) => {
+    var weight = Math.floor(cvss);
+    let severityLabel = 'Unknown';
+    if (weight == 0)
+        severityLabel = 'Informational';
+    else if (weight >= 0.1 && weight < 1.9)
+        severityLabel = 'Very Low';
+    else if (weight >= 2.0 && weight < 3.9)
+        severityLabel = 'Low';
+    else if (weight >= 4.0 && weight < 5.9)
+        severityLabel = 'Medium';
+    else if (weight >= 6.0 && weight < 7.9)
+        severityLabel = 'High';
+    else if (weight >= 8.0)
+        severityLabel = 'Very High';
+    return severityLabel;
 };
 
 

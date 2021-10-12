@@ -1629,7 +1629,7 @@ function run(options, msgFunc) {
     const libraries = scaResJson.records[0].libraries;
     let outputLibraries = {};
     vulnerabilities
-        .filter((vul) => vul.severity >= options.minCVSS)
+        .filter((vul) => vul.cvssScore >= options.minCVSS)
         .forEach((vulr) => {
         console.log('in each');
         const libref = vulr.libraries[0]._links.ref;

@@ -16,7 +16,7 @@ export function run(options:Options, msgFunc: (msg: string) => void) {
     let outputLibraries = {};
 
     vulnerabilities
-        .filter((vul:any) => vul.severity>=options.minCVSS)
+        .filter((vul:any) => vul.cvssScore>=options.minCVSS)
         .forEach((vulr:any) => {
             console.log('in each');
             const libref = vulr.libraries[0]._links.ref;

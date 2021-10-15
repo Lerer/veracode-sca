@@ -11,7 +11,8 @@ try {
         quick: core.getBooleanInput('quick') || false,
         updateAdvisor: core.getBooleanInput('update_advisor') || false,
         minCVSS: parseFloat(core.getInput('min-cvss-for-issue')) || 0,
-        url: core.getInput('url',{trimWhitespace:true})
+        url: core.getInput('url',{trimWhitespace:true}),
+        github_token: core.getInput('github_token',{required:true})
     }
     core.info('Start command');
     let extraCommands: string = '';

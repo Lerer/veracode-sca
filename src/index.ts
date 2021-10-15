@@ -1,4 +1,4 @@
-import core from '@actions/core';
+import {getOctokit,context} from '@actions/github';
 import {readFileSync} from 'fs';
 import { Options } from './options';
 import { SCALibrary, SCAVulnerability, SrcClrJson } from './srcclr';
@@ -7,7 +7,7 @@ export const SCA_OUTPUT_FILE = 'scaResults.json';
 
 const librariesWithIssues:any = {};
 
-export function run(options:Options, msgFunc: (msg: string) => void) {
+export async function run(options:Options, msgFunc: (msg: string) => void) {
     const scaResultsTxt = readFileSync(SCA_OUTPUT_FILE);  
 
     const scaResJson: SrcClrJson = JSON.parse(scaResultsTxt.toString('utf-8'));
@@ -31,6 +31,18 @@ export function run(options:Options, msgFunc: (msg: string) => void) {
 
     console.log('====================');
     console.log(librariesWithIssues);
+
+    const client = getOctokit(options.github_token);
+    const exampleIssue = librariesWithIssues[0].issues[0];
+    const ghResponse = await client.rest.issues.create({
+        owner:context.repo.owner,
+        repo:context.repo.repo,
+        title:exampleIssue.title,
+        body:exampleIssue.description,
+        labels:exampleIssue.labels
+    })
+
+    console.log(ghResponse);
 }
 
 const addIssueToLibrary = (libId:string,lib:SCALibrary,details:any) => {
@@ -41,18 +53,20 @@ const addIssueToLibrary = (libId:string,lib:SCALibrary,details:any) => {
 
 const createIssueDetails = (vuln: SCAVulnerability,lib: SCALibrary) => {
     console.log(lib,vuln,vuln.libraries[0]);
+    const vulnLibDetails = vuln.libraries[0].details[0];
     const sevLabel = getSeverityName(vuln.cvssScore);
     const myCVE = vuln.cve || '0000-0000';
     var title = "CVE: "+myCVE+" found in "+lib.name+" - Version: "+vuln.libraries[0].details[0].versionRange+" ["+vuln.language+"]";
-    var label = "Dependency Scanning,"+myCVE+","+sevLabel;
+    var labels = "Dependency Scanning,"+myCVE+","+sevLabel;
     var description = "Veracode Software Composition Analysis  \n===============================\n  \nLanguage: "+
-        vuln.language+"  \nLibrary: "+lib.name+"  \nCVE: "+vuln.cve+"  \nPresent in version/s: "+vuln.libraries[0].details[0].versionRange+
+        vuln.language+"  \nLibrary: "+lib.name+"  \nCVE: "+vuln.cve+"  \nPresent in version/s: "+vulnLibDetails.versionRange+
+        "  \nVulnerability fix version: "+vulnLibDetails.updateToVersion+
         "  \nLibrary latest version: "+lib.latestRelease+
-        "  \nDescription: "+lib.description+"  \n"+vuln.overview+"  \nFix: "+vuln.libraries[0].details[0].fixText+
-        "  \nLinks:  \n"+lib.versions[0]._links.html+"  \n"+vuln._links.html+"  \n"+vuln.libraries[0].details[0].patch;
+        "  \nDescription: "+lib.description+"  \n"+vuln.overview+"  \nFix: "+vulnLibDetails.fixText+
+        "  \nLinks:  \n"+lib.versions[0]._links.html+"  \n"+vuln._links.html+"  \n"+vulnLibDetails.patch;
 
     return {
-        title,description,label
+        title,description,labels
     };
 }
 

@@ -8402,19 +8402,22 @@ const createIssueDetails = (vuln, lib) => {
     var labels = [labels_1.LABELS.veracode, sevLabel, { name: myCVE, color: labels_1.LABELS.veracode.color, description: "CVE " + myCVE }];
     var description = "Veracode Software Composition Analysis" +
         "  \n===============================\n" +
-        "  \nLibrary: " + lib.name +
-        "  \nDescription: " + lib.description +
-        "  \nLanguage: " + vuln.language +
-        "  \nVulnerability: " + vuln.title +
-        "  \nVulnerability description: " + vuln.overview +
-        "  \nCVE: " + vuln.cve +
-        "  \nCVSS score: " + vuln.cvssScore +
-        "  \nVulnerability present in version/s: " + vulnLibDetails.versionRange +
-        "  \nFound library version/s: " + versionsFound +
-        "  \nVulnerability fixed in version: " + vulnLibDetails.updateToVersion +
-        "  \nLibrary latest version: " + lib.latestRelease +
-        "  \nFix: " + vulnLibDetails.fixText +
-        "  \nLinks:" +
+        "  \n Attribute | Details" +
+        "  \n| --- | --- |";
+    "  \nLibrary | " + lib.name +
+        "  \nDescription | " + lib.description +
+        "  \nLanguage | " + vuln.language +
+        "  \nVulnerability | " + vuln.title +
+        "  \nVulnerability description | " + vuln.overview +
+        "  \nCVE | " + vuln.cve +
+        "  \nCVSS score | " + vuln.cvssScore +
+        "  \nVulnerability present in version/s | " + vulnLibDetails.versionRange +
+        "  \nFound library version/s | " + versionsFound +
+        "  \nVulnerability fixed in version | " + vulnLibDetails.updateToVersion +
+        "  \nLibrary latest version | " + lib.latestRelease +
+        "  \nFix | " + vulnLibDetails.fixText +
+        "  \n";
+    "  \nLinks:" +
         "  \n- " + lib.versions[0]._links.html +
         "  \n- " + vuln._links.html +
         "  \n- Patch: " + vulnLibDetails.patch;

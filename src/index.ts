@@ -1,4 +1,4 @@
-import {getOctokit,context} from '@actions/github';
+//import {getOctokit,context} from '@actions/github';
 import {readFileSync} from 'fs';
 import { Options } from './options';
 import { SCALibrary, SCAVulnerability, SrcClrJson } from './srcclr';
@@ -23,35 +23,31 @@ export async function run(options:Options, msgFunc: (msg: string) => void) {
     vulnerabilities
         .filter((vul:any) => vul.cvssScore>=options.minCVSS)
         .forEach((vulr) => {
-            console.log('in each');
+            console.log('-------   in each   ------');
             const libref = vulr.libraries[0]._links.ref;
             const libId = libref.split('/')[4];
-            //console.log(`Lib ID: ${libId}`);
             const lib:SCALibrary = libraries[libId];
-            //console.log(lib);
             const details = createIssueDetails(vulr,lib);
             console.log(details);
             addIssueToLibrary(libId,lib,details);
         });
 
-    console.log('====================');
-    console.log(librariesWithIssues);
-
     githubHandler = new GithubHandler(options.github_token);
 
-    const client = getOctokit(options.github_token);
+    //const client = getOctokit(options.github_token);
     await verifyLabels();
-    const exampleIssue = librariesWithIssues[0].issues[0];
-    const ghResponse = await client.rest.issues.create({
-        owner:context.repo.owner,
-        repo:context.repo.repo,
-        title:exampleIssue.title,
-        body:exampleIssue.description,
-        labels: exampleIssue.labels
-    })
+    removeExistingOpenIssues();
+    // const exampleIssue = librariesWithIssues[0].issues[0];
+    // const ghResponse = await client.rest.issues.create({
+    //     owner:context.repo.owner,
+    //     repo:context.repo.repo,
+    //     title:exampleIssue.title,
+    //     body:exampleIssue.description,
+    //     labels: exampleIssue.labels
+    // })
 
-    console.log(ghResponse);
-    console.log(ghResponse.data.labels);
+    // console.log(ghResponse);
+    // console.log(ghResponse.data.labels);
 }
 
 const addIssueToLibrary = (libId:string,lib:SCALibrary,details:any) => {
@@ -120,4 +116,10 @@ const verifyLabels = async () => {
     if (!baseLabel || !baseLabel.data) {
         await githubHandler.createVeracodeLabels();
     }
+}
+
+const removeExistingOpenIssues = async () => {
+    const existingOpenIssues = await githubHandler.listExistingOpenIssues();
+
+
 }

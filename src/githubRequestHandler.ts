@@ -62,5 +62,24 @@ export class GithubHandler {
         }
         console.log('createVeracodeLabels - END');
     }
+
+    public async listExistingOpenIssues() {
+        console.log('createVeracodeLabels - START');
+
+        const openSCAIssues = await this.client.paginate(
+            this.client.rest.issues.listForRepo,
+            {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: 'open',
+                labels: VERACODE_LABEL.name
+            }
+        )
+        
+        console.log(openSCAIssues);
+        console.log('createVeracodeLabels - END');
+
+        return openSCAIssues;
+    }
 }
 

@@ -8412,6 +8412,20 @@ class GithubHandler {
             console.log('createVeracodeLabels - END');
         });
     }
+    listExistingOpenIssues() {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log('createVeracodeLabels - START');
+            const openSCAIssues = yield this.client.paginate(this.client.rest.issues.listForRepo, {
+                owner: github_1.context.repo.owner,
+                repo: github_1.context.repo.repo,
+                state: 'open',
+                labels: labels_1.VERACODE_LABEL.name
+            });
+            console.log(openSCAIssues);
+            console.log('createVeracodeLabels - END');
+            return openSCAIssues;
+        });
+    }
 }
 exports.GithubHandler = GithubHandler;
 
@@ -8434,7 +8448,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = exports.SCA_OUTPUT_FILE = void 0;
-const github_1 = __nccwpck_require__(5438);
+//import {getOctokit,context} from '@actions/github';
 const fs_1 = __nccwpck_require__(5747);
 const labels_1 = __nccwpck_require__(7402);
 const githubRequestHandler_1 = __nccwpck_require__(6366);
@@ -8450,31 +8464,28 @@ function run(options, msgFunc) {
         vulnerabilities
             .filter((vul) => vul.cvssScore >= options.minCVSS)
             .forEach((vulr) => {
-            console.log('in each');
+            console.log('-------   in each   ------');
             const libref = vulr.libraries[0]._links.ref;
             const libId = libref.split('/')[4];
-            //console.log(`Lib ID: ${libId}`);
             const lib = libraries[libId];
-            //console.log(lib);
             const details = createIssueDetails(vulr, lib);
             console.log(details);
             addIssueToLibrary(libId, lib, details);
         });
-        console.log('====================');
-        console.log(librariesWithIssues);
         githubHandler = new githubRequestHandler_1.GithubHandler(options.github_token);
-        const client = (0, github_1.getOctokit)(options.github_token);
+        //const client = getOctokit(options.github_token);
         yield verifyLabels();
-        const exampleIssue = librariesWithIssues[0].issues[0];
-        const ghResponse = yield client.rest.issues.create({
-            owner: github_1.context.repo.owner,
-            repo: github_1.context.repo.repo,
-            title: exampleIssue.title,
-            body: exampleIssue.description,
-            labels: exampleIssue.labels
-        });
-        console.log(ghResponse);
-        console.log(ghResponse.data.labels);
+        removeExistingOpenIssues();
+        // const exampleIssue = librariesWithIssues[0].issues[0];
+        // const ghResponse = await client.rest.issues.create({
+        //     owner:context.repo.owner,
+        //     repo:context.repo.repo,
+        //     title:exampleIssue.title,
+        //     body:exampleIssue.description,
+        //     labels: exampleIssue.labels
+        // })
+        // console.log(ghResponse);
+        // console.log(ghResponse.data.labels);
     });
 }
 exports.run = run;
@@ -8538,6 +8549,9 @@ const verifyLabels = () => __awaiter(void 0, void 0, void 0, function* () {
     if (!baseLabel || !baseLabel.data) {
         yield githubHandler.createVeracodeLabels();
     }
+});
+const removeExistingOpenIssues = () => __awaiter(void 0, void 0, void 0, function* () {
+    const existingOpenIssues = yield githubHandler.listExistingOpenIssues();
 });
 
 

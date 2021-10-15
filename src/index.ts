@@ -2,7 +2,7 @@ import {getOctokit,context} from '@actions/github';
 import {readFileSync} from 'fs';
 import { Options } from './options';
 import { SCALibrary, SCAVulnerability, SrcClrJson } from './srcclr';
-import { LABELS,Label } from './github';
+import { LABELS,Label } from './githubLabels';
 
 export const SCA_OUTPUT_FILE = 'scaResults.json';
 

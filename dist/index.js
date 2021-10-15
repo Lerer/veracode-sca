@@ -8350,7 +8350,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = exports.SCA_OUTPUT_FILE = void 0;
 const github_1 = __nccwpck_require__(5438);
 const fs_1 = __nccwpck_require__(5747);
-const github_2 = __nccwpck_require__(447);
+const githubLabels_1 = __nccwpck_require__(5213);
 exports.SCA_OUTPUT_FILE = 'scaResults.json';
 const librariesWithIssues = {};
 function run(options, msgFunc) {
@@ -8399,7 +8399,7 @@ const createIssueDetails = (vuln, lib) => {
     const myCVE = vuln.cve || '0000-0000';
     const versionsFound = lib.versions.map(version => version.version);
     var title = "CVE: " + myCVE + " found in " + lib.name + " - Version: " + versionsFound + " [" + vuln.language + "]";
-    var labels = [github_2.LABELS.veracode, sevLabel, { name: myCVE, color: github_2.LABELS.veracode.color, description: "CVE " + myCVE }];
+    var labels = [githubLabels_1.LABELS.veracode, sevLabel, { name: myCVE, color: githubLabels_1.LABELS.veracode.color, description: "CVE " + myCVE }];
     var description = "Veracode Software Composition Analysis" +
         "  \n===============================\n" +
         "  \nLibrary: " + lib.name +
@@ -8424,29 +8424,29 @@ const createIssueDetails = (vuln, lib) => {
 };
 const getSeverityName = (cvss) => {
     var weight = Math.floor(cvss);
-    let label = github_2.LABELS.severities.Unknown;
+    let label = githubLabels_1.LABELS.severities.Unknown;
     if (weight == 0)
-        label = github_2.LABELS.severities.Informational;
+        label = githubLabels_1.LABELS.severities.Informational;
     else if (weight >= 0.1 && weight < 1.9)
-        label = github_2.LABELS.severities['Very Low'];
+        label = githubLabels_1.LABELS.severities['Very Low'];
     else if (weight >= 2.0 && weight < 3.9)
-        label = github_2.LABELS.severities.Low;
+        label = githubLabels_1.LABELS.severities.Low;
     else if (weight >= 4.0 && weight < 5.9)
-        label = github_2.LABELS.severities.Medium;
+        label = githubLabels_1.LABELS.severities.Medium;
     else if (weight >= 6.0 && weight < 7.9)
-        label = github_2.LABELS.severities.High;
+        label = githubLabels_1.LABELS.severities.High;
     else if (weight >= 8.0)
-        label = github_2.LABELS.severities['Very High'];
+        label = githubLabels_1.LABELS.severities['Very High'];
     return label;
 };
 
 
 /***/ }),
 
-/***/ 447:
+/***/ 5213:
 /***/ ((module) => {
 
-module.exports = eval("require")("./github");
+module.exports = eval("require")("./githubLabels");
 
 
 /***/ }),

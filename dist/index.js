@@ -8350,6 +8350,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = exports.SCA_OUTPUT_FILE = void 0;
 const github_1 = __nccwpck_require__(5438);
 const fs_1 = __nccwpck_require__(5747);
+const github_2 = __nccwpck_require__(447);
 exports.SCA_OUTPUT_FILE = 'scaResults.json';
 const librariesWithIssues = {};
 function run(options, msgFunc) {
@@ -8380,7 +8381,7 @@ function run(options, msgFunc) {
             repo: github_1.context.repo.repo,
             title: exampleIssue.title,
             body: exampleIssue.description,
-            labels: exampleIssue.labels.split(',')
+            labels: exampleIssue.labels
         });
         console.log(ghResponse);
     });
@@ -8396,35 +8397,56 @@ const createIssueDetails = (vuln, lib) => {
     const vulnLibDetails = vuln.libraries[0].details[0];
     const sevLabel = getSeverityName(vuln.cvssScore);
     const myCVE = vuln.cve || '0000-0000';
-    var title = "CVE: " + myCVE + " found in " + lib.name + " - Version: " + vuln.libraries[0].details[0].versionRange + " [" + vuln.language + "]";
-    var labels = "Dependency Scanning," + myCVE + "," + sevLabel;
-    var description = "Veracode Software Composition Analysis  \n===============================\n  \nLanguage: " +
-        vuln.language + "  \nLibrary: " + lib.name + "  \nCVE: " + vuln.cve + "  \nPresent in version/s: " + vulnLibDetails.versionRange +
-        "  \nVulnerability fix version: " + vulnLibDetails.updateToVersion +
+    const versionsFound = lib.versions.map(version => version.version);
+    var title = "CVE: " + myCVE + " found in " + lib.name + " - Version: " + versionsFound + " [" + vuln.language + "]";
+    var labels = [github_2.LABELS.veracode, sevLabel, { name: myCVE, color: github_2.LABELS.veracode.color, description: "CVE " + myCVE }];
+    var description = "Veracode Software Composition Analysis" +
+        "  \n===============================\n" +
+        "  \nLibrary: " + lib.name +
+        "  \nDescription: " + lib.description +
+        "  \nLanguage: " + vuln.language +
+        "  \nVulnerability: " + vuln.title +
+        "  \nVulnerability description: " + vuln.overview +
+        "  \nCVE: " + vuln.cve +
+        "  \nCVSS score: " + vuln.cvssScore +
+        "  \nVulnerability present in version/s: " + vulnLibDetails.versionRange +
+        "  \nFound library version/s: " + versionsFound +
+        "  \nVulnerability fixed in version: " + vulnLibDetails.updateToVersion +
         "  \nLibrary latest version: " + lib.latestRelease +
-        "  \nDescription: " + lib.description + "  \n" + vuln.overview + "  \nFix: " + vulnLibDetails.fixText +
-        "  \nLinks:  \n" + lib.versions[0]._links.html + "  \n" + vuln._links.html + "  \n" + vulnLibDetails.patch;
+        "  \nFix: " + vulnLibDetails.fixText +
+        "  \nLinks:" +
+        "  \n- " + lib.versions[0]._links.html +
+        "  \n- " + vuln._links.html +
+        "  \n- Patch: " + vulnLibDetails.patch;
     return {
         title, description, labels
     };
 };
 const getSeverityName = (cvss) => {
     var weight = Math.floor(cvss);
-    let severityLabel = 'Unknown';
+    let label = github_2.LABELS.severities.Unknown;
     if (weight == 0)
-        severityLabel = 'Informational';
+        label = github_2.LABELS.severities.Informational;
     else if (weight >= 0.1 && weight < 1.9)
-        severityLabel = 'Very Low';
+        label = github_2.LABELS.severities['Very Low'];
     else if (weight >= 2.0 && weight < 3.9)
-        severityLabel = 'Low';
+        label = github_2.LABELS.severities.Low;
     else if (weight >= 4.0 && weight < 5.9)
-        severityLabel = 'Medium';
+        label = github_2.LABELS.severities.Medium;
     else if (weight >= 6.0 && weight < 7.9)
-        severityLabel = 'High';
+        label = github_2.LABELS.severities.High;
     else if (weight >= 8.0)
-        severityLabel = 'Very High';
-    return severityLabel;
+        label = github_2.LABELS.severities['Very High'];
+    return label;
 };
+
+
+/***/ }),
+
+/***/ 447:
+/***/ ((module) => {
+
+module.exports = eval("require")("./github");
 
 
 /***/ }),

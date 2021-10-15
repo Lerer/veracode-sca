@@ -2,6 +2,7 @@ import {getOctokit,context} from '@actions/github';
 import {readFileSync} from 'fs';
 import { Options } from './options';
 import { SCALibrary, SCAVulnerability, SrcClrJson } from './srcclr';
+import { LABELS,Label } from './github';
 
 export const SCA_OUTPUT_FILE = 'scaResults.json';
 
@@ -39,7 +40,7 @@ export async function run(options:Options, msgFunc: (msg: string) => void) {
         repo:context.repo.repo,
         title:exampleIssue.title,
         body:exampleIssue.description,
-        labels: exampleIssue.labels.split(',')
+        labels: exampleIssue.labels
     })
 
     console.log(ghResponse);
@@ -56,35 +57,48 @@ const createIssueDetails = (vuln: SCAVulnerability,lib: SCALibrary) => {
     const vulnLibDetails = vuln.libraries[0].details[0];
     const sevLabel = getSeverityName(vuln.cvssScore);
     const myCVE = vuln.cve || '0000-0000';
-    var title = "CVE: "+myCVE+" found in "+lib.name+" - Version: "+vuln.libraries[0].details[0].versionRange+" ["+vuln.language+"]";
-    var labels = "Dependency Scanning,"+myCVE+","+sevLabel;
-    var description = "Veracode Software Composition Analysis  \n===============================\n  \nLanguage: "+
-        vuln.language+"  \nLibrary: "+lib.name+"  \nCVE: "+vuln.cve+"  \nPresent in version/s: "+vulnLibDetails.versionRange+
-        "  \nVulnerability fix version: "+vulnLibDetails.updateToVersion+
+    const versionsFound = lib.versions.map(version => version.version);
+    var title = "CVE: "+myCVE+" found in "+lib.name+" - Version: "+versionsFound+" ["+vuln.language+"]";
+    var labels: Array<Label> = [LABELS.veracode,sevLabel,{name:myCVE,color:LABELS.veracode.color,description:"CVE "+myCVE}];
+    var description = "Veracode Software Composition Analysis"+
+        "  \n===============================\n"+
+        "  \nLibrary: "+lib.name+
+        "  \nDescription: "+lib.description+
+        "  \nLanguage: "+vuln.language+
+        "  \nVulnerability: "+vuln.title+
+        "  \nVulnerability description: "+vuln.overview+
+        "  \nCVE: "+vuln.cve+
+        "  \nCVSS score: "+vuln.cvssScore+
+        "  \nVulnerability present in version/s: "+vulnLibDetails.versionRange+
+        "  \nFound library version/s: "+versionsFound+
+        "  \nVulnerability fixed in version: "+vulnLibDetails.updateToVersion+
         "  \nLibrary latest version: "+lib.latestRelease+
-        "  \nDescription: "+lib.description+"  \n"+vuln.overview+"  \nFix: "+vulnLibDetails.fixText+
-        "  \nLinks:  \n"+lib.versions[0]._links.html+"  \n"+vuln._links.html+"  \n"+vulnLibDetails.patch;
+        "  \nFix: "+vulnLibDetails.fixText+
+        "  \nLinks:"+
+        "  \n- "+lib.versions[0]._links.html+
+        "  \n- "+vuln._links.html+
+        "  \n- Patch: "+vulnLibDetails.patch;
 
     return {
         title,description,labels
     };
 }
 
-const getSeverityName = (cvss: number):string => {
+const getSeverityName = (cvss: number):Label => {
     var weight = Math.floor(cvss);
-    let severityLabel = 'Unknown';
+    let label = LABELS.severities.Unknown;
     if (weight == 0)
-        severityLabel = 'Informational'
+        label = LABELS.severities.Informational;
     else if (weight >= 0.1 && weight < 1.9)
-        severityLabel = 'Very Low'
+        label =  LABELS.severities['Very Low'];
     else if (weight >= 2.0 && weight < 3.9)
-        severityLabel = 'Low'
+        label = LABELS.severities.Low;
     else if (weight >= 4.0 && weight < 5.9)
-        severityLabel = 'Medium'
+        label = LABELS.severities.Medium;
     else if (weight >= 6.0 && weight < 7.9)
-        severityLabel = 'High'
+        label = LABELS.severities.High;
     else if (weight >= 8.0)
-        severityLabel = 'Very High'
+        label = LABELS.severities['Very High'];
 
-    return severityLabel;
+    return label;
 }

@@ -8350,7 +8350,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = exports.SCA_OUTPUT_FILE = void 0;
 const github_1 = __nccwpck_require__(5438);
 const fs_1 = __nccwpck_require__(5747);
-const githubLabels_1 = __nccwpck_require__(5213);
+const labels_1 = __nccwpck_require__(7402);
 exports.SCA_OUTPUT_FILE = 'scaResults.json';
 const librariesWithIssues = {};
 function run(options, msgFunc) {
@@ -8399,7 +8399,7 @@ const createIssueDetails = (vuln, lib) => {
     const myCVE = vuln.cve || '0000-0000';
     const versionsFound = lib.versions.map(version => version.version);
     var title = "CVE: " + myCVE + " found in " + lib.name + " - Version: " + versionsFound + " [" + vuln.language + "]";
-    var labels = [githubLabels_1.LABELS.veracode, sevLabel, { name: myCVE, color: githubLabels_1.LABELS.veracode.color, description: "CVE " + myCVE }];
+    var labels = [labels_1.LABELS.veracode, sevLabel, { name: myCVE, color: labels_1.LABELS.veracode.color, description: "CVE " + myCVE }];
     var description = "Veracode Software Composition Analysis" +
         "  \n===============================\n" +
         "  \nLibrary: " + lib.name +
@@ -8424,29 +8424,76 @@ const createIssueDetails = (vuln, lib) => {
 };
 const getSeverityName = (cvss) => {
     var weight = Math.floor(cvss);
-    let label = githubLabels_1.LABELS.severities.Unknown;
+    let label = labels_1.LABELS.severities.Unknown;
     if (weight == 0)
-        label = githubLabels_1.LABELS.severities.Informational;
+        label = labels_1.LABELS.severities.Informational;
     else if (weight >= 0.1 && weight < 1.9)
-        label = githubLabels_1.LABELS.severities['Very Low'];
+        label = labels_1.LABELS.severities['Very Low'];
     else if (weight >= 2.0 && weight < 3.9)
-        label = githubLabels_1.LABELS.severities.Low;
+        label = labels_1.LABELS.severities.Low;
     else if (weight >= 4.0 && weight < 5.9)
-        label = githubLabels_1.LABELS.severities.Medium;
+        label = labels_1.LABELS.severities.Medium;
     else if (weight >= 6.0 && weight < 7.9)
-        label = githubLabels_1.LABELS.severities.High;
+        label = labels_1.LABELS.severities.High;
     else if (weight >= 8.0)
-        label = githubLabels_1.LABELS.severities['Very High'];
+        label = labels_1.LABELS.severities['Very High'];
     return label;
 };
 
 
 /***/ }),
 
-/***/ 5213:
-/***/ ((module) => {
+/***/ 7402:
+/***/ ((__unused_webpack_module, exports) => {
 
-module.exports = eval("require")("./githubLabels");
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LABELS = void 0;
+exports.LABELS = {
+    'severities': {
+        "Very High": {
+            'name': 'Severity: Very High',
+            'color': 'A90533',
+            'description': 'Very High severity',
+        },
+        High: {
+            'name': 'Severity: High',
+            'color': 'DD3B35',
+            'description': 'High severity'
+        },
+        Medium: {
+            'name': 'Severity: Medium',
+            'color': 'FF7D00',
+            'description': 'Medium severity'
+        },
+        Low: {
+            'name': 'Severity: Low',
+            'color': 'FFBE00',
+            'description': 'Low severity'
+        },
+        "Very Low": {
+            'name': 'Severity: Very Low',
+            'color': '33ADD2',
+            'description': 'Very Low severity',
+        },
+        Informational: {
+            'name': 'Severity: Informational',
+            'color': '0270D3',
+            'description': 'Informational severity',
+        },
+        Unknown: {
+            'name': 'Severity: Unknown',
+            'color': '0270D3',
+            'description': 'Unknown severity',
+        }
+    },
+    'veracode': {
+        'name': 'Veracode Dependency Scanning',
+        'color': '0AA2DC',
+        'description': 'A Veracode identified vulnerability'
+    }
+};
 
 
 /***/ }),

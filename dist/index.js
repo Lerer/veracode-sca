@@ -8380,7 +8380,7 @@ function run(options, msgFunc) {
             repo: github_1.context.repo.repo,
             title: exampleIssue.title,
             body: exampleIssue.description,
-            labels: exampleIssue.labels
+            labels: exampleIssue.labels.split(',')
         });
         console.log(ghResponse);
     });

@@ -5,6 +5,9 @@ branding:
   icon: 'play'
   color: 'blue'
 inputs:
+  github_token:
+    description: "Authorization token to query and create issues"
+    required: true
   quick:
     description: ""
     required: false

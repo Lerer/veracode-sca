@@ -39,7 +39,7 @@ export async function run(options:Options, msgFunc: (msg: string) => void) {
         repo:context.repo.repo,
         title:exampleIssue.title,
         body:exampleIssue.description,
-        labels:exampleIssue.labels
+        labels: exampleIssue.labels.split(',')
     })
 
     console.log(ghResponse);

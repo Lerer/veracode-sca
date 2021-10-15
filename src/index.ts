@@ -2,11 +2,15 @@ import {getOctokit,context} from '@actions/github';
 import {readFileSync} from 'fs';
 import { Options } from './options';
 import { SCALibrary, SCAVulnerability, SrcClrJson } from './srcclr';
-import { LABELS,Label } from './labels';
+import { Label, SEVERITY_LABELS, VERACODE_LABEL } from './labels';
+import { GithubHandler } from './githubRequestHandler';
 
 export const SCA_OUTPUT_FILE = 'scaResults.json';
 
 const librariesWithIssues:any = {};
+
+let githubHandler: GithubHandler;
+
 
 export async function run(options:Options, msgFunc: (msg: string) => void) {
     const scaResultsTxt = readFileSync(SCA_OUTPUT_FILE);  
@@ -33,7 +37,10 @@ export async function run(options:Options, msgFunc: (msg: string) => void) {
     console.log('====================');
     console.log(librariesWithIssues);
 
+    githubHandler = new GithubHandler(options.github_token);
+
     const client = getOctokit(options.github_token);
+    await verifyLabels();
     const exampleIssue = librariesWithIssues[0].issues[0];
     const ghResponse = await client.rest.issues.create({
         owner:context.repo.owner,
@@ -60,7 +67,7 @@ const createIssueDetails = (vuln: SCAVulnerability,lib: SCALibrary) => {
     const myCVE = vuln.cve || '0000-0000';
     const versionsFound = lib.versions.map(version => version.version);
     var title = "CVE: "+myCVE+" found in "+lib.name+" - Version: "+versionsFound+" ["+vuln.language+"]";
-    var labels: Array<Label> = [LABELS.veracode,sevLabel,{name:myCVE,color:LABELS.veracode.color,description:"CVE "+myCVE}];
+    var labels: Array<Label> = [VERACODE_LABEL,sevLabel];
     var description = "Veracode Software Composition Analysis"+
         "  \n===============================\n"+
         "  \n Attribute | Details"+
@@ -90,19 +97,27 @@ const createIssueDetails = (vuln: SCAVulnerability,lib: SCALibrary) => {
 
 const getSeverityName = (cvss: number):Label => {
     var weight = Math.floor(cvss);
-    let label = LABELS.severities.Unknown;
+    let label = SEVERITY_LABELS.Unknown;
     if (weight == 0)
-        label = LABELS.severities.Informational;
+        label = SEVERITY_LABELS.Informational;
     else if (weight >= 0.1 && weight < 1.9)
-        label =  LABELS.severities['Very Low'];
+        label =  SEVERITY_LABELS['Very Low'];
     else if (weight >= 2.0 && weight < 3.9)
-        label = LABELS.severities.Low;
+        label = SEVERITY_LABELS.Low;
     else if (weight >= 4.0 && weight < 5.9)
-        label = LABELS.severities.Medium;
+        label = SEVERITY_LABELS.Medium;
     else if (weight >= 6.0 && weight < 7.9)
-        label = LABELS.severities.High;
+        label = SEVERITY_LABELS.High;
     else if (weight >= 8.0)
-        label = LABELS.severities['Very High'];
+        label = SEVERITY_LABELS['Very High'];
 
     return label;
+}
+
+const verifyLabels = async () => {
+    const baseLabel = await githubHandler.getVeracodeLabel();
+    
+    if (!baseLabel || !baseLabel.data) {
+        await githubHandler.createVeracodeLabels();
+    }
 }

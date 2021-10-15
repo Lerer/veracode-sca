@@ -8332,6 +8332,92 @@ catch (error) {
 
 /***/ }),
 
+/***/ 6366:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.GithubHandler = void 0;
+const github_1 = __nccwpck_require__(5438);
+const labels_1 = __nccwpck_require__(7402);
+class GithubHandler {
+    constructor(token) {
+        this.token = token;
+        this.client = (0, github_1.getOctokit)(token);
+    }
+    getVeracodeLabel() {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log('getVeracodeLabel - START');
+            let veracodeLabel = {};
+            try {
+                veracodeLabel = yield this.client.rest
+                    .issues.getLabel({
+                    owner: github_1.context.repo.owner,
+                    repo: github_1.context.repo.repo,
+                    name: labels_1.VERACODE_LABEL.name
+                });
+                console.log('Veracode Labels already exist');
+            }
+            catch (e) {
+                if (e.status === 404) {
+                    console.log('Veracode Labels does not exist');
+                }
+                else {
+                    console.log('=======================   ERROR   ===============================');
+                    console.log(e);
+                }
+            }
+            console.log('getVeracodeLabel - END');
+            return veracodeLabel;
+        });
+    }
+    createVeracodeLabels() {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log('createVeracodeLabels - END');
+            try {
+                // Creating the severity labels
+                for (var label of Object.values(labels_1.SEVERITY_LABELS)) {
+                    //let label = SEVERITY_LABELS[lebelKey];
+                    yield this.client.rest.issues.createLabel({
+                        owner: github_1.context.repo.owner,
+                        repo: github_1.context.repo.repo,
+                        name: label.name,
+                        color: label.color,
+                        description: label.description
+                    });
+                }
+                // Creating the base label
+                yield this.client.rest.issues.createLabel({
+                    owner: github_1.context.repo.owner,
+                    repo: github_1.context.repo.repo,
+                    name: labels_1.VERACODE_LABEL.name,
+                    color: labels_1.VERACODE_LABEL.color,
+                    description: labels_1.VERACODE_LABEL.description
+                });
+            }
+            catch (e) {
+                console.log('=======================   ERROR   ===============================');
+                console.log(e);
+            }
+            console.log('createVeracodeLabels - END');
+        });
+    }
+}
+exports.GithubHandler = GithubHandler;
+
+
+/***/ }),
+
 /***/ 6144:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -8351,8 +8437,10 @@ exports.run = exports.SCA_OUTPUT_FILE = void 0;
 const github_1 = __nccwpck_require__(5438);
 const fs_1 = __nccwpck_require__(5747);
 const labels_1 = __nccwpck_require__(7402);
+const githubRequestHandler_1 = __nccwpck_require__(6366);
 exports.SCA_OUTPUT_FILE = 'scaResults.json';
 const librariesWithIssues = {};
+let githubHandler;
 function run(options, msgFunc) {
     return __awaiter(this, void 0, void 0, function* () {
         const scaResultsTxt = (0, fs_1.readFileSync)(exports.SCA_OUTPUT_FILE);
@@ -8374,7 +8462,9 @@ function run(options, msgFunc) {
         });
         console.log('====================');
         console.log(librariesWithIssues);
+        githubHandler = new githubRequestHandler_1.GithubHandler(options.github_token);
         const client = (0, github_1.getOctokit)(options.github_token);
+        yield verifyLabels();
         const exampleIssue = librariesWithIssues[0].issues[0];
         const ghResponse = yield client.rest.issues.create({
             owner: github_1.context.repo.owner,
@@ -8400,7 +8490,7 @@ const createIssueDetails = (vuln, lib) => {
     const myCVE = vuln.cve || '0000-0000';
     const versionsFound = lib.versions.map(version => version.version);
     var title = "CVE: " + myCVE + " found in " + lib.name + " - Version: " + versionsFound + " [" + vuln.language + "]";
-    var labels = [labels_1.LABELS.veracode, sevLabel, { name: myCVE, color: labels_1.LABELS.veracode.color, description: "CVE " + myCVE }];
+    var labels = [labels_1.VERACODE_LABEL, sevLabel];
     var description = "Veracode Software Composition Analysis" +
         "  \n===============================\n" +
         "  \n Attribute | Details" +
@@ -8428,21 +8518,27 @@ const createIssueDetails = (vuln, lib) => {
 };
 const getSeverityName = (cvss) => {
     var weight = Math.floor(cvss);
-    let label = labels_1.LABELS.severities.Unknown;
+    let label = labels_1.SEVERITY_LABELS.Unknown;
     if (weight == 0)
-        label = labels_1.LABELS.severities.Informational;
+        label = labels_1.SEVERITY_LABELS.Informational;
     else if (weight >= 0.1 && weight < 1.9)
-        label = labels_1.LABELS.severities['Very Low'];
+        label = labels_1.SEVERITY_LABELS['Very Low'];
     else if (weight >= 2.0 && weight < 3.9)
-        label = labels_1.LABELS.severities.Low;
+        label = labels_1.SEVERITY_LABELS.Low;
     else if (weight >= 4.0 && weight < 5.9)
-        label = labels_1.LABELS.severities.Medium;
+        label = labels_1.SEVERITY_LABELS.Medium;
     else if (weight >= 6.0 && weight < 7.9)
-        label = labels_1.LABELS.severities.High;
+        label = labels_1.SEVERITY_LABELS.High;
     else if (weight >= 8.0)
-        label = labels_1.LABELS.severities['Very High'];
+        label = labels_1.SEVERITY_LABELS['Very High'];
     return label;
 };
+const verifyLabels = () => __awaiter(void 0, void 0, void 0, function* () {
+    const baseLabel = yield githubHandler.getVeracodeLabel();
+    if (!baseLabel || !baseLabel.data) {
+        yield githubHandler.createVeracodeLabels();
+    }
+});
 
 
 /***/ }),
@@ -8453,50 +8549,48 @@ const getSeverityName = (cvss) => {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LABELS = void 0;
-exports.LABELS = {
-    'severities': {
-        "Very High": {
-            'name': 'Severity: Very High',
-            'color': 'A90533',
-            'description': 'Very High severity',
-        },
-        High: {
-            'name': 'Severity: High',
-            'color': 'DD3B35',
-            'description': 'High severity'
-        },
-        Medium: {
-            'name': 'Severity: Medium',
-            'color': 'FF7D00',
-            'description': 'Medium severity'
-        },
-        Low: {
-            'name': 'Severity: Low',
-            'color': 'FFBE00',
-            'description': 'Low severity'
-        },
-        "Very Low": {
-            'name': 'Severity: Very Low',
-            'color': '33ADD2',
-            'description': 'Very Low severity',
-        },
-        Informational: {
-            'name': 'Severity: Informational',
-            'color': '0270D3',
-            'description': 'Informational severity',
-        },
-        Unknown: {
-            'name': 'Severity: Unknown',
-            'color': '0270D3',
-            'description': 'Unknown severity',
-        }
+exports.VERACODE_LABEL = exports.SEVERITY_LABELS = void 0;
+exports.SEVERITY_LABELS = {
+    "Very High": {
+        'name': 'Severity: Very High',
+        'color': 'A90533',
+        'description': 'Very High severity',
     },
-    'veracode': {
-        'name': 'Veracode Dependency Scanning',
-        'color': '0AA2DC',
-        'description': 'A Veracode identified vulnerability'
+    High: {
+        'name': 'Severity: High',
+        'color': 'DD3B35',
+        'description': 'High severity'
+    },
+    Medium: {
+        'name': 'Severity: Medium',
+        'color': 'FF7D00',
+        'description': 'Medium severity'
+    },
+    Low: {
+        'name': 'Severity: Low',
+        'color': 'FFBE00',
+        'description': 'Low severity'
+    },
+    "Very Low": {
+        'name': 'Severity: Very Low',
+        'color': '33ADD2',
+        'description': 'Very Low severity',
+    },
+    Informational: {
+        'name': 'Severity: Informational',
+        'color': '0270D3',
+        'description': 'Informational severity',
+    },
+    Unknown: {
+        'name': 'Severity: Unknown',
+        'color': '0270D3',
+        'description': 'Unknown severity',
     }
+};
+exports.VERACODE_LABEL = {
+    'name': 'Veracode Dependency Scanning',
+    'color': '0AA2DC',
+    'description': 'A Veracode identified vulnerability'
 };
 
 

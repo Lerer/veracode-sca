@@ -44,6 +44,7 @@ export async function run(options:Options, msgFunc: (msg: string) => void) {
     })
 
     console.log(ghResponse);
+    console.log(ghResponse.data.labels);
 }
 
 const addIssueToLibrary = (libId:string,lib:SCALibrary,details:any) => {
@@ -63,7 +64,7 @@ const createIssueDetails = (vuln: SCAVulnerability,lib: SCALibrary) => {
     var description = "Veracode Software Composition Analysis"+
         "  \n===============================\n"+
         "  \n Attribute | Details"+
-        "  \n| --- | --- |"
+        "  \n| --- | --- |"+
         "  \nLibrary | "+lib.name+
         "  \nDescription | "+lib.description+
         "  \nLanguage | "+vuln.language+
@@ -76,7 +77,7 @@ const createIssueDetails = (vuln: SCAVulnerability,lib: SCALibrary) => {
         "  \nVulnerability fixed in version | "+vulnLibDetails.updateToVersion+
         "  \nLibrary latest version | "+lib.latestRelease+
         "  \nFix | "+vulnLibDetails.fixText+
-        "  \n"
+        "  \n"+
         "  \nLinks:"+
         "  \n- "+lib.versions[0]._links.html+
         "  \n- "+vuln._links.html+

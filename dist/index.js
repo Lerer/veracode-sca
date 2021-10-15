@@ -8384,6 +8384,7 @@ function run(options, msgFunc) {
             labels: exampleIssue.labels
         });
         console.log(ghResponse);
+        console.log(ghResponse.data.labels);
     });
 }
 exports.run = run;
@@ -8403,8 +8404,8 @@ const createIssueDetails = (vuln, lib) => {
     var description = "Veracode Software Composition Analysis" +
         "  \n===============================\n" +
         "  \n Attribute | Details" +
-        "  \n| --- | --- |";
-    "  \nLibrary | " + lib.name +
+        "  \n| --- | --- |" +
+        "  \nLibrary | " + lib.name +
         "  \nDescription | " + lib.description +
         "  \nLanguage | " + vuln.language +
         "  \nVulnerability | " + vuln.title +
@@ -8416,8 +8417,8 @@ const createIssueDetails = (vuln, lib) => {
         "  \nVulnerability fixed in version | " + vulnLibDetails.updateToVersion +
         "  \nLibrary latest version | " + lib.latestRelease +
         "  \nFix | " + vulnLibDetails.fixText +
-        "  \n";
-    "  \nLinks:" +
+        "  \n" +
+        "  \nLinks:" +
         "  \n- " + lib.versions[0]._links.html +
         "  \n- " + vuln._links.html +
         "  \n- Patch: " + vulnLibDetails.patch;

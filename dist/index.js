@@ -8317,7 +8317,7 @@ try {
         extraCommands = `--url ${o.url} `;
     }
     extraCommands = `${extraCommands}${o.quick ? '--quick' : ''} ${o.updateAdvisor ? '--update-advisor' : ''}`;
-    const command = `curl -sSL https://download.sourceclear.com/ci.sh | sh -s scan . ${extraCommands} --json=${index_1.SCA_OUTPUT_FILE}`;
+    const command = `curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ${extraCommands} --json=${index_1.SCA_OUTPUT_FILE}`;
     core.info(command);
     const stdout = (0, child_process_1.execSync)(command, {
         env: {

@@ -4,7 +4,7 @@
   "description": "An action to execute Veracode Software Composition Analysis Scaning as a GitHub Action",
   "main": "./dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test-gql": "tsc && NODE_ENV=test node -r dotenv/config ./dist/test/graphql.js",
     "clean": "rm -rf ./dist/ || true",
     "build": "npm run clean && ncc build ./src/action.ts --license license"
   },
@@ -26,6 +26,7 @@
   "devDependencies": {
     "@types/node": "^16.10.3",
     "@vercel/ncc": "^0.31.1",
+    "dotenv": "^10.0.0",
     "typescript": "^4.4.3"
   },
   "dependencies": {

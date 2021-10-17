@@ -8350,6 +8350,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.GithubHandler = void 0;
 const github_1 = __nccwpck_require__(5438);
 const labels_1 = __nccwpck_require__(7402);
+const ISSUES_PULL_COUNT = 100;
 class GithubHandler {
     constructor(token) {
         this.token = token;
@@ -8404,6 +8405,7 @@ class GithubHandler {
                     color: labels_1.VERACODE_LABEL.color,
                     description: labels_1.VERACODE_LABEL.description
                 });
+                //this.client.paginate(this.client.graphql,"");
             }
             catch (e) {
                 console.log('=======================   ERROR   ===============================');
@@ -8412,18 +8414,94 @@ class GithubHandler {
             console.log('createVeracodeLabels - END');
         });
     }
-    listExistingOpenIssues() {
+    createIssue(reportedIssue) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('createVeracodeLabels - START');
-            const openSCAIssues = yield this.client.paginate(this.client.rest.issues.listForRepo, {
+            return yield this.client.rest.issues.create({
                 owner: github_1.context.repo.owner,
                 repo: github_1.context.repo.repo,
-                state: 'open',
-                labels: labels_1.VERACODE_LABEL.name
+                title: reportedIssue.title,
+                body: reportedIssue.description,
+                labels: reportedIssue.labels
             });
-            console.log(openSCAIssues);
-            console.log('createVeracodeLabels - END');
-            return openSCAIssues;
+        });
+    }
+    listExistingOpenIssues() {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log('getIssues - START');
+            const query = `query IsslesTitle($organization: String!,$repo: String!, $count: Int!,$label: String!) {
+            repository(name: $repo, owner: $organization) {
+              issues(first: $count,filterBy: {labels: $label, states: OPEN}) {
+                edges {
+                  node {
+                    title
+                    number
+                  }
+                }
+                pageInfo {
+                  hasNextPage
+                  endCursor
+                }
+              }
+            }
+          }`;
+            const nextQuery = `query IsslesTitle($organization: String!,$repo: String!, $count: Int!, $endCursor: String!,$label: String!) {
+            repository(name: $repo, owner: $organization) {
+              issues(first: $count,after: $endCursor,filterBy: {labels: $label, states: OPEN}) {
+                edges {
+                  node {
+                    title
+                    number
+                  }
+                }
+                pageInfo {
+                  hasNextPage
+                  endCursor
+                }
+              }
+            }
+          }`;
+            let issues = [];
+            try {
+                let issuesRes = yield this.client.graphql({
+                    headers: {
+                        authorization: `token ${this.token}`
+                    },
+                    query,
+                    count: ISSUES_PULL_COUNT,
+                    organization: github_1.context.repo.owner,
+                    repo: github_1.context.repo.repo,
+                    label: labels_1.VERACODE_LABEL.name
+                });
+                issues = issues.concat(issuesRes.repository.issues.edges);
+                console.log(issuesRes.repository.issues.pageInfo.hasNextPage);
+                while (issuesRes.repository.issues.pageInfo.hasNextPage) {
+                    console.log('iterating for fetching more related open issues');
+                    const endCursor = issuesRes.repository.issues.pageInfo.endCursor;
+                    issuesRes = yield this.client.graphql({
+                        headers: {
+                            authorization: `token ${this.token}`
+                        },
+                        query: nextQuery,
+                        count: ISSUES_PULL_COUNT,
+                        endCursor,
+                        organization: github_1.context.repo.owner,
+                        repo: github_1.context.repo.repo,
+                        label: labels_1.VERACODE_LABEL.name
+                    });
+                    issues = issues.concat(issuesRes.repository.issues.edges);
+                }
+            }
+            catch (e) {
+                if (e.status === 404) {
+                    console.log('Veracode Labels does not exist');
+                }
+                else {
+                    console.log('=======================   ERROR   ===============================');
+                    console.log(e);
+                }
+            }
+            console.log('getIssues - END');
+            return issues;
         });
     }
 }
@@ -8473,19 +8551,9 @@ function run(options, msgFunc) {
             addIssueToLibrary(libId, lib, details);
         });
         githubHandler = new githubRequestHandler_1.GithubHandler(options.github_token);
-        //const client = getOctokit(options.github_token);
         yield verifyLabels();
-        removeExistingOpenIssues();
-        // const exampleIssue = librariesWithIssues[0].issues[0];
-        // const ghResponse = await client.rest.issues.create({
-        //     owner:context.repo.owner,
-        //     repo:context.repo.repo,
-        //     title:exampleIssue.title,
-        //     body:exampleIssue.description,
-        //     labels: exampleIssue.labels
-        // })
-        // console.log(ghResponse);
-        // console.log(ghResponse.data.labels);
+        console.log(JSON.stringify(librariesWithIssues, undefined, 2));
+        syncExistingOpenIssues();
     });
 }
 exports.run = run;
@@ -8494,6 +8562,25 @@ const addIssueToLibrary = (libId, lib, details) => {
     libWithIssues.issues.push(details);
     librariesWithIssues[libId] = libWithIssues;
 };
+const syncExistingOpenIssues = () => __awaiter(void 0, void 0, void 0, function* () {
+    const existingOpenIssues = yield githubHandler.listExistingOpenIssues();
+    for (var library of Object.values(librariesWithIssues)) {
+        library.issues.forEach((element) => __awaiter(void 0, void 0, void 0, function* () {
+            const foundIssueTitle = element.title;
+            const inExsiting = existingOpenIssues.filter(openIssue => {
+                return openIssue.node.title === foundIssueTitle;
+            });
+            if (inExsiting.length === 0) {
+                // issue not yet reported
+                const ghResponse = yield githubHandler.createIssue(element);
+                console.log(`Created issue: ${element.title}`);
+            }
+            else {
+                console.log(`Skipping existing Issue : ${element.title}`);
+            }
+        }));
+    }
+});
 const createIssueDetails = (vuln, lib) => {
     console.log(lib, vuln, vuln.libraries[0]);
     const vulnLibDetails = vuln.libraries[0].details[0];
@@ -8549,9 +8636,6 @@ const verifyLabels = () => __awaiter(void 0, void 0, void 0, function* () {
     if (!baseLabel || !baseLabel.data) {
         yield githubHandler.createVeracodeLabels();
     }
-});
-const removeExistingOpenIssues = () => __awaiter(void 0, void 0, void 0, function* () {
-    const existingOpenIssues = yield githubHandler.listExistingOpenIssues();
 });
 
 

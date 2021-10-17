@@ -1,5 +1,8 @@
 import {getOctokit,context} from '@actions/github';
 import { VERACODE_LABEL,SEVERITY_LABELS } from './labels';
+import { ReportedLibraryIssue } from './srcclr';
+
+const ISSUES_PULL_COUNT = 100;
 
 export class GithubHandler {
 
@@ -55,6 +58,8 @@ export class GithubHandler {
                 color: VERACODE_LABEL.color,
                 description: VERACODE_LABEL.description
             });
+
+            //this.client.paginate(this.client.graphql,"");
     
         } catch (e) {
             console.log('=======================   ERROR   ===============================');
@@ -63,23 +68,100 @@ export class GithubHandler {
         console.log('createVeracodeLabels - END');
     }
 
+    public async createIssue(reportedIssue: ReportedLibraryIssue) {
+        return await this.client.rest.issues.create({
+            owner:context.repo.owner,
+            repo:context.repo.repo,
+            title:reportedIssue.title,
+            body:reportedIssue.description,
+            labels: reportedIssue.labels
+        });
+    }
+
     public async listExistingOpenIssues() {
-        console.log('createVeracodeLabels - START');
-
-        const openSCAIssues = await this.client.paginate(
-            this.client.rest.issues.listForRepo,
-            {
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                state: 'open',
-                labels: VERACODE_LABEL.name
+        console.log('getIssues - START');
+        const query = `query IsslesTitle($organization: String!,$repo: String!, $count: Int!,$label: String!) {
+            repository(name: $repo, owner: $organization) {
+              issues(first: $count,filterBy: {labels: $label, states: OPEN}) {
+                edges {
+                  node {
+                    title
+                    number
+                  }
+                }
+                pageInfo {
+                  hasNextPage
+                  endCursor
+                }
+              }
             }
-        )
-        
-        console.log(openSCAIssues);
-        console.log('createVeracodeLabels - END');
+          }`;
 
-        return openSCAIssues;
+        const nextQuery = `query IsslesTitle($organization: String!,$repo: String!, $count: Int!, $endCursor: String!,$label: String!) {
+            repository(name: $repo, owner: $organization) {
+              issues(first: $count,after: $endCursor,filterBy: {labels: $label, states: OPEN}) {
+                edges {
+                  node {
+                    title
+                    number
+                  }
+                }
+                pageInfo {
+                  hasNextPage
+                  endCursor
+                }
+              }
+            }
+          }`;
+        
+        let issues:Array<{
+            node: {
+                title: string,
+                number: number
+            }
+        }> = [];
+        try {
+            let issuesRes: any = await this.client.graphql({
+                headers: {
+                    authorization: `token ${this.token}`
+                },
+                query,
+                count: ISSUES_PULL_COUNT,
+                organization: context.repo.owner,
+                repo: context.repo.repo,
+                label: VERACODE_LABEL.name
+            });
+             
+            issues = issues.concat(issuesRes.repository.issues.edges);
+
+            console.log(issuesRes.repository.issues.pageInfo.hasNextPage);
+            while (issuesRes.repository.issues.pageInfo.hasNextPage) {
+                console.log('iterating for fetching more related open issues')
+                const endCursor =issuesRes.repository.issues.pageInfo.endCursor;
+
+                issuesRes = await this.client.graphql({
+                    headers: {
+                        authorization: `token ${this.token}`
+                    },
+                    query:nextQuery,
+                    count: ISSUES_PULL_COUNT,
+                    endCursor,
+                    organization: context.repo.owner,
+                    repo: context.repo.repo,
+                    label: VERACODE_LABEL.name
+                });
+                issues = issues.concat(issuesRes.repository.issues.edges);
+            }
+        } catch (e:any) {
+            if (e.status===404) {
+                console.log('Veracode Labels does not exist');
+            } else {
+                console.log('=======================   ERROR   ===============================');
+                console.log(e);
+            }
+        }
+        console.log('getIssues - END');
+        return issues;
     }
 }
 

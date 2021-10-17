@@ -1,3 +1,5 @@
+import { Label } from "./labels";
+
 export interface SrcClrJson {
     records: Array<SrcClrRes>
 }
@@ -46,4 +48,15 @@ export interface scaVulLibDetails {
     versionRange: string,
     fixText: string,
     patch: string
+}
+
+export interface LibraryIssuesCollection {
+    lib: SCALibrary,
+    issues: Array<ReportedLibraryIssue>
+}
+
+export interface ReportedLibraryIssue {
+    title: string,
+    description: string,
+    labels: Array<Label> 
 }

@@ -1,7 +1,7 @@
 //import {getOctokit,context} from '@actions/github';
 import {readFileSync} from 'fs';
 import { Options } from './options';
-import { SCALibrary, SCAVulnerability, SrcClrJson } from './srcclr';
+import { LibraryIssuesCollection, ReportedLibraryIssue, SCALibrary, SCAVulnerability, SrcClrJson } from './srcclr';
 import { Label, SEVERITY_LABELS, VERACODE_LABEL } from './labels';
 import { GithubHandler } from './githubRequestHandler';
 
@@ -10,7 +10,6 @@ export const SCA_OUTPUT_FILE = 'scaResults.json';
 const librariesWithIssues:any = {};
 
 let githubHandler: GithubHandler;
-
 
 export async function run(options:Options, msgFunc: (msg: string) => void) {
     const scaResultsTxt = readFileSync(SCA_OUTPUT_FILE);  
@@ -34,29 +33,39 @@ export async function run(options:Options, msgFunc: (msg: string) => void) {
 
     githubHandler = new GithubHandler(options.github_token);
 
-    //const client = getOctokit(options.github_token);
     await verifyLabels();
-    removeExistingOpenIssues();
-    // const exampleIssue = librariesWithIssues[0].issues[0];
-    // const ghResponse = await client.rest.issues.create({
-    //     owner:context.repo.owner,
-    //     repo:context.repo.repo,
-    //     title:exampleIssue.title,
-    //     body:exampleIssue.description,
-    //     labels: exampleIssue.labels
-    // })
+    console.log(JSON.stringify(librariesWithIssues,undefined,2));
+    syncExistingOpenIssues();
 
-    // console.log(ghResponse);
-    // console.log(ghResponse.data.labels);
+
 }
 
-const addIssueToLibrary = (libId:string,lib:SCALibrary,details:any) => {
-    let libWithIssues = librariesWithIssues[libId] || {lib,issues:[]};
+const addIssueToLibrary = (libId:string,lib:SCALibrary,details:ReportedLibraryIssue) => {
+    let libWithIssues: LibraryIssuesCollection = librariesWithIssues[libId] || {lib,issues:[]};
     libWithIssues.issues.push(details);
     librariesWithIssues[libId] = libWithIssues;
 }
 
-const createIssueDetails = (vuln: SCAVulnerability,lib: SCALibrary) => {
+const syncExistingOpenIssues = async () => {
+    const existingOpenIssues = await githubHandler.listExistingOpenIssues();
+    for (var library of Object.values(librariesWithIssues)) {
+        (library as LibraryIssuesCollection).issues.forEach(async element => {
+            const foundIssueTitle = element.title;
+            const inExsiting = existingOpenIssues.filter(openIssue => {
+                return openIssue.node.title === foundIssueTitle;
+            })
+            if (inExsiting.length===0) {
+                // issue not yet reported
+                const ghResponse = await githubHandler.createIssue(element);
+                console.log(`Created issue: ${element.title}`);
+            } else {
+                console.log(`Skipping existing Issue : ${element.title}`);
+            }
+        });
+    }
+}
+
+const createIssueDetails = (vuln: SCAVulnerability,lib: SCALibrary): ReportedLibraryIssue => {
     console.log(lib,vuln,vuln.libraries[0]);
     const vulnLibDetails = vuln.libraries[0].details[0];
     const sevLabel = getSeverityName(vuln.cvssScore);
@@ -118,8 +127,3 @@ const verifyLabels = async () => {
     }
 }
 
-const removeExistingOpenIssues = async () => {
-    const existingOpenIssues = await githubHandler.listExistingOpenIssues();
-
-
-}

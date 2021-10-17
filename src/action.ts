@@ -4,7 +4,7 @@ import { execSync } from "child_process";
 
 import * as core from '@actions/core'
 import { Options } from "./options";
-import { SCA_OUTPUT_FILE,run } from ".";
+import { SCA_OUTPUT_FILE,run } from "./index";
 
 try {
     const o: Options = {
@@ -25,7 +25,7 @@ try {
             SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
         }
     });
-
+    core.info(stdout.toString('utf-8'));
     core.info('Finish command');
 
     run(o,core.info);

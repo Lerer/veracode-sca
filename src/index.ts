@@ -22,19 +22,17 @@ export async function run(options:Options, msgFunc: (msg: string) => void) {
     vulnerabilities
         .filter((vul:any) => vul.cvssScore>=options.minCVSS)
         .forEach((vulr) => {
-            console.log('-------   in each   ------');
+            //console.log('-------   in each   ------');
             const libref = vulr.libraries[0]._links.ref;
             const libId = libref.split('/')[4];
             const lib:SCALibrary = libraries[libId];
             const details = createIssueDetails(vulr,lib);
-            console.log(details);
             addIssueToLibrary(libId,lib,details);
         });
 
     githubHandler = new GithubHandler(options.github_token);
 
     await verifyLabels();
-    console.log(JSON.stringify(librariesWithIssues,undefined,2));
     syncExistingOpenIssues();
 
 
@@ -66,7 +64,6 @@ const syncExistingOpenIssues = async () => {
 }
 
 const createIssueDetails = (vuln: SCAVulnerability,lib: SCALibrary): ReportedLibraryIssue => {
-    console.log(lib,vuln,vuln.libraries[0]);
     const vulnLibDetails = vuln.libraries[0].details[0];
     const sevLabel = getSeverityName(vuln.cvssScore);
     const myCVE = vuln.cve || '0000-0000';

@@ -8302,7 +8302,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 // import exec method from child_process module
 const child_process_1 = __nccwpck_require__(3129);
 const core = __importStar(__nccwpck_require__(2186));
-const _1 = __nccwpck_require__(6144);
+const index_1 = __nccwpck_require__(6144);
 try {
     const o = {
         quick: core.getBooleanInput('quick') || false,
@@ -8317,13 +8317,14 @@ try {
         extraCommands = `--url ${o.url} `;
     }
     extraCommands = `${extraCommands}${o.quick ? '--quick' : ''} ${o.updateAdvisor ? '--update-advisor' : ''}`;
-    const stdout = (0, child_process_1.execSync)(`curl -sSL https://download.sourceclear.com/ci.sh | sh -s scan . ${extraCommands} --json ${_1.SCA_OUTPUT_FILE}`, {
+    const stdout = (0, child_process_1.execSync)(`curl -sSL https://download.sourceclear.com/ci.sh | sh -s scan . ${extraCommands} --json ${index_1.SCA_OUTPUT_FILE}`, {
         env: {
             SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
         }
     });
+    core.info(stdout.toString('utf-8'));
     core.info('Finish command');
-    (0, _1.run)(o, core.info);
+    (0, index_1.run)(o, core.info);
 }
 catch (error) {
     core.setFailed(error.message);
@@ -8473,7 +8474,6 @@ class GithubHandler {
                     label: labels_1.VERACODE_LABEL.name
                 });
                 issues = issues.concat(issuesRes.repository.issues.edges);
-                console.log(issuesRes.repository.issues.pageInfo.hasNextPage);
                 while (issuesRes.repository.issues.pageInfo.hasNextPage) {
                     console.log('iterating for fetching more related open issues');
                     const endCursor = issuesRes.repository.issues.pageInfo.endCursor;
@@ -8542,17 +8542,15 @@ function run(options, msgFunc) {
         vulnerabilities
             .filter((vul) => vul.cvssScore >= options.minCVSS)
             .forEach((vulr) => {
-            console.log('-------   in each   ------');
+            //console.log('-------   in each   ------');
             const libref = vulr.libraries[0]._links.ref;
             const libId = libref.split('/')[4];
             const lib = libraries[libId];
             const details = createIssueDetails(vulr, lib);
-            console.log(details);
             addIssueToLibrary(libId, lib, details);
         });
         githubHandler = new githubRequestHandler_1.GithubHandler(options.github_token);
         yield verifyLabels();
-        console.log(JSON.stringify(librariesWithIssues, undefined, 2));
         syncExistingOpenIssues();
     });
 }
@@ -8582,7 +8580,6 @@ const syncExistingOpenIssues = () => __awaiter(void 0, void 0, void 0, function*
     }
 });
 const createIssueDetails = (vuln, lib) => {
-    console.log(lib, vuln, vuln.libraries[0]);
     const vulnLibDetails = vuln.libraries[0].details[0];
     const sevLabel = getSeverityName(vuln.cvssScore);
     const myCVE = vuln.cve || '0000-0000';

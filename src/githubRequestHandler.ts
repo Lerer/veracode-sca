@@ -134,7 +134,6 @@ export class GithubHandler {
              
             issues = issues.concat(issuesRes.repository.issues.edges);
 
-            console.log(issuesRes.repository.issues.pageInfo.hasNextPage);
             while (issuesRes.repository.issues.pageInfo.hasNextPage) {
                 console.log('iterating for fetching more related open issues')
                 const endCursor =issuesRes.repository.issues.pageInfo.endCursor;

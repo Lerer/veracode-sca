@@ -4,6 +4,8 @@ on:
       - "README.md"
       - "**.json"
       - "action.yml"
+  schedule:
+    - cron: 15 14 * * 6
   workflow_dispatch:
 
 jobs:
@@ -14,8 +16,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      #- name: run SCA
-      #  run: curl -sSL https://download.sourceclear.com/ci.sh | sh -s scan --quick
       - name: Run Veracode SCA
         env:
           SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
@@ -23,9 +23,8 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           quick: true
-          url: "https://github.com/Lerer/veracode-pipeline-scan-results-to-sarif"
+          #url: "https://github.com/Lerer/veracode-pipeline-scan-results-to-sarif"
           create-issues: true 
-          fail-on-cvss: 5
-          min-cvss-for-issue: 5
+          fail-on-cvss: 1
 
         

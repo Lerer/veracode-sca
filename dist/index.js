@@ -8649,7 +8649,7 @@ function runText(options, output, msgFunc) {
     return __awaiter(this, void 0, void 0, function* () {
         const vulnerabilityLinePattern = /^\d+\s+Vulnerability\s+([\d\.]+)\s+.+/;
         const splitLines = output.split(/\r?\n/);
-        for (var line in splitLines) {
+        for (var line of splitLines) {
             //91678237    Vulnerability       4.0         CVE-2020-15228: Environment Variables Tampering    @actions/core 1.2.4
             msgFunc(line);
             if (vulnerabilityLinePattern.test(line)) {

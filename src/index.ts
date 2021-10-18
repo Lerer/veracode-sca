@@ -124,3 +124,16 @@ const verifyLabels = async () => {
     }
 }
 
+export async function runText(options:Options,output:string, msgFunc: (msg: string) => void) {
+    const vulnerabilityLinePattern: RegExp = /^\d+\s+Vulnerability\s+([\d\.]+)\s+.+/; 
+    const splitLines = output.split(/\r?\n/);
+    for (var line in splitLines) {
+        //91678237    Vulnerability       4.0         CVE-2020-15228: Environment Variables Tampering    @actions/core 1.2.4
+        msgFunc(line);
+        if (vulnerabilityLinePattern.test(line)) {
+            msgFunc('The above line is Vulnerability');
+            const match = line.match(vulnerabilityLinePattern);
+            msgFunc(match ? match.toString() : '');
+        }
+    }
+}

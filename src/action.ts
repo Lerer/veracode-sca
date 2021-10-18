@@ -4,7 +4,7 @@ import { execSync } from "child_process";
 
 import * as core from '@actions/core'
 import { Options } from "./options";
-import { SCA_OUTPUT_FILE,run } from "./index";
+import { SCA_OUTPUT_FILE,run, runText } from "./index";
 
 try {
     const o: Options = {
@@ -13,7 +13,8 @@ try {
         minCVSS: parseFloat(core.getInput('min-cvss-for-issue')) || 0,
         url: core.getInput('url',{trimWhitespace:true}),
         github_token: core.getInput('github_token',{required:true}),
-        createIssues: core.getBooleanInput('create-issues') || false
+        createIssues: core.getBooleanInput('create-issues') || false,
+        failOnCVSS: parseFloat(core.getInput('fail-on-cvss')) || 10
     }
     core.info('Start command');
     let extraCommands: string = '';
@@ -31,13 +32,16 @@ try {
         },
 
     });
-    core.info(stdout.toString('utf-8'));
-    core.info('Finish command');
-
+    
     if (o.createIssues) {
         run(o,core.info);
+    } else {
+        const output = stdout.toString('utf-8');
+        core.info(output);
+        runText(o,output,core.info);
     }
-
+    
+    core.info('Finish command');
 } catch (error:any) {
     core.setFailed(error.message);
 }

@@ -4,5 +4,6 @@ export interface Options {
     minCVSS: number,
     url: string,
     github_token: string,
-    createIssues: boolean
+    createIssues: boolean,
+    failOnCVSS: number
 }

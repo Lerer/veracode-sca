@@ -20,6 +20,10 @@ inputs:
     description: "The minimum CVSS value for vulnerability to be added as an issue"
     required: false
     default: "0"
+  fail-on-cvss:
+    description: "The maximum allowed cvss in found vulnerabilities to pass the step"
+    required: false
+    default: "10"
   url:
     description: "A git URL to work with in case the scan is not for the current repository"
     required: false

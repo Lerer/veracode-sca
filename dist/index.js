@@ -8310,7 +8310,8 @@ try {
         minCVSS: parseFloat(core.getInput('min-cvss-for-issue')) || 0,
         url: core.getInput('url', { trimWhitespace: true }),
         github_token: core.getInput('github_token', { required: true }),
-        createIssues: core.getBooleanInput('create-issues') || false
+        createIssues: core.getBooleanInput('create-issues') || false,
+        failOnCVSS: parseFloat(core.getInput('fail-on-cvss')) || 10
     };
     core.info('Start command');
     let extraCommands = '';
@@ -8326,11 +8327,15 @@ try {
             SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
         },
     });
-    core.info(stdout.toString('utf-8'));
-    core.info('Finish command');
     if (o.createIssues) {
         (0, index_1.run)(o, core.info);
     }
+    else {
+        const output = stdout.toString('utf-8');
+        core.info(output);
+        (0, index_1.runText)(o, output, core.info);
+    }
+    core.info('Finish command');
 }
 catch (error) {
     core.setFailed(error.message);
@@ -8531,7 +8536,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.run = exports.SCA_OUTPUT_FILE = void 0;
+exports.runText = exports.run = exports.SCA_OUTPUT_FILE = void 0;
 //import {getOctokit,context} from '@actions/github';
 const fs_1 = __nccwpck_require__(5747);
 const labels_1 = __nccwpck_require__(7402);
@@ -8640,6 +8645,22 @@ const verifyLabels = () => __awaiter(void 0, void 0, void 0, function* () {
         yield githubHandler.createVeracodeLabels();
     }
 });
+function runText(options, output, msgFunc) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const vulnerabilityLinePattern = /^\d+\s+Vulnerability\s+([\d\.]+)\s+.+/;
+        const splitLines = output.split(/\r?\n/);
+        for (var line in splitLines) {
+            //91678237    Vulnerability       4.0         CVE-2020-15228: Environment Variables Tampering    @actions/core 1.2.4
+            msgFunc(line);
+            if (vulnerabilityLinePattern.test(line)) {
+                msgFunc('The above line is Vulnerability');
+                const match = line.match(vulnerabilityLinePattern);
+                msgFunc(match ? match.toString() : '');
+            }
+        }
+    });
+}
+exports.runText = runText;
 
 
 /***/ }),

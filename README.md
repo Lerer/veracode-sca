@@ -85,8 +85,6 @@ on:
   push:
     paths-ignore:
       - "README.md"
-      - "**.json"
-      - "action.yml"
   schedule:
     - cron: 15 14 * * 6
 

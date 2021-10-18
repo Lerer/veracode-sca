@@ -4,6 +4,8 @@ import { Options } from './options';
 import { LibraryIssuesCollection, ReportedLibraryIssue, SCALibrary, SCAVulnerability, SrcClrJson } from './srcclr';
 import { Label, SEVERITY_LABELS, VERACODE_LABEL } from './labels';
 import { GithubHandler } from './githubRequestHandler';
+import * as core from '@actions/core'
+
 
 export const SCA_OUTPUT_FILE = 'scaResults.json';
 
@@ -20,7 +22,7 @@ export async function run(options:Options, msgFunc: (msg: string) => void) {
     const libraries = scaResJson.records[0].libraries;
 
     vulnerabilities
-        .filter((vul:any) => vul.cvssScore>=options.minCVSS)
+        .filter((vul:any) => vul.cvssScore>=options.minCVSSForIssue)
         .forEach((vulr) => {
             //console.log('-------   in each   ------');
             const libref = vulr.libraries[0]._links.ref;
@@ -33,9 +35,13 @@ export async function run(options:Options, msgFunc: (msg: string) => void) {
     githubHandler = new GithubHandler(options.github_token);
 
     await verifyLabels();
-    syncExistingOpenIssues();
+    await syncExistingOpenIssues();
 
-
+    // check for failing the step
+    const failingVul = vulnerabilities.filter(vul => vul.cvssScore>=options.failOnCVSS);
+    if (failingVul.length>0) {
+        core.setFailed(`Found Vulnerability with CVSS equal or greater than ${options.failOnCVSS}`);
+    }
 }
 
 const addIssueToLibrary = (libId:string,lib:SCALibrary,details:ReportedLibraryIssue) => {
@@ -126,14 +132,22 @@ const verifyLabels = async () => {
 
 export async function runText(options:Options,output:string, msgFunc: (msg: string) => void) {
     const vulnerabilityLinePattern: RegExp = /^\d+\s+Vulnerability\s+([\d\.]+)\s+.+/; 
-    const splitLines = output.split(/\r?\n/);
+    const splitLines:string[] = output.split(/\r?\n/);
+    let failed: boolean = false;
     for (var line of splitLines) {
         //91678237    Vulnerability       4.0         CVE-2020-15228: Environment Variables Tampering    @actions/core 1.2.4
-        msgFunc(line);
         if (vulnerabilityLinePattern.test(line)) {
-            msgFunc('The above line is Vulnerability');
             const match = line.match(vulnerabilityLinePattern);
-            msgFunc(match ? match.toString() : '');
+            if (match) {
+                const cvss = parseFloat(match[1]);
+                if (cvss>=options.failOnCVSS) {
+                    failed = true;
+                }
+            }
         }
+    }
+
+    if (failed) {
+        core.setFailed(`Found Vulnerability with CVSS equal or greater than ${options.failOnCVSS}`);
     }
 }

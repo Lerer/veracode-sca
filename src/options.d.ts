@@ -1,7 +1,7 @@
 export interface Options {
     quick: boolean,
     updateAdvisor: boolean,
-    minCVSS: number,
+    minCVSSForIssue: number,
     url: string,
     github_token: string,
     createIssues: boolean,

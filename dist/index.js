@@ -8307,7 +8307,7 @@ try {
     const o = {
         quick: core.getBooleanInput('quick') || false,
         updateAdvisor: core.getBooleanInput('update_advisor') || false,
-        minCVSS: parseFloat(core.getInput('min-cvss-for-issue')) || 0,
+        minCVSSForIssue: parseFloat(core.getInput('min-cvss-for-issue')) || 0,
         url: core.getInput('url', { trimWhitespace: true }),
         github_token: core.getInput('github_token', { required: true }),
         createIssues: core.getBooleanInput('create-issues') || false,
@@ -8526,6 +8526,25 @@ exports.GithubHandler = GithubHandler;
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8541,6 +8560,7 @@ exports.runText = exports.run = exports.SCA_OUTPUT_FILE = void 0;
 const fs_1 = __nccwpck_require__(5747);
 const labels_1 = __nccwpck_require__(7402);
 const githubRequestHandler_1 = __nccwpck_require__(6366);
+const core = __importStar(__nccwpck_require__(2186));
 exports.SCA_OUTPUT_FILE = 'scaResults.json';
 const librariesWithIssues = {};
 let githubHandler;
@@ -8551,7 +8571,7 @@ function run(options, msgFunc) {
         const vulnerabilities = scaResJson.records[0].vulnerabilities;
         const libraries = scaResJson.records[0].libraries;
         vulnerabilities
-            .filter((vul) => vul.cvssScore >= options.minCVSS)
+            .filter((vul) => vul.cvssScore >= options.minCVSSForIssue)
             .forEach((vulr) => {
             //console.log('-------   in each   ------');
             const libref = vulr.libraries[0]._links.ref;
@@ -8562,7 +8582,12 @@ function run(options, msgFunc) {
         });
         githubHandler = new githubRequestHandler_1.GithubHandler(options.github_token);
         yield verifyLabels();
-        syncExistingOpenIssues();
+        yield syncExistingOpenIssues();
+        // check for failing the step
+        const failingVul = vulnerabilities.filter(vul => vul.cvssScore >= options.failOnCVSS);
+        if (failingVul.length > 0) {
+            core.setFailed(`Found Vulnerability with CVSS equal or greater than ${options.failOnCVSS}`);
+        }
     });
 }
 exports.run = run;
@@ -8649,14 +8674,21 @@ function runText(options, output, msgFunc) {
     return __awaiter(this, void 0, void 0, function* () {
         const vulnerabilityLinePattern = /^\d+\s+Vulnerability\s+([\d\.]+)\s+.+/;
         const splitLines = output.split(/\r?\n/);
+        let failed = false;
         for (var line of splitLines) {
             //91678237    Vulnerability       4.0         CVE-2020-15228: Environment Variables Tampering    @actions/core 1.2.4
-            msgFunc(line);
             if (vulnerabilityLinePattern.test(line)) {
-                msgFunc('The above line is Vulnerability');
                 const match = line.match(vulnerabilityLinePattern);
-                msgFunc(match ? match.toString() : '');
+                if (match) {
+                    const cvss = parseFloat(match[1]);
+                    if (cvss >= options.failOnCVSS) {
+                        failed = true;
+                    }
+                }
             }
+        }
+        if (failed) {
+            core.setFailed(`Found Vulnerability with CVSS equal or greater than ${options.failOnCVSS}`);
         }
     });
 }

@@ -6,7 +6,10 @@ export interface SrcClrJson {
 
 export interface SrcClrRes {
     libraries: any,//Array<SCALibrary>,
-    vulnerabilities: Array<SCAVulnerability>
+    vulnerabilities: Array<SCAVulnerability>,
+    metadata: {
+        report:string
+    }
 }
 
 export interface SCALibrary {

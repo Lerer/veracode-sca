@@ -8581,13 +8581,19 @@ function run(options, msgFunc) {
             addIssueToLibrary(libId, lib, details);
         });
         githubHandler = new githubRequestHandler_1.GithubHandler(options.github_token);
-        yield verifyLabels();
-        yield syncExistingOpenIssues();
-        // check for failing the step
-        const failingVul = vulnerabilities.filter(vul => vul.cvssScore >= options.failOnCVSS);
-        if (failingVul.length > 0) {
-            core.setFailed(`Found Vulnerability with CVSS equal or greater than ${options.failOnCVSS}`);
+        if (Object.keys(librariesWithIssues).length > 0) {
+            yield verifyLabels();
+            yield syncExistingOpenIssues();
+            // check for failing the step
+            const failingVul = vulnerabilities.filter(vul => vul.cvssScore >= options.failOnCVSS);
+            if (failingVul.length > 0) {
+                core.setFailed(`Found Vulnerability with CVSS equal or greater than ${options.failOnCVSS}`);
+            }
+            else {
+                msgFunc(`No 3rd party library found with Vulnerability of CVSS equal or greater than ${options.failOnCVSS}`);
+            }
         }
+        msgFunc(`Scan finished.\nFull Report Details:   ${scaResJson.records[0].metadata.report}`);
     });
 }
 exports.run = run;
@@ -8676,7 +8682,6 @@ function runText(options, output, msgFunc) {
         const splitLines = output.split(/\r?\n/);
         let failed = false;
         for (var line of splitLines) {
-            //91678237    Vulnerability       4.0         CVE-2020-15228: Environment Variables Tampering    @actions/core 1.2.4
             if (vulnerabilityLinePattern.test(line)) {
                 const match = line.match(vulnerabilityLinePattern);
                 if (match) {
@@ -8689,6 +8694,9 @@ function runText(options, output, msgFunc) {
         }
         if (failed) {
             core.setFailed(`Found Vulnerability with CVSS equal or greater than ${options.failOnCVSS}`);
+        }
+        else {
+            msgFunc(`No 3rd party library found with Vulnerability of CVSS equal or greater than ${options.failOnCVSS}`);
         }
     });
 }

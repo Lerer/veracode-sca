@@ -34,14 +34,20 @@ export async function run(options:Options, msgFunc: (msg: string) => void) {
 
     githubHandler = new GithubHandler(options.github_token);
 
-    await verifyLabels();
-    await syncExistingOpenIssues();
+    if (Object.keys(librariesWithIssues).length>0) {
+        await verifyLabels();
+        await syncExistingOpenIssues();
 
-    // check for failing the step
-    const failingVul = vulnerabilities.filter(vul => vul.cvssScore>=options.failOnCVSS);
-    if (failingVul.length>0) {
-        core.setFailed(`Found Vulnerability with CVSS equal or greater than ${options.failOnCVSS}`);
+        // check for failing the step
+        const failingVul = vulnerabilities.filter(vul => vul.cvssScore>=options.failOnCVSS);
+        if (failingVul.length>0) {
+            core.setFailed(`Found Vulnerability with CVSS equal or greater than ${options.failOnCVSS}`);
+        } else {
+            msgFunc(`No 3rd party library found with Vulnerability of CVSS equal or greater than ${options.failOnCVSS}`);
+        }
     }
+
+    msgFunc(`Scan finished.\nFull Report Details:   ${scaResJson.records[0].metadata.report}`);
 }
 
 const addIssueToLibrary = (libId:string,lib:SCALibrary,details:ReportedLibraryIssue) => {
@@ -135,7 +141,6 @@ export async function runText(options:Options,output:string, msgFunc: (msg: stri
     const splitLines:string[] = output.split(/\r?\n/);
     let failed: boolean = false;
     for (var line of splitLines) {
-        //91678237    Vulnerability       4.0         CVE-2020-15228: Environment Variables Tampering    @actions/core 1.2.4
         if (vulnerabilityLinePattern.test(line)) {
             const match = line.match(vulnerabilityLinePattern);
             if (match) {
@@ -149,5 +154,7 @@ export async function runText(options:Options,output:string, msgFunc: (msg: stri
 
     if (failed) {
         core.setFailed(`Found Vulnerability with CVSS equal or greater than ${options.failOnCVSS}`);
+    } else {
+        msgFunc(`No 3rd party library found with Vulnerability of CVSS equal or greater than ${options.failOnCVSS}`);
     }
 }

@@ -24,6 +24,10 @@ inputs:
     description: "A git URL to work with in case the scan is not for the current repository"
     required: false
     default: ""
+  create-issues:
+    description: "An attribute to instruct the action to create an issue from found vulnerability or just simple text output"
+    required: false
+    default: "false"
 runs:
   using: 'node12'
   main: 'dist/index.js'

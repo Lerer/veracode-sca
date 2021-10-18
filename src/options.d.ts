@@ -3,5 +3,6 @@ export interface Options {
     updateAdvisor: boolean,
     minCVSS: number,
     url: string,
-    github_token: string
+    github_token: string,
+    createIssues: boolean
 }

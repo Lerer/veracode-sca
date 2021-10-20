@@ -41,6 +41,14 @@ Default Value: __false__
 ### `url`
 **Optional** - specify a remote repository URL for scanning. It will not scan the current repository in which the workflow is running
 
+### `path`
+__Optional__ - a relative path for the scan to start.
+This attribute is useful in scenarios where the actual code is not in the root of the repository. An example would be mono repo where the repository is home for multiple projects
+
+Default Value: __`.`__ (repository root folder)
+
+> :exclamation: This attribute is ignored if a __`url`__ attribute is also in use
+
 ### `quick`
 __Optional__ - run the Veracode SCA scan with the `--quick` flag
 
@@ -67,7 +75,7 @@ jobs:
       - name: Run Veracode SCA
         env:
           SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
-        uses: lerer/veracode-sca@v1.0.0
+        uses: lerer/veracode-sca@v1.0.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           url: "https://github.com/Lerer/veracode-pipeline-scan-results-to-sarif"
@@ -99,7 +107,7 @@ jobs:
       - name: Run Veracode SCA
         env:
           SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
-        uses: lerer/veracode-sca@v1.0.0
+        uses: lerer/veracode-sca@v1.0.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           quick: true
@@ -107,3 +115,14 @@ jobs:
           fail-on-cvss: 1
           min-cvss-for-issue: 1
 ```
+## User Interface
+
+### Issues List
+<p align="center">
+  <img src="/media/issues-list.png" width="700px" alt="Issues List"/>
+</p>
+
+### Individual Issue
+<p align="center">
+  <img src="/media/issue.png" width="700px" alt="Individual issues ticket content"/>
+</p>

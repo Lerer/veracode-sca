@@ -71,7 +71,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           url: "https://github.com/Lerer/veracode-pipeline-scan-results-to-sarif"
-          create-issues: flase 
+          create-issues: false 
           fail-on-cvss: 1     
 ```
 

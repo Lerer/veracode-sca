@@ -8311,12 +8311,16 @@ try {
         url: core.getInput('url', { trimWhitespace: true }),
         github_token: core.getInput('github_token', { required: true }),
         createIssues: core.getBooleanInput('create-issues') || false,
-        failOnCVSS: parseFloat(core.getInput('fail-on-cvss')) || 10
+        failOnCVSS: parseFloat(core.getInput('fail-on-cvss')) || 10,
+        path: core.getInput('path', { trimWhitespace: true }) || '.'
     };
     core.info('Start command');
     let extraCommands = '';
     if (o.url.length > 0) {
         extraCommands = `--url ${o.url} `;
+    }
+    else {
+        extraCommands = `${o.path} `;
     }
     const commandOutput = o.createIssues ? `--json=${index_1.SCA_OUTPUT_FILE}` : '';
     extraCommands = `${extraCommands}${o.quick ? '--quick' : ''} ${o.updateAdvisor ? '--update-advisor' : ''}`;

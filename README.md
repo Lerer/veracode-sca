@@ -67,7 +67,7 @@ jobs:
       - name: Run Veracode SCA
         env:
           SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
-        uses: lerer/veracode-sca@v1 
+        uses: lerer/veracode-sca@v1.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           url: "https://github.com/Lerer/veracode-pipeline-scan-results-to-sarif"
@@ -99,7 +99,7 @@ jobs:
       - name: Run Veracode SCA
         env:
           SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
-        uses: lerer/veracode-sca@v1 
+        uses: lerer/veracode-sca@v1.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           quick: true

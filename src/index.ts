@@ -90,7 +90,7 @@ const createIssueDetails = (vuln: SCAVulnerability,lib: SCALibrary): ReportedLib
         "  \nDescription | "+lib.description+
         "  \nLanguage | "+vuln.language+
         "  \nVulnerability | "+vuln.title+
-        "  \nVulnerability description | "+vuln.overview+
+        "  \nVulnerability description | "+(vuln.overview ? vuln.overview.trim() : "")+
         "  \nCVE | "+vuln.cve+
         "  \nCVSS score | "+vuln.cvssScore+
         "  \nVulnerability present in version/s | "+vulnLibDetails.versionRange+

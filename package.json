@@ -5,6 +5,7 @@
   "main": "./dist/index.js",
   "scripts": {
     "test-gql": "tsc && NODE_ENV=test node -r dotenv/config ./dist/test/graphql.js",
+    "test-url": "tsc && NODE_ENV=test node -r dotenv/config ./dist/test/testRun.js",
     "clean": "rm -rf ./dist/ || true",
     "build": "npm run clean && ncc build ./src/action.ts --license license"
   },

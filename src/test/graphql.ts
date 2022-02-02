@@ -3,7 +3,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 export class TestGraph{
-    private client;
+    private client: any;
 
     constructor(private token:string = process.env.GITHUB_TOKEN || '') {
         this.client = getOctokit(token); 
@@ -84,13 +84,10 @@ export class TestGraph{
                 console.log(issues);
             }
 
-        } catch (e:any) {
-            if (e.status===404) {
-                console.log('Veracode Labels does not exist');
-            } else {
-                console.log('=======================   ERROR   ===============================');
-                console.log(e);
-            }
+        } catch (e) {
+            console.log('=======================   ERROR   ===============================');
+            console.log(e);
+          
         }
         console.log('getIssues - END');
         return issues;

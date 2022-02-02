@@ -1,12 +1,12 @@
 import {getOctokit,context} from '@actions/github';
 import { VERACODE_LABEL,SEVERITY_LABELS } from './labels';
-import { ReportedLibraryIssue } from './srcclr';
+import { ReportedLibraryIssue } from './srcclr.d';
 
 const ISSUES_PULL_COUNT = 100;
 
 export class GithubHandler {
 
-    private client;
+    private client = getOctokit('');
 
     constructor(private token:string) {
         this.client = getOctokit(token); 
@@ -24,13 +24,9 @@ export class GithubHandler {
                     name:VERACODE_LABEL.name
             });
             console.log('Veracode Labels already exist');
-        } catch (e:any) {
-            if (e.status===404) {
-                console.log('Veracode Labels does not exist');
-            } else {
-                console.log('=======================   ERROR   ===============================');
-                console.log(e);
-            }
+        } catch (e) {
+            console.log('=======================   ERROR   ===============================');
+            console.log(e);    
         }
         console.log('getVeracodeLabel - END');
         return veracodeLabel;
@@ -151,13 +147,9 @@ export class GithubHandler {
                 });
                 issues = issues.concat(issuesRes.repository.issues.edges);
             }
-        } catch (e:any) {
-            if (e.status===404) {
-                console.log('Veracode Labels does not exist');
-            } else {
+        } catch (e) {
                 console.log('=======================   ERROR   ===============================');
                 console.log(e);
-            }
         }
         console.log('getIssues - END');
         return issues;

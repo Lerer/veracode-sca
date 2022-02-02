@@ -8299,51 +8299,19 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-// import exec method from child_process module
-const child_process_1 = __nccwpck_require__(3129);
 const core = __importStar(__nccwpck_require__(2186));
-const index_1 = __nccwpck_require__(6144);
-try {
-    const o = {
-        quick: core.getBooleanInput('quick') || false,
-        updateAdvisor: core.getBooleanInput('update_advisor') || false,
-        minCVSSForIssue: parseFloat(core.getInput('min-cvss-for-issue')) || 0,
-        url: core.getInput('url', { trimWhitespace: true }),
-        github_token: core.getInput('github_token', { required: true }),
-        createIssues: core.getBooleanInput('create-issues') || false,
-        failOnCVSS: parseFloat(core.getInput('fail-on-cvss')) || 10,
-        path: core.getInput('path', { trimWhitespace: true }) || '.'
-    };
-    core.info('Start command');
-    let extraCommands = '';
-    if (o.url.length > 0) {
-        extraCommands = `--url ${o.url} `;
-    }
-    else {
-        extraCommands = `${o.path} `;
-    }
-    const commandOutput = o.createIssues ? `--json=${index_1.SCA_OUTPUT_FILE}` : '';
-    extraCommands = `${extraCommands}${o.quick ? '--quick' : ''} ${o.updateAdvisor ? '--update-advisor' : ''}`;
-    const command = `curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ${extraCommands} ${commandOutput}`;
-    core.info(command);
-    const stdout = (0, child_process_1.execSync)(command, {
-        env: {
-            SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
-        },
-    });
-    if (o.createIssues) {
-        (0, index_1.run)(o, core.info);
-    }
-    else {
-        const output = stdout.toString('utf-8');
-        core.info(output);
-        (0, index_1.runText)(o, output, core.info);
-    }
-    core.info('Finish command');
-}
-catch (error) {
-    core.setFailed(error.message);
-}
+const srcclr_1 = __nccwpck_require__(4778);
+const options = {
+    quick: core.getBooleanInput('quick'),
+    updateAdvisor: core.getBooleanInput('update_advisor'),
+    minCVSSForIssue: parseFloat(core.getInput('min-cvss-for-issue')) || 0,
+    url: core.getInput('url', { trimWhitespace: true }),
+    github_token: core.getInput('github_token', { required: true }),
+    createIssues: core.getBooleanInput('create-issues'),
+    failOnCVSS: parseFloat(core.getInput('fail-on-cvss')) || 10,
+    path: core.getInput('path', { trimWhitespace: true }) || '.'
+};
+(0, srcclr_1.runAction)(options);
 
 
 /***/ }),
@@ -8370,6 +8338,7 @@ const ISSUES_PULL_COUNT = 100;
 class GithubHandler {
     constructor(token) {
         this.token = token;
+        this.client = (0, github_1.getOctokit)('');
         this.client = (0, github_1.getOctokit)(token);
     }
     getVeracodeLabel() {
@@ -8386,13 +8355,8 @@ class GithubHandler {
                 console.log('Veracode Labels already exist');
             }
             catch (e) {
-                if (e.status === 404) {
-                    console.log('Veracode Labels does not exist');
-                }
-                else {
-                    console.log('=======================   ERROR   ===============================');
-                    console.log(e);
-                }
+                console.log('=======================   ERROR   ===============================');
+                console.log(e);
             }
             console.log('getVeracodeLabel - END');
             return veracodeLabel;
@@ -8507,13 +8471,8 @@ class GithubHandler {
                 }
             }
             catch (e) {
-                if (e.status === 404) {
-                    console.log('Veracode Labels does not exist');
-                }
-                else {
-                    console.log('=======================   ERROR   ===============================');
-                    console.log(e);
-                }
+                console.log('=======================   ERROR   ===============================');
+                console.log(e);
             }
             console.log('getIssues - END');
             return issues;
@@ -8758,6 +8717,80 @@ exports.VERACODE_LABEL = {
     'color': '0AA2DC',
     'description': 'A Veracode identified vulnerability'
 };
+
+
+/***/ }),
+
+/***/ 4778:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.runAction = void 0;
+const child_process_1 = __nccwpck_require__(3129);
+const core = __importStar(__nccwpck_require__(2186));
+const index_1 = __nccwpck_require__(6144);
+function runAction(options) {
+    try {
+        core.info('Start command');
+        let extraCommands = '';
+        if (options.url.length > 0) {
+            extraCommands = `--url ${options.url} `;
+        }
+        else {
+            extraCommands = `${options.path} `;
+        }
+        const commandOutput = options.createIssues ? `--json=${index_1.SCA_OUTPUT_FILE}` : '';
+        extraCommands = `${extraCommands}${options.quick ? '--quick' : ''} ${options.updateAdvisor ? '--update-advisor' : ''}`;
+        const command = `curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ${extraCommands} ${commandOutput}`;
+        core.info(command);
+        const stdout = (0, child_process_1.execSync)(command, {
+            env: {
+                SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
+            },
+            maxBuffer: 100 * 1024
+        });
+        if (options.createIssues) {
+            (0, index_1.run)(options, core.info);
+        }
+        else {
+            const output = stdout.toString('utf-8');
+            core.info(output);
+            (0, index_1.runText)(options, output, core.info);
+        }
+        core.info('Finish command');
+    }
+    catch (error) {
+        if (error instanceof Error) {
+            core.setFailed(error.message);
+        }
+        else {
+            core.setFailed("unknown error");
+            console.log(error);
+        }
+    }
+}
+exports.runAction = runAction;
 
 
 /***/ }),

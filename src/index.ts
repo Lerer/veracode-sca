@@ -1,7 +1,7 @@
 //import {getOctokit,context} from '@actions/github';
 import {readFileSync} from 'fs';
 import { Options } from './options';
-import { LibraryIssuesCollection, ReportedLibraryIssue, SCALibrary, SCAVulnerability, SrcClrJson } from './srcclr';
+import { LibraryIssuesCollection, ReportedLibraryIssue, SCALibrary, SCAVulnerability, SrcClrJson } from './srcclr.d';
 import { Label, SEVERITY_LABELS, VERACODE_LABEL } from './labels';
 import { GithubHandler } from './githubRequestHandler';
 import * as core from '@actions/core'

@@ -19,7 +19,8 @@ jobs:
       - name: Run Veracode SCA
         env:
           SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
-        uses: ./
+        #uses: ./
+        uses: lerer/veracode-sca@fix-execSync-buffer-overflow
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           quick: true

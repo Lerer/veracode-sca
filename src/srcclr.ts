@@ -24,7 +24,7 @@ export function runAction (options: Options)  {
             env: {
                 SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
             },
-            maxBuffer: 100 * 1024
+            maxBuffer: 2 * 1024 * 1024
         });
         
         if (options.createIssues) {

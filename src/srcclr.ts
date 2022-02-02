@@ -20,23 +20,25 @@ export function runAction (options: Options)  {
         extraCommands = `${extraCommands}${options.quick? '--quick':''} ${options.updateAdvisor? '--update-advisor':''}`;
         const command = `curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ${extraCommands} ${commandOutput}`;
         core.info(command);
-        // const stdout = execSync(command, {
-        //     env: {
-        //         SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
-        //     },
-        //     maxBuffer: 2 * 1024 * 1024
-        // });
-
-        const execution = spawnSync(command,[],{
+        const stdout = execSync(command, {
             env: {
                 SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
-            }
+            },
+            maxBuffer: 2 * 1024 * 1024
         });
+
+        // const execution = spawn(command,[],{
+        //     env: {
+        //         SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
+        //     }
+        // });
+
+        // execution.stdout.on()
         
         if (options.createIssues) {
             run(options,core.info);
         } else {
-            const output = execution.stdout.toString('utf-8');
+            const output = stdout.toString('utf-8');
             core.info(output);
             runText(options,output,core.info);
         }

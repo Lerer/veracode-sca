@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { execSync, spawnSync } from "child_process";
+import { execSync, spawn, spawnSync } from "child_process";
 
 import * as core from '@actions/core'
 import { Options } from "./options";
@@ -20,17 +20,23 @@ export function runAction (options: Options)  {
         extraCommands = `${extraCommands}${options.quick? '--quick':''} ${options.updateAdvisor? '--update-advisor':''}`;
         const command = `curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ${extraCommands} ${commandOutput}`;
         core.info(command);
-        const stdout = execSync(command, {
+        // const stdout = execSync(command, {
+        //     env: {
+        //         SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
+        //     },
+        //     maxBuffer: 2 * 1024 * 1024
+        // });
+
+        const execution = spawnSync(command,[],{
             env: {
                 SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
-            },
-            maxBuffer: 2 * 1024 * 1024
+            }
         });
         
         if (options.createIssues) {
             run(options,core.info);
         } else {
-            const output = stdout.toString('utf-8');
+            const output = execution.stdout.toString('utf-8');
             core.info(output);
             runText(options,output,core.info);
         }

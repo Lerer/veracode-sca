@@ -44,13 +44,16 @@ export function runAction (options: Options)  {
             core.error(`stderr: ${data}`);
         });
         
-        if (options.createIssues) {
-            run(options,core.info);
-        } else {
-            runText(options,output,core.info);
-        }
+        execution.on('close', (code) => {
+            core.info(`Scan finished with exit code:  ${code}`);
+            if (options.createIssues) {
+                run(options,core.info);
+            } else {
+                runText(options,output,core.info);
+            }
+            core.info('Finish command');
+        });
         
-        core.info('Finish command');
     } catch (error) {
         if (error instanceof Error) {
             core.setFailed(error.message);

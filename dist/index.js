@@ -8810,13 +8810,16 @@ function runAction(options) {
         execution.stderr.on('data', (data) => {
             core.error(`stderr: ${data}`);
         });
-        if (options.createIssues) {
-            (0, index_1.run)(options, core.info);
-        }
-        else {
-            (0, index_1.runText)(options, output, core.info);
-        }
-        core.info('Finish command');
+        execution.on('close', (code) => {
+            core.info(`Scan finished with exit code:  ${code}`);
+            if (options.createIssues) {
+                (0, index_1.run)(options, core.info);
+            }
+            else {
+                (0, index_1.runText)(options, output, core.info);
+            }
+            core.info('Finish command');
+        });
     }
     catch (error) {
         if (error instanceof Error) {

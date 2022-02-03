@@ -11,7 +11,8 @@ const options: Options = {
     github_token: process.env.GITHUB_TOKEN || '',
     createIssues: false,
     failOnCVSS: 10,
-    path: '.'
+    path: '.',
+    debug:false
 }
 
 runAction(options);

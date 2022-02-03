@@ -6,5 +6,6 @@ export interface Options {
     github_token: string,
     createIssues: boolean,
     failOnCVSS: number,
-    path: string
+    path: string,
+    debug: boolean
 }

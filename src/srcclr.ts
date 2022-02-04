@@ -2,8 +2,18 @@
 import { execSync, spawn, spawnSync } from "child_process";
 
 import * as core from '@actions/core'
-import { Options } from "./options";
+import { Options,collectors } from "./options";
 import { SCA_OUTPUT_FILE,run, runText } from "./index";
+
+const cleanCollectors = (inputArr:Array<string>) => {
+    let allowed:Array<string> = [];
+    for (var input of inputArr) {
+        if (input && collectors.indexOf(input.trim().toLowerCase())>-1) {
+            allowed.push(input.trim().toLowerCase());
+        }
+    }
+    return allowed;
+}
 
 export function runAction (options: Options)  {
     try {
@@ -16,8 +26,15 @@ export function runAction (options: Options)  {
             extraCommands = `${options.path} `;
         }
 
+        const skip = cleanCollectors(options["skip-collectors"]);
+        let skipCollectorsAttr = '';
+        if (skip.length>0) {
+            skipCollectorsAttr = `--skip-collectors ${skip.toString()} `;
+        }
+
+
         const commandOutput = options.createIssues ? `--json=${SCA_OUTPUT_FILE}` : ''; 
-        extraCommands = `${extraCommands}${options.quick? '--quick ':''}${options.updateAdvisor? '--update-advisor ':''}${options.debug? '--debug ':''}`;
+        extraCommands = `${extraCommands}${options.quick? '--quick ':''}${options.updateAdvisor? '--update-advisor ':''}${options.debug? '--debug ':''}${skipCollectorsAttr}`;
         const command = `curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ${extraCommands} ${commandOutput}`;
         core.info(command);
 

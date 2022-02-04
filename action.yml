@@ -40,6 +40,9 @@ inputs:
     description: "Run the SRCCLR in debug mode"
     required: false
     default: "false"
+  skip-collectors:
+    description: "Run the SRCCLR with the `--skip-collectors` options"
+    required: false
 runs:
   using: 'node12'
   main: 'dist/index.js'

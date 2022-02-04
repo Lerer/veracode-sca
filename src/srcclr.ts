@@ -17,33 +17,43 @@ export function runAction (options: Options)  {
         }
 
         const commandOutput = options.createIssues ? `--json=${SCA_OUTPUT_FILE}` : ''; 
-        extraCommands = `${extraCommands}${options.quick? '--quick':''} ${options.updateAdvisor? '--update-advisor':''}`;
+        extraCommands = `${extraCommands}${options.quick? '--quick ':''}${options.updateAdvisor? '--update-advisor ':''}${options.debug? '--debug ':''}`;
         const command = `curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ${extraCommands} ${commandOutput}`;
         core.info(command);
-        const stdout = execSync(command, {
+
+        const execution = spawn('sh',['-c',command],{
             env: {
                 SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
-            },
-            maxBuffer: 2 * 1024 * 1024
+            }
         });
 
-        // const execution = spawn(command,[],{
-        //     env: {
-        //         SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
-        //     }
-        // });
+        execution.on('error', (data) => {
+            core.error(data);
+        })
 
-        // execution.stdout.on()
+        let output: string = '';
+        execution.stdout.on('data', (data) => {
+            //core.info(data.toString());
+            output = `${output}${data}`;
+        });
+          
+        execution.stderr.on('data', (data) => {
+            core.error(`stderr: ${data}`);
+        });
+
+
         
-        if (options.createIssues) {
-            run(options,core.info);
-        } else {
-            const output = stdout.toString('utf-8');
+        execution.on('close', (code) => {
             core.info(output);
-            runText(options,output,core.info);
-        }
+            core.info(`Scan finished with exit code:  ${code}`);
+            if (options.createIssues) {
+                run(options,core.info);
+            } else {
+                runText(options,output,core.info);
+            }
+            core.info('Finish command');
+        });
         
-        core.info('Finish command');
     } catch (error) {
         if (error instanceof Error) {
             core.setFailed(error.message);

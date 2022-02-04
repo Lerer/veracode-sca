@@ -8335,7 +8335,8 @@ const options = {
     github_token: core.getInput('github_token', { required: true }),
     createIssues: core.getBooleanInput('create-issues'),
     failOnCVSS: parseFloat(core.getInput('fail-on-cvss')) || 10,
-    path: core.getInput('path', { trimWhitespace: true }) || '.'
+    path: core.getInput('path', { trimWhitespace: true }) || '.',
+    debug: core.getBooleanInput('debug')
 };
 (0, srcclr_1.runAction)(options);
 
@@ -8787,30 +8788,36 @@ function runAction(options) {
             extraCommands = `${options.path} `;
         }
         const commandOutput = options.createIssues ? `--json=${index_1.SCA_OUTPUT_FILE}` : '';
-        extraCommands = `${extraCommands}${options.quick ? '--quick' : ''} ${options.updateAdvisor ? '--update-advisor' : ''}`;
+        extraCommands = `${extraCommands}${options.quick ? '--quick ' : ''}${options.updateAdvisor ? '--update-advisor ' : ''}${options.debug ? '--debug ' : ''}`;
         const command = `curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ${extraCommands} ${commandOutput}`;
         core.info(command);
-        const stdout = (0, child_process_1.execSync)(command, {
+        const execution = (0, child_process_1.spawn)('sh', ['-c', command], {
             env: {
                 SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
-            },
-            maxBuffer: 2 * 1024 * 1024
+            }
         });
-        // const execution = spawn(command,[],{
-        //     env: {
-        //         SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
-        //     }
-        // });
-        // execution.stdout.on()
-        if (options.createIssues) {
-            (0, index_1.run)(options, core.info);
-        }
-        else {
-            const output = stdout.toString('utf-8');
+        execution.on('error', (data) => {
+            core.error(data);
+        });
+        let output = '';
+        execution.stdout.on('data', (data) => {
+            //core.info(data.toString());
+            output = `${output}${data}`;
+        });
+        execution.stderr.on('data', (data) => {
+            core.error(`stderr: ${data}`);
+        });
+        execution.on('close', (code) => {
             core.info(output);
-            (0, index_1.runText)(options, output, core.info);
-        }
-        core.info('Finish command');
+            core.info(`Scan finished with exit code:  ${code}`);
+            if (options.createIssues) {
+                (0, index_1.run)(options, core.info);
+            }
+            else {
+                (0, index_1.runText)(options, output, core.info);
+            }
+            core.info('Finish command');
+        });
     }
     catch (error) {
         if (error instanceof Error) {

@@ -12,7 +12,8 @@ const options: Options = {
     github_token: core.getInput('github_token',{required:true}),
     createIssues: core.getBooleanInput('create-issues'),
     failOnCVSS: parseFloat(core.getInput('fail-on-cvss')) || 10,
-    path: core.getInput('path',{trimWhitespace: true}) || '.'
+    path: core.getInput('path',{trimWhitespace: true}) || '.',
+    debug: core.getBooleanInput('debug')
 }
 
 runAction(options);

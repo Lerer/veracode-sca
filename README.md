@@ -114,6 +114,7 @@ jobs:
         env:
           SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
         uses: lerer/veracode-sca@v1.0.3
+
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           quick: true

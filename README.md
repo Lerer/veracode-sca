@@ -59,6 +59,10 @@ __Optional__ - run the Veracode SCA scan with `--debug`
 
 Default Value: __false__
 
+### `skip-collectors`
+__Optional__ - run the Veracode SCA scan with the `--skip-collectors` attribute with comma sporated values. 
+The available values can be found here: [Scan directive](https://docs.veracode.com/r/c_sc_scan_directives) (scroll down to the `skip_collectors` directive).
+Default Value: __None__
 
 ## Examples
 
@@ -81,7 +85,7 @@ jobs:
       - name: Run Veracode SCA
         env:
           SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
-        uses: lerer/veracode-sca@v1.0.3
+        uses: lerer/veracode-sca@v1.0.4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           url: "https://github.com/Lerer/veracode-pipeline-scan-results-to-sarif"
@@ -113,7 +117,7 @@ jobs:
       - name: Run Veracode SCA
         env:
           SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
-        uses: lerer/veracode-sca@v1.0.3
+        uses: lerer/veracode-sca@v1.0.4
 
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

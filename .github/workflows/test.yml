@@ -27,6 +27,6 @@ jobs:
           create-issues: false 
           fail-on-cvss: 1
           #debug: true
-          skip-collectors: gradle, DRF,NPM,
+          #skip-collectors: gradle, DRF,NPM,
 
         

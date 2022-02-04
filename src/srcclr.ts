@@ -21,13 +21,6 @@ export function runAction (options: Options)  {
         const command = `curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ${extraCommands} ${commandOutput}`;
         core.info(command);
 
-        // const stdout = execSync(command, {
-        //     env: {
-        //         SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
-        //     },
-        //     maxBuffer: 2 * 1024 * 1024
-        // });
-
         const execution = spawn('sh',['-c',command],{
             env: {
                 SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,

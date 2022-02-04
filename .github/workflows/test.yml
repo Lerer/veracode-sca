@@ -26,6 +26,6 @@ jobs:
           url: "https://www.github.com/dancancro/great-big-example-application"
           create-issues: false 
           fail-on-cvss: 1
-          debug: true
+          #debug: true
 
         

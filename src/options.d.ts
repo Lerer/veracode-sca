@@ -10,29 +10,3 @@ export interface Options {
     debug: boolean,
     "skip-collectors": Array<string>
 }
-
-export const collectors = [
-    "maven"	,
-"gradle",
-"ant",
-"jar",
-"sbt",	
-"glide"	,
-"go get",
-"go mod",
-"godep",
-"dep",
-"govendor",
-"trash",
-"pip"	,
-"pipenv",
-"bower"	,
-"yarn",
-"npm",
-"cocoapods",	
-"gem",
-"composer"	,
-"makefile"	,
-"dll",
-"msbuilddotnet",
-]

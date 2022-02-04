@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-import { execSync, spawn, spawnSync } from "child_process";
+import { spawn } from "child_process";
 
 import * as core from '@actions/core'
-import { Options,collectors } from "./options";
+import { Options } from "./options";
 import { SCA_OUTPUT_FILE,run, runText } from "./index";
 
 const cleanCollectors = (inputArr:Array<string>) => {
@@ -80,4 +80,31 @@ export function runAction (options: Options)  {
         }
     }
 }
+
+
+const collectors = [
+    "maven"	,
+"gradle",
+"ant",
+"jar",
+"sbt",	
+"glide"	,
+"go get",
+"go mod",
+"godep",
+"dep",
+"govendor",
+"trash",
+"pip"	,
+"pipenv",
+"bower"	,
+"yarn",
+"npm",
+"cocoapods",	
+"gem",
+"composer"	,
+"makefile"	,
+"dll",
+"msbuilddotnet",
+]
 

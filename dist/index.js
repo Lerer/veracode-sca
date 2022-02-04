@@ -8777,12 +8777,11 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.runAction = void 0;
 const child_process_1 = __nccwpck_require__(2081);
 const core = __importStar(__nccwpck_require__(2186));
-const options_1 = __nccwpck_require__(4945);
 const index_1 = __nccwpck_require__(6144);
 const cleanCollectors = (inputArr) => {
     let allowed = [];
     for (var input of inputArr) {
-        if (input && options_1.collectors.indexOf(input.trim().toLowerCase()) > -1) {
+        if (input && collectors.indexOf(input.trim().toLowerCase()) > -1) {
             allowed.push(input.trim().toLowerCase());
         }
     }
@@ -8846,14 +8845,31 @@ function runAction(options) {
     }
 }
 exports.runAction = runAction;
-
-
-/***/ }),
-
-/***/ 4945:
-/***/ ((module) => {
-
-module.exports = eval("require")("./options");
+const collectors = [
+    "maven",
+    "gradle",
+    "ant",
+    "jar",
+    "sbt",
+    "glide",
+    "go get",
+    "go mod",
+    "godep",
+    "dep",
+    "govendor",
+    "trash",
+    "pip",
+    "pipenv",
+    "bower",
+    "yarn",
+    "npm",
+    "cocoapods",
+    "gem",
+    "composer",
+    "makefile",
+    "dll",
+    "msbuilddotnet",
+];
 
 
 /***/ }),

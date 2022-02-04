@@ -8797,7 +8797,7 @@ function runAction(options) {
         //     },
         //     maxBuffer: 2 * 1024 * 1024
         // });
-        const execution = (0, child_process_1.spawn)(command, [], {
+        const execution = (0, child_process_1.spawn)('sh', ['-c', command], {
             env: {
                 SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
             }

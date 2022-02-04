@@ -28,7 +28,7 @@ export function runAction (options: Options)  {
         //     maxBuffer: 2 * 1024 * 1024
         // });
 
-        const execution = spawn(command,[],{
+        const execution = spawn('sh',['-c',command],{
             env: {
                 SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
             }

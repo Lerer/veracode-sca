@@ -40,7 +40,7 @@ export function runAction (options: Options)  {
 
         let output: string = '';
         execution.stdout.on('data', (data) => {
-            core.info(data.toString());
+            //core.info(data.toString());
             output = `${output}${data}`;
         });
           
@@ -51,6 +51,7 @@ export function runAction (options: Options)  {
 
         
         execution.on('close', (code) => {
+            core.info(output);
             core.info(`Scan finished with exit code:  ${code}`);
             if (options.createIssues) {
                 run(options,core.info);

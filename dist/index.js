@@ -8807,13 +8807,14 @@ function runAction(options) {
         });
         let output = '';
         execution.stdout.on('data', (data) => {
-            core.info(data.toString());
+            //core.info(data.toString());
             output = `${output}${data}`;
         });
         execution.stderr.on('data', (data) => {
             core.error(`stderr: ${data}`);
         });
         execution.on('close', (code) => {
+            core.info(output);
             core.info(`Scan finished with exit code:  ${code}`);
             if (options.createIssues) {
                 (0, index_1.run)(options, core.info);

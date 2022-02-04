@@ -8336,7 +8336,8 @@ const options = {
     createIssues: core.getBooleanInput('create-issues'),
     failOnCVSS: parseFloat(core.getInput('fail-on-cvss')) || 10,
     path: core.getInput('path', { trimWhitespace: true }) || '.',
-    debug: core.getBooleanInput('debug')
+    debug: core.getBooleanInput('debug'),
+    "skip-collectors": core.getInput('skip-collectors').split(',')
 };
 (0, srcclr_1.runAction)(options);
 
@@ -8777,6 +8778,15 @@ exports.runAction = void 0;
 const child_process_1 = __nccwpck_require__(2081);
 const core = __importStar(__nccwpck_require__(2186));
 const index_1 = __nccwpck_require__(6144);
+const cleanCollectors = (inputArr) => {
+    let allowed = [];
+    for (var input of inputArr) {
+        if (input && collectors.indexOf(input.trim().toLowerCase()) > -1) {
+            allowed.push(input.trim().toLowerCase());
+        }
+    }
+    return allowed;
+};
 function runAction(options) {
     try {
         core.info('Start command');
@@ -8787,8 +8797,13 @@ function runAction(options) {
         else {
             extraCommands = `${options.path} `;
         }
+        const skip = cleanCollectors(options["skip-collectors"]);
+        let skipCollectorsAttr = '';
+        if (skip.length > 0) {
+            skipCollectorsAttr = `--skip-collectors ${skip.toString()} `;
+        }
         const commandOutput = options.createIssues ? `--json=${index_1.SCA_OUTPUT_FILE}` : '';
-        extraCommands = `${extraCommands}${options.quick ? '--quick ' : ''}${options.updateAdvisor ? '--update-advisor ' : ''}${options.debug ? '--debug ' : ''}`;
+        extraCommands = `${extraCommands}${options.quick ? '--quick ' : ''}${options.updateAdvisor ? '--update-advisor ' : ''}${options.debug ? '--debug ' : ''}${skipCollectorsAttr}`;
         const command = `curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ${extraCommands} ${commandOutput}`;
         core.info(command);
         const execution = (0, child_process_1.spawn)('sh', ['-c', command], {
@@ -8830,6 +8845,31 @@ function runAction(options) {
     }
 }
 exports.runAction = runAction;
+const collectors = [
+    "maven",
+    "gradle",
+    "ant",
+    "jar",
+    "sbt",
+    "glide",
+    "go get",
+    "go mod",
+    "godep",
+    "dep",
+    "govendor",
+    "trash",
+    "pip",
+    "pipenv",
+    "bower",
+    "yarn",
+    "npm",
+    "cocoapods",
+    "gem",
+    "composer",
+    "makefile",
+    "dll",
+    "msbuilddotnet",
+];
 
 
 /***/ }),

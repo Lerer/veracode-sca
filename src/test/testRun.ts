@@ -12,7 +12,8 @@ const options: Options = {
     createIssues: false,
     failOnCVSS: 10,
     path: '.',
-    debug:false
+    debug:false,
+    "skip-collectors": []
 }
 
 runAction(options);

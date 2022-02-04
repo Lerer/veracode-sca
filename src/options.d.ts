@@ -7,5 +7,6 @@ export interface Options {
     createIssues: boolean,
     failOnCVSS: number,
     path: string,
-    debug: boolean
+    debug: boolean,
+    "skip-collectors": Array<string>
 }

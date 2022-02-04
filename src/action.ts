@@ -13,7 +13,8 @@ const options: Options = {
     createIssues: core.getBooleanInput('create-issues'),
     failOnCVSS: parseFloat(core.getInput('fail-on-cvss')) || 10,
     path: core.getInput('path',{trimWhitespace: true}) || '.',
-    debug: core.getBooleanInput('debug')
+    debug: core.getBooleanInput('debug'),
+    "skip-collectors": core.getInput('skip-collectors').split(',')
 }
 
 runAction(options);

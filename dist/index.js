@@ -8802,6 +8802,9 @@ function runAction(options) {
                 SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
             }
         });
+        execution.on('error', (data) => {
+            core.error(data);
+        });
         let output = '';
         execution.stdout.on('data', (data) => {
             core.info(data.toString());

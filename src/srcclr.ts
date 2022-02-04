@@ -34,6 +34,10 @@ export function runAction (options: Options)  {
             }
         });
 
+        execution.on('error', (data) => {
+            core.error(data);
+        })
+
         let output: string = '';
         execution.stdout.on('data', (data) => {
             core.info(data.toString());
@@ -43,6 +47,8 @@ export function runAction (options: Options)  {
         execution.stderr.on('data', (data) => {
             core.error(`stderr: ${data}`);
         });
+
+
         
         execution.on('close', (code) => {
             core.info(`Scan finished with exit code:  ${code}`);

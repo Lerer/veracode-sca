@@ -23,12 +23,13 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           #quick: true
-          url: "https://www.github.com/dancancro/great-big-example-application"
+          #url: "https://www.github.com/dancancro/great-big-example-application"
+          url: "https://github.com/christyson/Verademo-Python"
           create-issues: false 
           fail-on-cvss: 1
           #debug: true
           #skip-collectors: gradle, DRF,NPM,
-          skip-collectors: yarn
+          #skip-collectors: yarn
           allow-dirty: true
 
         

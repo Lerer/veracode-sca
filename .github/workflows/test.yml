@@ -18,7 +18,9 @@ jobs:
         uses: actions/checkout@v2
       - name: no plugin
         run: |
-          srcclr scan --url https://www.github.com/dancancro/great-big-example-application --allow-dirty
+          curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan --url https://www.github.com/dancancro/great-big-example-application --allow-dirty
+        env:
+          SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
       - name: Run Veracode SCA
         env:
           SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}

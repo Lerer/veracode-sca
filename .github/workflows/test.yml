@@ -24,7 +24,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           #quick: true
           #url: "https://www.github.com/dancancro/great-big-example-application"
-          url: "https://github.com/christyson/Verademo-Python"
+          url: "https://github.com/Lerer/verademo"
           create-issues: false 
           fail-on-cvss: 1
           #debug: true

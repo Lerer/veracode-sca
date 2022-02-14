@@ -18,9 +18,10 @@ jobs:
         uses: actions/checkout@v2
       - name: no plugin
         run: |
-          curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan --url https://www.github.com/dancancro/great-big-example-application --allow-dirty
+          curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan --url https://github.com/Lerer/verademo
         env:
           SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
+        continue-on-error: true
       - name: Run Veracode SCA
         env:
           SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
@@ -28,13 +29,13 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           #quick: true
-          url: "https://www.github.com/dancancro/great-big-example-application"
-          #url: "https://github.com/Lerer/verademo"
+          #url: "https://www.github.com/dancancro/great-big-example-application"
+          url: "https://github.com/Lerer/verademo"
           create-issues: false 
           fail-on-cvss: 1
           #debug: true
           #skip-collectors: gradle, DRF,NPM,
           #skip-collectors: yarn
-          allow-dirty: true
+          #allow-dirty: true
 
         

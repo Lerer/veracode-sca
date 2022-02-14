@@ -25,8 +25,8 @@ jobs:
           #quick: true
           url: "https://www.github.com/dancancro/great-big-example-application"
           #url: "https://github.com/Lerer/verademo"
-          create-issues: false 
-          allow-dirty: false
+          #create-issues: false 
+          #allow-dirty: false
           #recursive: true
           fail-on-cvss: 1
 

@@ -43,12 +43,15 @@ inputs:
   skip-collectors:
     description: "Run the SRCCLR with the `--skip-collectors` options"
     required: false
+    default: "false"
   allow-dirty:
     description: "Run the SRCCLR with the `--allow-dirty` option"
     required: false
+    default: "false"
   recursive:
     description: "Run the SRCCLR with the `--recursive` option"
     required: false
+    default: "false"
 runs:
   using: 'node12'
   main: 'dist/index.js'

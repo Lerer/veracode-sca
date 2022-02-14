@@ -13,7 +13,8 @@ const options: Options = {
     failOnCVSS: 10,
     path: '.',
     debug:false,
-    "skip-collectors": []
+    "skip-collectors": [],
+    allowDirty: false
 }
 
 runAction(options);

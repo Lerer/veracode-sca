@@ -8,5 +8,6 @@ export interface Options {
     failOnCVSS: number,
     path: string,
     debug: boolean,
+    allowDirty:boolean,
     "skip-collectors": Array<string>
 }

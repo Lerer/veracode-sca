@@ -8334,6 +8334,7 @@ const options = {
     url: core.getInput('url', { trimWhitespace: true }),
     github_token: core.getInput('github_token', { required: true }),
     createIssues: core.getBooleanInput('create-issues'),
+    allowDirty: core.getBooleanInput('allow-dirty'),
     failOnCVSS: parseFloat(core.getInput('fail-on-cvss')) || 10,
     path: core.getInput('path', { trimWhitespace: true }) || '.',
     debug: core.getBooleanInput('debug'),
@@ -8803,7 +8804,7 @@ function runAction(options) {
             skipCollectorsAttr = `--skip-collectors ${skip.toString()} `;
         }
         const commandOutput = options.createIssues ? `--json=${index_1.SCA_OUTPUT_FILE}` : '';
-        extraCommands = `${extraCommands}${options.quick ? '--quick ' : ''}${options.updateAdvisor ? '--update-advisor ' : ''}${options.debug ? '--debug ' : ''}${skipCollectorsAttr}`;
+        extraCommands = `${extraCommands}${options.quick ? '--quick ' : ''}${options.allowDirty ? '--allow-dirty ' : ''}${options.updateAdvisor ? '--update-advisor ' : ''}${options.debug ? '--debug ' : ''}${skipCollectorsAttr}`;
         const command = `curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ${extraCommands} ${commandOutput}`;
         core.info(command);
         const execution = (0, child_process_1.spawn)('sh', ['-c', command], {

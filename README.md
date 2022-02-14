@@ -64,6 +64,11 @@ __Optional__ - run the Veracode SCA scan with the `--skip-collectors` attribute 
 The available values can be found here: [Scan directive](https://docs.veracode.com/r/c_sc_scan_directives) (scroll down to the `skip_collectors` directive).
 Default Value: __None__
 
+### `allow-dirty`
+__Optional__ - run the Veracode SCA scan with `--allow-dirty` 
+
+Default Value: __false__
+
 ## Examples
 
 ### Scan a remote repository with textual output

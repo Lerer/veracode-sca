@@ -22,11 +22,12 @@ jobs:
         uses: ./
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          quick: true
+          #quick: true
           url: "https://www.github.com/dancancro/great-big-example-application"
           create-issues: false 
           fail-on-cvss: 1
           #debug: true
           #skip-collectors: gradle, DRF,NPM,
+          allow-dirty: true
 
         

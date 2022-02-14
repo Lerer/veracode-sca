@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v2
       - name: no plugin
         run: |
-          curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan --url https://github.com/Lerer/verademo
+          curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan --url https://github.com/Lerer/verademo --recursive
         env:
           SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
         continue-on-error: true
@@ -33,9 +33,7 @@ jobs:
           url: "https://github.com/Lerer/verademo"
           create-issues: false 
           fail-on-cvss: 1
-          #debug: true
-          #skip-collectors: gradle, DRF,NPM,
-          #skip-collectors: yarn
-          #allow-dirty: true
+          recursive: true
+          
 
         

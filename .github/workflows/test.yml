@@ -34,6 +34,6 @@ jobs:
           create-issues: false 
           fail-on-cvss: 1
           recursive: true
-          
+          allow-dirty: false
 
         

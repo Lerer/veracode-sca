@@ -8804,7 +8804,7 @@ function runAction(options) {
             skipCollectorsAttr = `--skip-collectors ${skip.toString()} `;
         }
         const commandOutput = options.createIssues ? `--json=${index_1.SCA_OUTPUT_FILE}` : '';
-        extraCommands = `${extraCommands}${options.quick ? '--quick ' : ''}${options.allowDirty ? '--allow-dirty ' : ''}${options.updateAdvisor ? '--update-advisor ' : ''}${options.debug ? '--debug ' : ''}${skipCollectorsAttr}`;
+        extraCommands = `${options.quick ? '--quick ' : ''}${options.allowDirty ? '--allow-dirty ' : ''}${extraCommands}${options.updateAdvisor ? '--update-advisor ' : ''}${options.debug ? '--debug ' : ''}${skipCollectorsAttr}`;
         const command = `curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ${extraCommands} ${commandOutput}`;
         core.info(command);
         // const execution = spawn('sh',['-c',command],{

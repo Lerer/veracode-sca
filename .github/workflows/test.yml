@@ -28,6 +28,7 @@ jobs:
           fail-on-cvss: 1
           #debug: true
           #skip-collectors: gradle, DRF,NPM,
+          skip-collectors: yarn
           allow-dirty: true
 
         

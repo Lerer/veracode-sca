@@ -29,5 +29,6 @@ jobs:
           #allow-dirty: false
           #recursive: true
           fail-on-cvss: 1
+          debug: true
 
         

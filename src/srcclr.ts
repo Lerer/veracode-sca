@@ -34,7 +34,7 @@ export function runAction (options: Options)  {
 
 
         const commandOutput = options.createIssues ? `--json=${SCA_OUTPUT_FILE}` : ''; 
-        extraCommands = `${options.quick? '--quick ':''}${options.allowDirty? '--allow-dirty ':''}${extraCommands}${options.updateAdvisor? '--update-advisor ':''}${options.debug? '--debug ':''}${skipCollectorsAttr}`;
+        extraCommands = `${options.recursive?'--recursive ':''}${options.quick? '--quick ':''}${options.allowDirty? '--allow-dirty ':''}${extraCommands}${options.updateAdvisor? '--update-advisor ':''}${options.debug? '--debug ':''}${skipCollectorsAttr}`;
         const command = `curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ${extraCommands} ${commandOutput}`;
         core.info(command);
 
@@ -43,30 +43,21 @@ export function runAction (options: Options)  {
         //         SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
         //     }
         // });
-
-        const stdout = execSync(command, {
-            env: {
-                SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
-            },
-            maxBuffer: 20 * 1024 * 1024
-        });
-
+        
         // execution.on('error', (data) => {
         //     core.error(data);
         // })
-
+        
         // let output: string = '';
         // execution.stdout.on('data', (data) => {
         //     //core.info(data.toString());
         //     output = `${output}${data}`;
         // });
-          
+        
         // execution.stderr.on('data', (data) => {
         //     core.error(`stderr: ${data}`);
         // });
-
-
-        
+         
         // execution.on('close', (code) => {
         //     core.info(output);
         //     core.info(`Scan finished with exit code:  ${code}`);
@@ -77,6 +68,13 @@ export function runAction (options: Options)  {
         //     }
         //     core.info('Finish command');
         // });
+                            
+        const stdout = execSync(command, {
+            env: {
+                SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
+            },
+            maxBuffer: 20 * 1024 * 1024
+        });
 
         if (options.createIssues) {
             run(options,core.info);

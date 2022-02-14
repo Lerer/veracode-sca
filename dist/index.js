@@ -8338,6 +8338,7 @@ const options = {
     failOnCVSS: parseFloat(core.getInput('fail-on-cvss')) || 10,
     path: core.getInput('path', { trimWhitespace: true }) || '.',
     debug: core.getBooleanInput('debug'),
+    recursive: core.getBooleanInput('recursive'),
     "skip-collectors": core.getInput('skip-collectors').split(',')
 };
 (0, srcclr_1.runAction)(options);
@@ -8804,7 +8805,7 @@ function runAction(options) {
             skipCollectorsAttr = `--skip-collectors ${skip.toString()} `;
         }
         const commandOutput = options.createIssues ? `--json=${index_1.SCA_OUTPUT_FILE}` : '';
-        extraCommands = `${options.quick ? '--quick ' : ''}${options.allowDirty ? '--allow-dirty ' : ''}${extraCommands}${options.updateAdvisor ? '--update-advisor ' : ''}${options.debug ? '--debug ' : ''}${skipCollectorsAttr}`;
+        extraCommands = `${options.recursive ? '--recursive ' : ''}${options.quick ? '--quick ' : ''}${options.allowDirty ? '--allow-dirty ' : ''}${extraCommands}${options.updateAdvisor ? '--update-advisor ' : ''}${options.debug ? '--debug ' : ''}${skipCollectorsAttr}`;
         const command = `curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ${extraCommands} ${commandOutput}`;
         core.info(command);
         // const execution = spawn('sh',['-c',command],{
@@ -8812,12 +8813,6 @@ function runAction(options) {
         //         SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
         //     }
         // });
-        const stdout = (0, child_process_1.execSync)(command, {
-            env: {
-                SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
-            },
-            maxBuffer: 20 * 1024 * 1024
-        });
         // execution.on('error', (data) => {
         //     core.error(data);
         // })
@@ -8839,6 +8834,12 @@ function runAction(options) {
         //     }
         //     core.info('Finish command');
         // });
+        const stdout = (0, child_process_1.execSync)(command, {
+            env: {
+                SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
+            },
+            maxBuffer: 20 * 1024 * 1024
+        });
         if (options.createIssues) {
             (0, index_1.run)(options, core.info);
         }

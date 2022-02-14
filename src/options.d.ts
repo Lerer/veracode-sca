@@ -9,5 +9,6 @@ export interface Options {
     path: string,
     debug: boolean,
     allowDirty:boolean,
+    recursive:boolean,
     "skip-collectors": Array<string>
 }

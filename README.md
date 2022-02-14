@@ -69,6 +69,11 @@ __Optional__ - run the Veracode SCA scan with `--allow-dirty`
 
 Default Value: __false__
 
+### `recursive`
+__Optional__ - run the Veracode SCA scan with `--recursive` 
+
+Default Value: __false__
+
 ## Examples
 
 ### Scan a remote repository with textual output

@@ -14,7 +14,8 @@ const options: Options = {
     path: '.',
     debug:false,
     "skip-collectors": [],
-    allowDirty: false
+    allowDirty: false,
+    recursive:false
 }
 
 runAction(options);

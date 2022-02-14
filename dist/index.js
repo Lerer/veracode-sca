@@ -8812,7 +8812,7 @@ function runAction(options) {
             env: {
                 SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
             },
-            stdio: "inherit",
+            stdio: "pipe",
             shell: true
         });
         execution.on('error', (data) => {

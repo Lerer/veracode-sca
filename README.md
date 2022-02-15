@@ -43,8 +43,6 @@ This attribute is useful in scenarios where the actual code is not in the root o
 
 Default Value: __`.`__ (repository root folder)
 
-> :exclamation: This attribute is ignored if a __`url`__ attribute is also in use
-
 ### `quick`
 __Optional__ - run the Veracode SCA scan with the `--quick` 
 
@@ -72,7 +70,7 @@ Default Value: __false__
 
 ## Examples
 
-### Scan a remote repository with textual output
+### Scan your repository with textual output
 
 ```yaml
 on: 
@@ -91,10 +89,9 @@ jobs:
       - name: Run Veracode SCA
         env:
           SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
-        uses: lerer/veracode-sca@v1.0.4
+        uses: lerer/veracode-sca@v1.0.5
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          url: "https://github.com/Lerer/veracode-pipeline-scan-results-to-sarif"
           create-issues: false 
           fail-on-cvss: 1     
 ```
@@ -123,7 +120,7 @@ jobs:
       - name: Run Veracode SCA
         env:
           SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
-        uses: lerer/veracode-sca@v1.0.4
+        uses: lerer/veracode-sca@v1.0.5
 
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

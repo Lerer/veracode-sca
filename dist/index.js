@@ -8837,9 +8837,6 @@ function runAction(options) {
         //     core.info('Finish command');
         // });
         const stdout = (0, child_process_1.execSync)(command, {
-            env: {
-                SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
-            },
             maxBuffer: 20 * 1024 * 1024
         });
         if (options.createIssues) {

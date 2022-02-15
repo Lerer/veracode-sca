@@ -72,9 +72,6 @@ export function runAction (options: Options)  {
         // });
                             
         const stdout = execSync(command, {
-            env: {
-                SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
-            },
             maxBuffer: 20 * 1024 * 1024
         });
 

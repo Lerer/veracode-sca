@@ -1,6 +1,6 @@
 {
   "name": "veracode-sca",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "An action to execute Veracode Software Composition Analysis Scaning as a GitHub Action",
   "main": "./dist/index.js",
   "scripts": {

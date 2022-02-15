@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { spawn } from "child_process";
+import { execSync } from "child_process";
 
 import * as core from '@actions/core'
 import { Options } from "./options";
@@ -34,42 +34,59 @@ export function runAction (options: Options)  {
 
 
         const commandOutput = options.createIssues ? `--json=${SCA_OUTPUT_FILE}` : ''; 
-        extraCommands = `${extraCommands}${options.quick? '--quick ':''}${options.updateAdvisor? '--update-advisor ':''}${options.debug? '--debug ':''}${skipCollectorsAttr}`;
+        extraCommands = `${options.recursive?'--recursive ':''}${options.quick? '--quick ':''}${options.allowDirty? '--allow-dirty ':''}${extraCommands}${options.updateAdvisor? '--update-advisor ':''}${options.debug? '--debug ':''}${skipCollectorsAttr}`;
         const command = `curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ${extraCommands} ${commandOutput}`;
         core.info(command);
 
-        const execution = spawn('sh',['-c',command],{
-            env: {
-                SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
-            }
+        /**
+         * 
+         * If one day we need to go to spawn
+         * 
+         * 
+         *  const execution = spawn('sh',['-c',command],{
+         *    stdio:"pipe",
+         *    shell:true
+         *  });
+         *    
+         *  execution.on('error', (data) => {
+         *      core.error(data);
+         *  })
+         *        
+         *  let output: string = '';
+         *  execution.stdout!.on('data', (data) => {
+         *      core.info(data.toString());
+         *      output = `${output}${data}`;
+         *  });
+         *            
+         *  execution.stderr!.on('data', (data) => {
+         *      core.error(`stderr: ${data}`);
+         *  });
+         *                
+         *  execution.on('close', (code) => {
+         *      core.info(output);
+         *      core.info(`Scan finished with exit code:  ${code}`);
+         *      if (options.createIssues) {
+         *           run(options,core.info);
+         *      } else {
+         *           runText(options,output,core.info);
+         *      }
+         *      core.info('Finish command');
+         * });
+        */
+                            
+        const stdout = execSync(command, {
+            maxBuffer: 20 * 1024 * 1024
         });
 
-        execution.on('error', (data) => {
-            core.error(data);
-        })
-
-        let output: string = '';
-        execution.stdout.on('data', (data) => {
-            //core.info(data.toString());
-            output = `${output}${data}`;
-        });
-          
-        execution.stderr.on('data', (data) => {
-            core.error(`stderr: ${data}`);
-        });
-
-
-        
-        execution.on('close', (code) => {
+        if (options.createIssues) {
+            run(options,core.info);
+        } else {
+            const output = stdout.toString('utf-8');
             core.info(output);
-            core.info(`Scan finished with exit code:  ${code}`);
-            if (options.createIssues) {
-                run(options,core.info);
-            } else {
-                runText(options,output,core.info);
-            }
-            core.info('Finish command');
-        });
+            runText(options,output,core.info);
+        }
+
+        core.info('Finish command');
         
     } catch (error) {
         if (error instanceof Error) {

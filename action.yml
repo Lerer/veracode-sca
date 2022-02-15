@@ -24,10 +24,6 @@ inputs:
     description: "The maximum allowed cvss in found vulnerabilities to pass the step"
     required: false
     default: "10"
-  url:
-    description: "A git URL to work with in case the scan is not for the current repository"
-    required: false
-    default: ""
   create-issues:
     description: "An attribute to instruct the action to create an issue from found vulnerability or just simple text output"
     required: false
@@ -43,6 +39,15 @@ inputs:
   skip-collectors:
     description: "Run the SRCCLR with the `--skip-collectors` options"
     required: false
+    default: "false"
+  allow-dirty:
+    description: "Run the SRCCLR with the `--allow-dirty` option"
+    required: false
+    default: "false"
+  recursive:
+    description: "Run the SRCCLR with the `--recursive` option"
+    required: false
+    default: "false"
 runs:
   using: 'node12'
   main: 'dist/index.js'

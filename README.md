@@ -37,10 +37,6 @@ This is a boolean value attirbute
 
 Default Value: __false__
 
-
-### `url`
-**Optional** - specify a remote repository URL for scanning. It will not scan the current repository in which the workflow is running
-
 ### `path`
 __Optional__ - a relative path for the scan to start.
 This attribute is useful in scenarios where the actual code is not in the root of the repository. An example would be mono repo where the repository is home for multiple projects
@@ -63,6 +59,16 @@ Default Value: __false__
 __Optional__ - run the Veracode SCA scan with the `--skip-collectors` attribute with comma sporated values. 
 The available values can be found here: [Scan directive](https://docs.veracode.com/r/c_sc_scan_directives) (scroll down to the `skip_collectors` directive).
 Default Value: __None__
+
+### `allow-dirty`
+__Optional__ - run the Veracode SCA scan with `--allow-dirty` 
+
+Default Value: __false__
+
+### `recursive`
+__Optional__ - run the Veracode SCA scan with `--recursive` 
+
+Default Value: __false__
 
 ## Examples
 

@@ -8331,12 +8331,14 @@ const options = {
     quick: core.getBooleanInput('quick'),
     updateAdvisor: core.getBooleanInput('update_advisor'),
     minCVSSForIssue: parseFloat(core.getInput('min-cvss-for-issue')) || 0,
-    url: core.getInput('url', { trimWhitespace: true }),
+    url: '',
     github_token: core.getInput('github_token', { required: true }),
     createIssues: core.getBooleanInput('create-issues'),
+    allowDirty: core.getBooleanInput('allow-dirty'),
     failOnCVSS: parseFloat(core.getInput('fail-on-cvss')) || 10,
     path: core.getInput('path', { trimWhitespace: true }) || '.',
     debug: core.getBooleanInput('debug'),
+    recursive: core.getBooleanInput('recursive'),
     "skip-collectors": core.getInput('skip-collectors').split(',')
 };
 (0, srcclr_1.runAction)(options);
@@ -8803,36 +8805,56 @@ function runAction(options) {
             skipCollectorsAttr = `--skip-collectors ${skip.toString()} `;
         }
         const commandOutput = options.createIssues ? `--json=${index_1.SCA_OUTPUT_FILE}` : '';
-        extraCommands = `${extraCommands}${options.quick ? '--quick ' : ''}${options.updateAdvisor ? '--update-advisor ' : ''}${options.debug ? '--debug ' : ''}${skipCollectorsAttr}`;
+        extraCommands = `${options.recursive ? '--recursive ' : ''}${options.quick ? '--quick ' : ''}${options.allowDirty ? '--allow-dirty ' : ''}${extraCommands}${options.updateAdvisor ? '--update-advisor ' : ''}${options.debug ? '--debug ' : ''}${skipCollectorsAttr}`;
         const command = `curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ${extraCommands} ${commandOutput}`;
         core.info(command);
-        const execution = (0, child_process_1.spawn)('sh', ['-c', command], {
-            env: {
-                SRCCLR_API_TOKEN: process.env.SRCCLR_API_TOKEN,
-            }
+        /**
+         *
+         * If one day we need to go to spawn
+         *
+         *
+         *  const execution = spawn('sh',['-c',command],{
+         *    stdio:"pipe",
+         *    shell:true
+         *  });
+         *
+         *  execution.on('error', (data) => {
+         *      core.error(data);
+         *  })
+         *
+         *  let output: string = '';
+         *  execution.stdout!.on('data', (data) => {
+         *      core.info(data.toString());
+         *      output = `${output}${data}`;
+         *  });
+         *
+         *  execution.stderr!.on('data', (data) => {
+         *      core.error(`stderr: ${data}`);
+         *  });
+         *
+         *  execution.on('close', (code) => {
+         *      core.info(output);
+         *      core.info(`Scan finished with exit code:  ${code}`);
+         *      if (options.createIssues) {
+         *           run(options,core.info);
+         *      } else {
+         *           runText(options,output,core.info);
+         *      }
+         *      core.info('Finish command');
+         * });
+        */
+        const stdout = (0, child_process_1.execSync)(command, {
+            maxBuffer: 20 * 1024 * 1024
         });
-        execution.on('error', (data) => {
-            core.error(data);
-        });
-        let output = '';
-        execution.stdout.on('data', (data) => {
-            //core.info(data.toString());
-            output = `${output}${data}`;
-        });
-        execution.stderr.on('data', (data) => {
-            core.error(`stderr: ${data}`);
-        });
-        execution.on('close', (code) => {
+        if (options.createIssues) {
+            (0, index_1.run)(options, core.info);
+        }
+        else {
+            const output = stdout.toString('utf-8');
             core.info(output);
-            core.info(`Scan finished with exit code:  ${code}`);
-            if (options.createIssues) {
-                (0, index_1.run)(options, core.info);
-            }
-            else {
-                (0, index_1.runText)(options, output, core.info);
-            }
-            core.info('Finish command');
-        });
+            (0, index_1.runText)(options, output, core.info);
+        }
+        core.info('Finish command');
     }
     catch (error) {
         if (error instanceof Error) {

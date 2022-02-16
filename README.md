@@ -89,7 +89,7 @@ jobs:
       - name: Run Veracode SCA
         env:
           SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
-        uses: lerer/veracode-sca@v1.0.5
+        uses: lerer/veracode-sca@v1.0.6
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           create-issues: false 
@@ -120,7 +120,7 @@ jobs:
       - name: Run Veracode SCA
         env:
           SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
-        uses: lerer/veracode-sca@v1.0.5
+        uses: lerer/veracode-sca@v1.0.6
 
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

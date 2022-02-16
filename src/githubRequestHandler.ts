@@ -6,7 +6,7 @@ const ISSUES_PULL_COUNT = 100;
 
 export class GithubHandler {
 
-    private client = getOctokit('');
+    private client:any;
 
     constructor(private token:string) {
         this.client = getOctokit(token); 
@@ -37,8 +37,7 @@ export class GithubHandler {
         try {
             // Creating the severity labels
             for (var label of Object.values(SEVERITY_LABELS)) {
-                //let label = SEVERITY_LABELS[lebelKey];
-                await this.client.rest.issues.createLabel({
+              await this.client.rest.issues.createLabel({
                     owner:context.repo.owner,
                     repo:context.repo.repo,
                     name: label.name,

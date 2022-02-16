@@ -8368,7 +8368,6 @@ const ISSUES_PULL_COUNT = 100;
 class GithubHandler {
     constructor(token) {
         this.token = token;
-        this.client = (0, github_1.getOctokit)('');
         this.client = (0, github_1.getOctokit)(token);
     }
     getVeracodeLabel() {
@@ -8398,7 +8397,6 @@ class GithubHandler {
             try {
                 // Creating the severity labels
                 for (var label of Object.values(labels_1.SEVERITY_LABELS)) {
-                    //let label = SEVERITY_LABELS[lebelKey];
                     yield this.client.rest.issues.createLabel({
                         owner: github_1.context.repo.owner,
                         repo: github_1.context.repo.repo,

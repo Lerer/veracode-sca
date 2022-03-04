@@ -16,6 +16,10 @@ inputs:
     description: "Show update advisor"
     required: false
     default: "false"
+  url:
+    description: "A git URL to work with in case the scan is not for the current repository"
+    required: false
+    default: ""
   min-cvss-for-issue:
     description: "The minimum CVSS value for vulnerability to be added as an issue"
     required: false

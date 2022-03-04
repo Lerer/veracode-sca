@@ -8806,51 +8806,43 @@ function runAction(options) {
         extraCommands = `${options.recursive ? '--recursive ' : ''}${options.quick ? '--quick ' : ''}${options.allowDirty ? '--allow-dirty ' : ''}${extraCommands}${options.updateAdvisor ? '--update-advisor ' : ''}${options.debug ? '--debug ' : ''}${skipCollectorsAttr}`;
         const command = `curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ${extraCommands} ${commandOutput}`;
         core.info(command);
-        /**
-         *
-         * If one day we need to go to spawn
-         *
-         *
-         *  const execution = spawn('sh',['-c',command],{
-         *    stdio:"pipe",
-         *    shell:true
-         *  });
-         *
-         *  execution.on('error', (data) => {
-         *      core.error(data);
-         *  })
-         *
-         *  let output: string = '';
-         *  execution.stdout!.on('data', (data) => {
-         *      core.info(data.toString());
-         *      output = `${output}${data}`;
-         *  });
-         *
-         *  execution.stderr!.on('data', (data) => {
-         *      core.error(`stderr: ${data}`);
-         *  });
-         *
-         *  execution.on('close', (code) => {
-         *      core.info(output);
-         *      core.info(`Scan finished with exit code:  ${code}`);
-         *      if (options.createIssues) {
-         *           run(options,core.info);
-         *      } else {
-         *           runText(options,output,core.info);
-         *      }
-         *      core.info('Finish command');
-         * });
-        */
-        const stdout = (0, child_process_1.execSync)(command, {
-            maxBuffer: 20 * 1024 * 1024
-        });
         if (options.createIssues) {
-            (0, index_1.run)(options, core.info);
+            const execution = (0, child_process_1.spawn)('sh', ['-c', command], {
+                stdio: "pipe",
+                shell: true
+            });
+            execution.on('error', (data) => {
+                core.error(data);
+            });
+            let output = '';
+            execution.stdout.on('data', (data) => {
+                output = `${output}${data}`;
+            });
+            execution.stderr.on('data', (data) => {
+                core.error(`stderr: ${data}`);
+            });
+            execution.on('close', (code) => {
+                core.info(output);
+                core.info(`Scan finished with exit code:  ${code}`);
+                //if (options.createIssues) {
+                (0, index_1.run)(options, core.info);
+                //} else {
+                //     runText(options,output,core.info);
+                //}
+                core.info('Finish command');
+            });
         }
         else {
+            const stdout = (0, child_process_1.execSync)(command, {
+                maxBuffer: 20 * 1024 * 1024
+            });
+            // if (options.createIssues) {
+            //     run(options,core.info);
+            // } else {
             const output = stdout.toString('utf-8');
             core.info(output);
             (0, index_1.runText)(options, output, core.info);
+            //}
         }
         core.info('Finish command');
     }

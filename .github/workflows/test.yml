@@ -30,6 +30,6 @@ jobs:
           #recursive: true
           fail-on-cvss: 1
           debug: true
-        continue-on-error: true
+        
      
         

@@ -1,5 +1,5 @@
 //import {getOctokit,context} from '@actions/github';
-import {readFileSync} from 'fs';
+import { readFileSync, existsSync} from 'fs';
 import { Options } from './options';
 import { LibraryIssuesCollection, ReportedLibraryIssue, SCALibrary, SCAVulnerability, SrcClrJson } from './srcclr.d';
 import { Label, SEVERITY_LABELS, VERACODE_LABEL } from './labels';
@@ -14,6 +14,12 @@ const librariesWithIssues:any = {};
 let githubHandler: GithubHandler;
 
 export async function run(options:Options, msgFunc: (msg: string) => void) {
+
+    if (!existsSync(SCA_OUTPUT_FILE)) {
+        core.setFailed('SCA Output file was not found - cannot proceed with creating issues.\nPlease check prior execution errors.');
+        return;
+    }
+
     const scaResultsTxt = readFileSync(SCA_OUTPUT_FILE);  
 
     const scaResJson: SrcClrJson = JSON.parse(scaResultsTxt.toString('utf-8'));

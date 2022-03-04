@@ -8557,6 +8557,10 @@ const librariesWithIssues = {};
 let githubHandler;
 function run(options, msgFunc) {
     return __awaiter(this, void 0, void 0, function* () {
+        if (!(0, fs_1.existsSync)(exports.SCA_OUTPUT_FILE)) {
+            core.setFailed('SCA Output file was not found - cannot proceed with creating issues.\nPlease check prior execution errors.');
+            return;
+        }
         const scaResultsTxt = (0, fs_1.readFileSync)(exports.SCA_OUTPUT_FILE);
         const scaResJson = JSON.parse(scaResultsTxt.toString('utf-8'));
         const vulnerabilities = scaResJson.records[0].vulnerabilities;
@@ -8803,7 +8807,7 @@ function runAction(options) {
             skipCollectorsAttr = `--skip-collectors ${skip.toString()} `;
         }
         const commandOutput = options.createIssues ? `--json=${index_1.SCA_OUTPUT_FILE}` : '';
-        extraCommands = `${options.recursive ? '--recursive ' : ''}${options.quick ? '--quick ' : ''}${options.allowDirty ? '--allow-dirty ' : ''}${extraCommands}${options.updateAdvisor ? '--update-advisor ' : ''}${options.debug ? '--debug ' : ''}${skipCollectorsAttr}`;
+        extraCommands = `${extraCommands}${options.recursive ? '--recursive ' : ''}${options.quick ? '--quick ' : ''}${options.allowDirty ? '--allow-dirty ' : ''}${options.updateAdvisor ? '--update-advisor ' : ''}${options.debug ? '--debug ' : ''}${skipCollectorsAttr}`;
         const command = `curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ${extraCommands} ${commandOutput}`;
         core.info(command);
         if (options.createIssues) {

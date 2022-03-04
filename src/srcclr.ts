@@ -42,7 +42,7 @@ export function runAction (options: Options)  {
         if (options.createIssues) {
           const execution = spawn('sh',['-c',command],{
             stdio:"pipe",
-            shell:true
+         //   shell:true
           });
             
           execution.on('error', (data) => {

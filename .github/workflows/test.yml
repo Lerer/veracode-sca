@@ -25,7 +25,8 @@ jobs:
           quick: true
           #url: "https://www.github.com/dancancro/great-big-example-application"
           #url: "https://github.com/Lerer/verademo"
-          create-issues: true 
+          url: "https://github.com/the-tatanka/tractusx"
+          create-issues: false 
           #allow-dirty: false
           #recursive: true
           fail-on-cvss: 1

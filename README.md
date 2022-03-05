@@ -37,6 +37,9 @@ This is a boolean value attirbute
 
 Default Value: __false__
 
+### `url`
+**Optional** - specify a remote repository URL for scanning. It will not scan the current repository in which the workflow is running
+
 ### `path`
 __Optional__ - a relative path for the scan to start.
 This attribute is useful in scenarios where the actual code is not in the root of the repository. An example would be mono repo where the repository is home for multiple projects
@@ -89,7 +92,7 @@ jobs:
       - name: Run Veracode SCA
         env:
           SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
-        uses: lerer/veracode-sca@v1.0.6
+        uses: lerer/veracode-sca@v1.0.7
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           create-issues: false 
@@ -120,7 +123,7 @@ jobs:
       - name: Run Veracode SCA
         env:
           SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
-        uses: lerer/veracode-sca@v1.0.6
+        uses: lerer/veracode-sca@v1.0.7
 
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

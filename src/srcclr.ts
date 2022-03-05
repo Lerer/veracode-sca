@@ -61,11 +61,7 @@ export function runAction (options: Options)  {
           execution.on('close', (code) => {
               core.info(output);
               core.info(`Scan finished with exit code:  ${code}`);
-              //if (options.createIssues) {
               run(options,core.info);
-              //} else {
-              //     runText(options,output,core.info);
-              //}
               core.info('Finish command');
          });
         
@@ -74,14 +70,10 @@ export function runAction (options: Options)  {
             const stdout = execSync(command, {
                 maxBuffer: 20 * 1024 * 1024
             });
-
-            // if (options.createIssues) {
-            //     run(options,core.info);
-            // } else {
-                const output = stdout.toString('utf-8');
-                core.info(output);
-                runText(options,output,core.info);
-            //}
+    
+            const output = stdout.toString('utf-8');
+            core.info(output);
+            runText(options,output,core.info);
         }
 
         core.info('Finish command');

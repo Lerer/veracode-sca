@@ -25,7 +25,7 @@ jobs:
           quick: true
           #url: "https://www.github.com/dancancro/great-big-example-application"
           url: "https://github.com/Lerer/serverless-veracode-webhooks"
-          create-issues: false 
+          create-issues: true 
           #allow-dirty: false
           #recursive: true
           fail-on-cvss: 7

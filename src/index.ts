@@ -38,8 +38,6 @@ export async function run(options:Options, msgFunc: (msg: string) => void) {
             addIssueToLibrary(libId,lib,details);
         });
 
-    console.log(JSON.stringify(librariesWithIssues));
-
     githubHandler = new GithubHandler(options.github_token);
 
     if (Object.keys(librariesWithIssues).length>0) {
@@ -66,17 +64,16 @@ const addIssueToLibrary = (libId:string,lib:SCALibrary,details:ReportedLibraryIs
 
 const syncExistingOpenIssues = async () => {
     const existingOpenIssues = await githubHandler.listExistingOpenIssues();
-    console.log(JSON.stringify(existingOpenIssues));
     for (var library of Object.values(librariesWithIssues)) {
         (library as LibraryIssuesCollection).issues.forEach(async element => {
             const foundIssueTitle = element.title;
-            console.log(`Checking for issue title [${foundIssueTitle}]`);
+            core.info(`Checking for issue title [${foundIssueTitle}]`);
             const inExsiting = existingOpenIssues.filter(openIssue => {
                 return openIssue.node.title === foundIssueTitle;
             })
             if (inExsiting.length===0) {
                 // issue not yet reported
-                // const ghResponse = await githubHandler.createIssue(element);
+                const ghResponse = await githubHandler.createIssue(element);
                 console.log(`Created issue: ${element.title}`);
             } else {
                 console.log(`Skipping existing Issue : ${element.title}`);

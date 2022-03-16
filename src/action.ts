@@ -8,7 +8,7 @@ const options: Options = {
     quick: core.getBooleanInput('quick'),
     updateAdvisor: core.getBooleanInput('update_advisor'),
     minCVSSForIssue: parseFloat(core.getInput('min-cvss-for-issue')) || 0,
-    url: '',
+    url: core.getInput('url'),
     github_token: core.getInput('github_token',{required:true}),
     createIssues: core.getBooleanInput('create-issues'),
     allowDirty: core.getBooleanInput('allow-dirty'),

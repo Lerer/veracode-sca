@@ -8575,6 +8575,7 @@ function run(options, msgFunc) {
             const details = createIssueDetails(vulr, lib);
             addIssueToLibrary(libId, lib, details);
         });
+        console.log(JSON.stringify(librariesWithIssues));
         githubHandler = new githubRequestHandler_1.GithubHandler(options.github_token);
         if (Object.keys(librariesWithIssues).length > 0) {
             yield verifyLabels();
@@ -8599,15 +8600,17 @@ const addIssueToLibrary = (libId, lib, details) => {
 };
 const syncExistingOpenIssues = () => __awaiter(void 0, void 0, void 0, function* () {
     const existingOpenIssues = yield githubHandler.listExistingOpenIssues();
+    console.log(JSON.stringify(existingOpenIssues));
     for (var library of Object.values(librariesWithIssues)) {
         library.issues.forEach((element) => __awaiter(void 0, void 0, void 0, function* () {
             const foundIssueTitle = element.title;
+            console.log(`Checking for issue title [${foundIssueTitle}]`);
             const inExsiting = existingOpenIssues.filter(openIssue => {
                 return openIssue.node.title === foundIssueTitle;
             });
             if (inExsiting.length === 0) {
                 // issue not yet reported
-                const ghResponse = yield githubHandler.createIssue(element);
+                // const ghResponse = await githubHandler.createIssue(element);
                 console.log(`Created issue: ${element.title}`);
             }
             else {
@@ -8826,7 +8829,7 @@ function runAction(options) {
                 core.error(`stderr: ${data}`);
             });
             execution.on('close', (code) => {
-                core.info(output);
+                //core.info(output);
                 core.info(`Scan finished with exit code:  ${code}`);
                 (0, index_1.run)(options, core.info);
                 core.info('Finish command');

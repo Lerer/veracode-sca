@@ -59,7 +59,7 @@ export function runAction (options: Options)  {
           });
                         
           execution.on('close', (code) => {
-              core.info(output);
+              //core.info(output);
               core.info(`Scan finished with exit code:  ${code}`);
               run(options,core.info);
               core.info('Finish command');

@@ -8331,7 +8331,7 @@ const options = {
     quick: core.getBooleanInput('quick'),
     updateAdvisor: core.getBooleanInput('update_advisor'),
     minCVSSForIssue: parseFloat(core.getInput('min-cvss-for-issue')) || 0,
-    url: '',
+    url: core.getInput('url'),
     github_token: core.getInput('github_token', { required: true }),
     createIssues: core.getBooleanInput('create-issues'),
     allowDirty: core.getBooleanInput('allow-dirty'),
@@ -8438,7 +8438,7 @@ class GithubHandler {
             console.log('getIssues - START');
             const query = `query IsslesTitle($organization: String!,$repo: String!, $count: Int!,$label: String!) {
             repository(name: $repo, owner: $organization) {
-              issues(first: $count,filterBy: {labels: $label, states: OPEN}) {
+              issues(first: $count,filterBy: {labels: [$label], states: OPEN}) {
                 edges {
                   node {
                     title
@@ -8454,7 +8454,7 @@ class GithubHandler {
           }`;
             const nextQuery = `query IsslesTitle($organization: String!,$repo: String!, $count: Int!, $endCursor: String!,$label: String!) {
             repository(name: $repo, owner: $organization) {
-              issues(first: $count,after: $endCursor,filterBy: {labels: $label, states: OPEN}) {
+              issues(first: $count,after: $endCursor,filterBy: {labels: [$label], states: OPEN}) {
                 edges {
                   node {
                     title
@@ -8602,6 +8602,7 @@ const syncExistingOpenIssues = () => __awaiter(void 0, void 0, void 0, function*
     for (var library of Object.values(librariesWithIssues)) {
         library.issues.forEach((element) => __awaiter(void 0, void 0, void 0, function* () {
             const foundIssueTitle = element.title;
+            core.info(`Checking for issue title [${foundIssueTitle}]`);
             const inExsiting = existingOpenIssues.filter(openIssue => {
                 return openIssue.node.title === foundIssueTitle;
             });
@@ -8826,7 +8827,9 @@ function runAction(options) {
                 core.error(`stderr: ${data}`);
             });
             execution.on('close', (code) => {
-                core.info(output);
+                if (core.isDebug()) {
+                    core.info(output);
+                }
                 core.info(`Scan finished with exit code:  ${code}`);
                 (0, index_1.run)(options, core.info);
                 core.info('Finish command');

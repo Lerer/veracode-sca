@@ -67,6 +67,7 @@ const syncExistingOpenIssues = async () => {
     for (var library of Object.values(librariesWithIssues)) {
         (library as LibraryIssuesCollection).issues.forEach(async element => {
             const foundIssueTitle = element.title;
+            core.info(`Checking for issue title [${foundIssueTitle}]`);
             const inExsiting = existingOpenIssues.filter(openIssue => {
                 return openIssue.node.title === foundIssueTitle;
             })

@@ -29,6 +29,7 @@ jobs:
           #allow-dirty: false
           #recursive: true
           fail-on-cvss: 7
+          min-cvss-for-issue: 7
           debug: false
         
      

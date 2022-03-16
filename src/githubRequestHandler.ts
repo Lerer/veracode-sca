@@ -77,7 +77,7 @@ export class GithubHandler {
         console.log('getIssues - START');
         const query = `query IsslesTitle($organization: String!,$repo: String!, $count: Int!,$label: String!) {
             repository(name: $repo, owner: $organization) {
-              issues(first: $count,filterBy: {labels: $label, states: OPEN}) {
+              issues(first: $count,filterBy: {labels: [$label], states: OPEN}) {
                 edges {
                   node {
                     title
@@ -94,7 +94,7 @@ export class GithubHandler {
 
         const nextQuery = `query IsslesTitle($organization: String!,$repo: String!, $count: Int!, $endCursor: String!,$label: String!) {
             repository(name: $repo, owner: $organization) {
-              issues(first: $count,after: $endCursor,filterBy: {labels: $label, states: OPEN}) {
+              issues(first: $count,after: $endCursor,filterBy: {labels: [$label], states: OPEN}) {
                 edges {
                   node {
                     title

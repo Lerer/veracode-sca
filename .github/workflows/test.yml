@@ -24,11 +24,11 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           quick: true
           #url: "https://www.github.com/dancancro/great-big-example-application"
-          #url: "https://github.com/Lerer/verademo"
-          create-issues: true 
+          url: "https://github.com/Lerer/serverless-veracode-webhooks"
+          create-issues: false 
           #allow-dirty: false
           #recursive: true
-          fail-on-cvss: 1
+          fail-on-cvss: 7
           debug: false
         
      

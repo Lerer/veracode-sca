@@ -11,19 +11,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Lerer/veracode-sca.git"
+    "url": "git+https://github.com/veracode/veracode-sca.git"
   },
   "keywords": [
     "Veracode",
     "SCA",
     "Other"
   ],
-  "author": "Yaakov Lerer",
+  "author": "Veracode",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Lerer/veracode-sca/issues"
+    "url": "https://github.com/veracode/veracode-sca/issues"
   },
-  "homepage": "https://github.com/Lerer/veracode-sca#readme",
+  "homepage": "https://github.com/veracode/veracode-sca#readme",
   "devDependencies": {
     "@types/node": "^16.11.22",
     "@vercel/ncc": "^0.33.0",

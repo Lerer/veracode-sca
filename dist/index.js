@@ -8847,7 +8847,9 @@ function runAction(options) {
     }
     catch (error) {
         if (error instanceof Error) {
-            core.setFailed(error.message);
+            //const output = stdout.toString();
+            core.info(error.message);
+            //core.setFailed(error.message);
         }
         else {
             core.setFailed("unknown error");

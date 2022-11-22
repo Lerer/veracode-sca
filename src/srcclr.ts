@@ -82,8 +82,8 @@ export function runAction (options: Options)  {
         
     } catch (error) {
         if (error instanceof Error) {
-            const output = error.toString();
-            core.info(output);
+            //const output = stdout.toString();
+            core.info(error.message);
             //core.setFailed(error.message);
         } else {
             core.setFailed("unknown error");

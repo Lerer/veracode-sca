@@ -8827,9 +8827,9 @@ function runAction(options) {
                 core.error(`stderr: ${data}`);
             });
             execution.on('close', (code) => {
-                if (core.isDebug()) {
-                    core.info(output);
-                }
+                //if (core.isDebug()) {
+                core.info(output);
+                //}
                 core.info(`Scan finished with exit code:  ${code}`);
                 (0, index_1.run)(options, core.info);
                 core.info('Finish command');

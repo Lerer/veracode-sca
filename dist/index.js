@@ -8793,114 +8793,114 @@ const cleanCollectors = (inputArr) => {
     return allowed;
 };
 function runAction(options) {
-    // try {
-    core.info('Start command');
-    let extraCommands = '';
-    if (options.url.length > 0) {
-        extraCommands = `--url ${options.url} `;
-    }
-    else {
-        extraCommands = `${options.path} `;
-    }
-    core.info('something went wrong 12');
-    const skip = cleanCollectors(options["skip-collectors"]);
-    let skipCollectorsAttr = '';
-    if (skip.length > 0) {
-        skipCollectorsAttr = `--skip-collectors ${skip.toString()} `;
-    }
-    core.info('something went wrong 13');
-    const commandOutput = options.createIssues ? `--json=${index_1.SCA_OUTPUT_FILE}` : '';
-    extraCommands = `${extraCommands}${options.recursive ? '--recursive ' : ''}${options.quick ? '--quick ' : ''}${options.allowDirty ? '--allow-dirty ' : ''}${options.updateAdvisor ? '--update-advisor ' : ''}${options.debug ? '--debug ' : ''}${skipCollectorsAttr}`;
-    const command = `curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ${extraCommands} ${commandOutput}`;
-    core.info(command);
-    core.info('something went wrong 14');
-    if (options.createIssues) {
-        core.info('Starting the scan');
-        const execution = (0, child_process_1.spawn)('sh', ['-c', command], {
-            stdio: "pipe",
-            shell: true
-        });
-        core.info('something went wrong 6');
-        execution.on('error', (data) => {
-            core.info('something went wrong 1');
-            core.error(data);
-        });
-        let output = '';
-        core.info('something went wrong 7');
-        execution.stdout.on('data', (data) => {
-            core.info('something went wrong 2');
-            output = `${output}${data}`;
-        });
-        core.info('something went wrong 8');
-        execution.stderr.on('data', (data) => {
-            core.info('something went wrong 3');
-            core.error(`stderr: ${data}`);
-        });
-        core.info('something went wrong 9');
-        execution.on('close', (code) => {
-            core.info('something went wrong 4');
-            //if (core.isDebug()) {
+    try {
+        core.info('Start command');
+        let extraCommands = '';
+        if (options.url.length > 0) {
+            extraCommands = `--url ${options.url} `;
+        }
+        else {
+            extraCommands = `${options.path} `;
+        }
+        core.info('something went wrong 12');
+        const skip = cleanCollectors(options["skip-collectors"]);
+        let skipCollectorsAttr = '';
+        if (skip.length > 0) {
+            skipCollectorsAttr = `--skip-collectors ${skip.toString()} `;
+        }
+        core.info('something went wrong 13');
+        const commandOutput = options.createIssues ? `--json=${index_1.SCA_OUTPUT_FILE}` : '';
+        extraCommands = `${extraCommands}${options.recursive ? '--recursive ' : ''}${options.quick ? '--quick ' : ''}${options.allowDirty ? '--allow-dirty ' : ''}${options.updateAdvisor ? '--update-advisor ' : ''}${options.debug ? '--debug ' : ''}${skipCollectorsAttr}`;
+        const command = `curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ${extraCommands} ${commandOutput}`;
+        core.info(command);
+        core.info('something went wrong 14');
+        if (options.createIssues) {
+            core.info('Starting the scan');
+            const execution = (0, child_process_1.spawn)('sh', ['-c', command], {
+                stdio: "pipe",
+                shell: true
+            });
+            core.info('something went wrong 6');
+            execution.on('error', (data) => {
+                core.info('something went wrong 1');
+                core.error(data);
+            });
+            let output = '';
+            core.info('something went wrong 7');
+            execution.stdout.on('data', (data) => {
+                core.info('something went wrong 2');
+                output = `${output}${data}`;
+            });
+            core.info('something went wrong 8');
+            execution.stderr.on('data', (data) => {
+                core.info('something went wrong 3');
+                core.error(`stderr: ${data}`);
+            });
+            core.info('something went wrong 9');
+            execution.on('close', (code) => {
+                core.info('something went wrong 4');
+                //if (core.isDebug()) {
+                core.info(output);
+                //}
+                core.info(`Scan finished with exit code:  ${code}`);
+                (0, index_1.run)(options, core.info);
+                core.info('Finish command');
+            });
+            core.info('something went wrong 10');
+        }
+        else {
+            core.info('something went wrong 5');
+            const execution = (0, child_process_1.spawn)('sh', ['-c', command], {
+                stdio: "pipe",
+                shell: true
+            });
+            execution.on('error', (data) => {
+                core.info('Execution on error');
+                core.error(data);
+            });
+            let output = '';
+            execution.stdout.on('data', (data) => {
+                core.info('Execution on success');
+                output = `${output}${data}`;
+            });
+            execution.stderr.on('data', (data) => {
+                core.info('Execution on stderr');
+                core.error(`stderr: ${data}`);
+            });
+            execution.on('close', (code) => {
+                core.info('Execution on close');
+                //if (core.isDebug()) {
+                core.info(output);
+                //}
+                core.info(`Scan finished with exit code:  ${code}`);
+                (0, index_1.run)(options, core.info);
+                core.info('Finish command');
+            });
+            /*
+            const stdout = execSync(command, {
+                maxBuffer: 20 * 1024 * 1024
+            });
+    
+            const output = stdout.toString('utf-8');
+            core.info('Creating issues failed')
             core.info(output);
-            //}
-            core.info(`Scan finished with exit code:  ${code}`);
-            (0, index_1.run)(options, core.info);
-            core.info('Finish command');
-        });
-        core.info('something went wrong 10');
+            runText(options,output,core.info);
+            */
+        }
+        core.info('Finish command');
     }
-    else {
-        core.info('something went wrong 5');
-        const execution = (0, child_process_1.spawn)('sh', ['-c', command], {
-            stdio: "pipe",
-            shell: true
-        });
-        execution.stdout.on('data', function (data) { process.stdout.write(data.toString()); });
-        execution.stderr.on('data', function (data) { process.stdout.write(data.toString()); });
-        execution.on('error', (data) => {
-            core.info('Execution on error');
-            core.error(data);
-        });
-        let output = '';
-        execution.stdout.on('data', (data) => {
-            core.info('Execution on success');
-            output = `${output}${data}`;
-        });
-        execution.stderr.on('data', (data) => {
-            core.info('Execution on stderr');
-            core.error(`stderr: ${data}`);
-        });
-        execution.on('close', (code) => {
-            core.info('Execution on close');
-            //if (core.isDebug()) {
-            core.info(output);
-            //}
-            core.info(`Scan finished with exit code:  ${code}`);
-            (0, index_1.run)(options, core.info);
-            core.info('Finish command');
-        });
-        /*
-        const stdout = execSync(command, {
-            maxBuffer: 20 * 1024 * 1024
-        });
-
-        const output = stdout.toString('utf-8');
-        core.info('Creating issues failed')
-        core.info(output);
-        runText(options,output,core.info);
-        */
+    catch (error) {
+        if (error instanceof Error) {
+            core.info('Running scan failed.');
+            //const output = stdout.toString();
+            core.info(error.message);
+            //core.setFailed(error.message);
+        }
+        else {
+            core.setFailed("unknown error");
+            console.log(error);
+        }
     }
-    core.info('Finish command');
-    /*     } catch (error) {
-            if (error instanceof Error) {
-                core.info('Running scan failed.')
-                //const output = stdout.toString();
-                core.info(error.message);
-                //core.setFailed(error.message);
-            } else {
-                core.setFailed("unknown error");
-                console.log(error);
-            }
-        } */
 }
 exports.runAction = runAction;
 const collectors = [

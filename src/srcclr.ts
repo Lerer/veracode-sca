@@ -16,7 +16,7 @@ const cleanCollectors = (inputArr:Array<string>) => {
 }
 
 export function runAction (options: Options)  {
-   // try {
+    try {
   
         core.info('Start command');
         let extraCommands: string = '';
@@ -87,8 +87,6 @@ export function runAction (options: Options)  {
                 stdio:"pipe",
                 shell:true
               });
-            execution.stdout.on('data', function (data) {   process.stdout.write(data.toString());  });
-            execution.stderr.on('data', function (data) {   process.stdout.write(data.toString());  });
 
             execution.on('error', (data) => {
                 core.info('Execution on error')
@@ -131,7 +129,7 @@ export function runAction (options: Options)  {
 
         core.info('Finish command');
         
-/*     } catch (error) {
+    } catch (error) {
         if (error instanceof Error) {
             core.info('Running scan failed.')
             //const output = stdout.toString();
@@ -141,7 +139,7 @@ export function runAction (options: Options)  {
             core.setFailed("unknown error");
             console.log(error);
         }
-    } */
+    }
 }
 
 

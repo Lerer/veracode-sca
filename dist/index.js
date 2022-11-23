@@ -8793,71 +8793,69 @@ const cleanCollectors = (inputArr) => {
     return allowed;
 };
 function runAction(options) {
-    try {
-        core.info('Start command');
-        let extraCommands = '';
-        if (options.url.length > 0) {
-            extraCommands = `--url ${options.url} `;
-        }
-        else {
-            extraCommands = `${options.path} `;
-        }
-        const skip = cleanCollectors(options["skip-collectors"]);
-        let skipCollectorsAttr = '';
-        if (skip.length > 0) {
-            skipCollectorsAttr = `--skip-collectors ${skip.toString()} `;
-        }
-        const commandOutput = options.createIssues ? `--json=${index_1.SCA_OUTPUT_FILE}` : '';
-        extraCommands = `${extraCommands}${options.recursive ? '--recursive ' : ''}${options.quick ? '--quick ' : ''}${options.allowDirty ? '--allow-dirty ' : ''}${options.updateAdvisor ? '--update-advisor ' : ''}${options.debug ? '--debug ' : ''}${skipCollectorsAttr}`;
-        const command = `curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ${extraCommands} ${commandOutput}`;
-        core.info(command);
-        if (options.createIssues) {
-            const execution = (0, child_process_1.spawn)('sh', ['-c', command], {
-                stdio: "pipe",
-                shell: true
-            });
-            execution.on('error', (data) => {
-                core.error(data);
-            });
-            let output = '';
-            execution.stdout.on('data', (data) => {
-                output = `${output}${data}`;
-            });
-            execution.stderr.on('data', (data) => {
-                core.error(`stderr: ${data}`);
-            });
-            execution.on('close', (code) => {
-                //if (core.isDebug()) {
-                core.info(output);
-                //}
-                core.info(`Scan finished with exit code:  ${code}`);
-                (0, index_1.run)(options, core.info);
-                core.info('Finish command');
-            });
-        }
-        else {
-            const stdout = (0, child_process_1.execSync)(command, {
-                maxBuffer: 20 * 1024 * 1024
-            });
-            const output = stdout.toString('utf-8');
-            core.info('Creating issues failed');
+    // try {
+    core.info('Start command');
+    let extraCommands = '';
+    if (options.url.length > 0) {
+        extraCommands = `--url ${options.url} `;
+    }
+    else {
+        extraCommands = `${options.path} `;
+    }
+    const skip = cleanCollectors(options["skip-collectors"]);
+    let skipCollectorsAttr = '';
+    if (skip.length > 0) {
+        skipCollectorsAttr = `--skip-collectors ${skip.toString()} `;
+    }
+    const commandOutput = options.createIssues ? `--json=${index_1.SCA_OUTPUT_FILE}` : '';
+    extraCommands = `${extraCommands}${options.recursive ? '--recursive ' : ''}${options.quick ? '--quick ' : ''}${options.allowDirty ? '--allow-dirty ' : ''}${options.updateAdvisor ? '--update-advisor ' : ''}${options.debug ? '--debug ' : ''}${skipCollectorsAttr}`;
+    const command = `curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ${extraCommands} ${commandOutput}`;
+    core.info(command);
+    if (options.createIssues) {
+        const execution = (0, child_process_1.spawn)('sh', ['-c', command], {
+            stdio: "pipe",
+            shell: true
+        });
+        execution.on('error', (data) => {
+            core.error(data);
+        });
+        let output = '';
+        execution.stdout.on('data', (data) => {
+            output = `${output}${data}`;
+        });
+        execution.stderr.on('data', (data) => {
+            core.error(`stderr: ${data}`);
+        });
+        execution.on('close', (code) => {
+            //if (core.isDebug()) {
             core.info(output);
-            (0, index_1.runText)(options, output, core.info);
-        }
-        core.info('Finish command');
+            //}
+            core.info(`Scan finished with exit code:  ${code}`);
+            (0, index_1.run)(options, core.info);
+            core.info('Finish command');
+        });
     }
-    catch (error) {
-        if (error instanceof Error) {
-            core.info('Running scan failed.');
-            //const output = stdout.toString();
-            core.info(error.message);
-            //core.setFailed(error.message);
-        }
-        else {
-            core.setFailed("unknown error");
-            console.log(error);
-        }
+    else {
+        const stdout = (0, child_process_1.execSync)(command, {
+            maxBuffer: 20 * 1024 * 1024
+        });
+        const output = stdout.toString('utf-8');
+        core.info('Creating issues failed');
+        core.info(output);
+        (0, index_1.runText)(options, output, core.info);
     }
+    core.info('Finish command');
+    /*     } catch (error) {
+            if (error instanceof Error) {
+                core.info('Running scan failed.')
+                //const output = stdout.toString();
+                core.info(error.message);
+                //core.setFailed(error.message);
+            } else {
+                core.setFailed("unknown error");
+                console.log(error);
+            }
+        } */
 }
 exports.runAction = runAction;
 const collectors = [

@@ -8818,18 +8818,20 @@ function runAction(options) {
             shell: true
         });
         execution.on('error', (data) => {
-            core.info('something went wrong');
+            core.info('something went wrong 1');
             core.error(data);
         });
         let output = '';
         execution.stdout.on('data', (data) => {
+            core.info('something went wrong 2');
             output = `${output}${data}`;
         });
         execution.stderr.on('data', (data) => {
-            core.info('something went wrong in addition');
+            core.info('something went wrong 3');
             core.error(`stderr: ${data}`);
         });
         execution.on('close', (code) => {
+            core.info('something went wrong 4');
             //if (core.isDebug()) {
             core.info(output);
             //}

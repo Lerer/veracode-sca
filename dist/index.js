@@ -8840,6 +8840,7 @@ function runAction(options) {
                 maxBuffer: 20 * 1024 * 1024
             });
             const output = stdout.toString('utf-8');
+            core.info('Creating issues failed');
             core.info(output);
             (0, index_1.runText)(options, output, core.info);
         }
@@ -8847,6 +8848,7 @@ function runAction(options) {
     }
     catch (error) {
         if (error instanceof Error) {
+            core.info('Running scan failed.');
             //const output = stdout.toString();
             core.info(error.message);
             //core.setFailed(error.message);

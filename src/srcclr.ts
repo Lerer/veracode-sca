@@ -74,6 +74,7 @@ export function runAction (options: Options)  {
             });
     
             const output = stdout.toString('utf-8');
+            core.info('Creating issues failed')
             core.info(output);
             runText(options,output,core.info);
         }
@@ -82,6 +83,7 @@ export function runAction (options: Options)  {
         
     } catch (error) {
         if (error instanceof Error) {
+            core.info('Running scan failed.')
             //const output = stdout.toString();
             core.info(error.message);
             //core.setFailed(error.message);

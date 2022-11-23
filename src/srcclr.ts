@@ -73,7 +73,7 @@ export function runAction (options: Options)  {
          });
         
         } else {
-                            
+            core.info('something went wrong 5')
             const stdout = execSync(command, {
                 maxBuffer: 20 * 1024 * 1024
             });

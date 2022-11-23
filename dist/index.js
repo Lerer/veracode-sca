@@ -8841,6 +8841,7 @@ function runAction(options) {
         });
     }
     else {
+        core.info('something went wrong 5');
         const stdout = (0, child_process_1.execSync)(command, {
             maxBuffer: 20 * 1024 * 1024
         });

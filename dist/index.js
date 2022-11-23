@@ -8815,7 +8815,7 @@ function runAction(options) {
             core.info('Starting the scan');
             const execution = (0, child_process_1.spawn)('sh', ['-c', command], {
                 stdio: "pipe",
-                shell: true
+                shell: false
             });
             execution.on('error', (data) => {
                 core.error(data);

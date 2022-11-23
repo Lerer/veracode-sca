@@ -42,7 +42,7 @@ export function runAction (options: Options)  {
             core.info('Starting the scan')
           const execution = spawn('sh',['-c',command],{
             stdio:"pipe",
-            shell:true
+            shell:false
           });
           
           execution.on('error', (data) => {

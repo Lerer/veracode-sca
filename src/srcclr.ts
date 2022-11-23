@@ -25,6 +25,7 @@ export function runAction (options: Options)  {
         } else {
             extraCommands = `${options.path} `;
         }
+        core.info('something went wrong 12')
 
         const skip = cleanCollectors(options["skip-collectors"]);
         let skipCollectorsAttr = '';
@@ -33,12 +34,14 @@ export function runAction (options: Options)  {
         }
 
 
+        core.info('something went wrong 13')
         const commandOutput = options.createIssues ? `--json=${SCA_OUTPUT_FILE}` : ''; 
         extraCommands = `${extraCommands}${options.recursive?'--recursive ':''}${options.quick? '--quick ':''}${options.allowDirty? '--allow-dirty ':''}${options.updateAdvisor? '--update-advisor ':''}${options.debug? '--debug ':''}${skipCollectorsAttr}`;
         const command = `curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ${extraCommands} ${commandOutput}`;
         core.info(command);
 
 
+        core.info('something went wrong 14')
         if (options.createIssues) {
             core.info('Starting the scan')
           const execution = spawn('sh',['-c',command],{

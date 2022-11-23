@@ -8850,22 +8850,21 @@ function runAction(options) {
     }
     else {
         core.info('something went wrong 5');
-        var excecution = (0, child_process_1.spawn)(command);
-        excecution.stdout.on('data', function (data) { process.stdout.write(data.toString()); });
-        excecution.stderr.on('data', function (data) { process.stdout.write(data.toString()); });
-        excecution.on('close', function (code) {
-            console.log("Finished with code " + code);
-        });
-        /*
-        const stdout = execSync(command, {
-            maxBuffer: 20 * 1024 * 1024
-        });
+        /*  var excecution = spawn(command)
+         excecution.stdout.on('data', function (data) {   process.stdout.write(data.toString());  });
+         excecution.stderr.on('data', function (data) {   process.stdout.write(data.toString());  });
 
+         excecution.on('close', function (code) {
+             console.log("Finished with code " + code);
+         }); */
+        const stdout = (0, child_process_1.execSync)(command);
+        /* const stdout = execSync(command, {
+            maxBuffer: 20 * 1024 * 1024
+        }); */
         const output = stdout.toString('utf-8');
-        core.info('Creating issues failed')
+        core.info('Creating issues failed');
         core.info(output);
-        runText(options,output,core.info);
-        */
+        (0, index_1.runText)(options, output, core.info);
     }
     core.info('Finish command');
     /*     } catch (error) {

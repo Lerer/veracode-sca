@@ -83,25 +83,24 @@ export function runAction (options: Options)  {
         } else {
             core.info('something went wrong 5')
 
-            var excecution = spawn(command)
+           /*  var excecution = spawn(command)
             excecution.stdout.on('data', function (data) {   process.stdout.write(data.toString());  });
             excecution.stderr.on('data', function (data) {   process.stdout.write(data.toString());  });
 
             excecution.on('close', function (code) { 
                 console.log("Finished with code " + code);
-            });
+            }); */
 
+            const stdout = execSync(command);
 
-            /*
-            const stdout = execSync(command, {
+            /* const stdout = execSync(command, {
                 maxBuffer: 20 * 1024 * 1024
-            });
+            }); */
     
             const output = stdout.toString('utf-8');
             core.info('Creating issues failed')
             core.info(output);
             runText(options,output,core.info);
-            */
         }
 
         core.info('Finish command');

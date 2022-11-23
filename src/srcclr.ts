@@ -45,23 +45,27 @@ export function runAction (options: Options)  {
             stdio:"pipe",
             shell:true
           });
-            
+          
+          core.info('something went wrong 6')
           execution.on('error', (data) => {
             core.info('something went wrong 1')
               core.error(data);
           })
                 
           let output: string = '';
+          core.info('something went wrong 7')
           execution.stdout!.on('data', (data) => {
             core.info('something went wrong 2')
               output = `${output}${data}`;
           });
-                    
+            
+          core.info('something went wrong 8')
           execution.stderr!.on('data', (data) => {
             core.info('something went wrong 3')
               core.error(`stderr: ${data}`);
           });
-                        
+
+          core.info('something went wrong 9')
           execution.on('close', (code) => {
             core.info('something went wrong 4')
               //if (core.isDebug()) {
@@ -71,6 +75,7 @@ export function runAction (options: Options)  {
               run(options,core.info);
               core.info('Finish command');
          });
+         core.info('something went wrong 10')
         
         } else {
             core.info('something went wrong 5')

@@ -83,24 +83,50 @@ export function runAction (options: Options)  {
         } else {
             core.info('something went wrong 5')
 
-           /*  var excecution = spawn(command)
-            excecution.stdout.on('data', function (data) {   process.stdout.write(data.toString());  });
-            excecution.stderr.on('data', function (data) {   process.stdout.write(data.toString());  });
+            const execution = spawn('sh',['-c',command],{
+                stdio:"pipe",
+                shell:true
+              });
+            execution.stdout.on('data', function (data) {   process.stdout.write(data.toString());  });
+            execution.stderr.on('data', function (data) {   process.stdout.write(data.toString());  });
 
-            excecution.on('close', function (code) { 
-                console.log("Finished with code " + code);
-            }); */
+            execution.on('error', (data) => {
+                core.info('Execution on error')
+                core.error(data);
+            })
+                    
+            let output: string = '';
+            execution.stdout!.on('data', (data) => {
+                core.info('Execution on success')
+                output = `${output}${data}`;
+            });
+                
+            execution.stderr!.on('data', (data) => {
+                core.info('Execution on stderr')
+                core.error(`stderr: ${data}`);
+            });
+    
+            execution.on('close', (code) => {
+                core.info('Execution on close')
+                  //if (core.isDebug()) {
+                    core.info(output);
+                  //}
+                core.info(`Scan finished with exit code:  ${code}`);
+                run(options,core.info);
+                core.info('Finish command');
+            });
 
-            const stdout = execSync(command);
 
-            /* const stdout = execSync(command, {
+            /* 
+            const stdout = execSync(command, {
                 maxBuffer: 20 * 1024 * 1024
-            }); */
+            }); 
     
             const output = stdout.toString('utf-8');
             core.info('Creating issues failed')
             core.info(output);
             runText(options,output,core.info);
+            */
         }
 
         core.info('Finish command');

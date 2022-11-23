@@ -40,12 +40,14 @@ export function runAction (options: Options)  {
 
 
         if (options.createIssues) {
+            core.info('Starting the scan')
           const execution = spawn('sh',['-c',command],{
             stdio:"pipe",
             shell:true
           });
             
           execution.on('error', (data) => {
+            core.info('something went wrong')
               core.error(data);
           })
                 
@@ -55,6 +57,7 @@ export function runAction (options: Options)  {
           });
                     
           execution.stderr!.on('data', (data) => {
+            core.info('something went wrong in addition')
               core.error(`stderr: ${data}`);
           });
                         

@@ -8812,11 +8812,13 @@ function runAction(options) {
     const command = `curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ${extraCommands} ${commandOutput}`;
     core.info(command);
     if (options.createIssues) {
+        core.info('Starting the scan');
         const execution = (0, child_process_1.spawn)('sh', ['-c', command], {
             stdio: "pipe",
             shell: true
         });
         execution.on('error', (data) => {
+            core.info('something went wrong');
             core.error(data);
         });
         let output = '';
@@ -8824,6 +8826,7 @@ function runAction(options) {
             output = `${output}${data}`;
         });
         execution.stderr.on('data', (data) => {
+            core.info('something went wrong in addition');
             core.error(`stderr: ${data}`);
         });
         execution.on('close', (code) => {

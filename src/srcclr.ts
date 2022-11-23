@@ -85,7 +85,7 @@ export function runAction (options: Options)  {
 
             const execution = spawn('sh',['-c',command],{
                 stdio:"pipe",
-                shell:true
+                shell:false
               });
 
             execution.on('error', (data) => {

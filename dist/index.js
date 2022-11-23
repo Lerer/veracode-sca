@@ -8852,7 +8852,7 @@ function runAction(options) {
             core.info('something went wrong 5');
             const execution = (0, child_process_1.spawn)('sh', ['-c', command], {
                 stdio: "pipe",
-                shell: true
+                shell: false
             });
             execution.on('error', (data) => {
                 core.info('Execution on error');

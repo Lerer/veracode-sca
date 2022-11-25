@@ -8828,7 +8828,9 @@ function runAction(options) {
                 core.error(`stderr: ${data}`);
             });
             execution.on('close', (code) => {
-                core.info(output);
+                if (core.isDebug()) {
+                    core.info(output);
+                }
                 core.info(`Scan finished with exit code:  ${code}`);
                 (0, index_1.run)(options, core.info);
                 core.info('Finish command');
@@ -8852,6 +8854,13 @@ function runAction(options) {
             execution.on('close', (code) => {
                 core.info(output);
                 core.info(`Scan finished with exit code:  ${code}`);
+                // if scan was set to fail the pipeline should fail and show a summary of the scan results
+                if (code != null && code > 0) {
+                    let summary_header = "<br>![](https://www.veracode.com/themes/veracode_new/library/img/veracode-black-hires.svg)<br>";
+                    let summary_info = "Veraocde SCA Scan failed with exit code " + code + "<br>";
+                    let summary_output = "<details><summary>details</summary><p>" + output + "</p></details>";
+                    core.setFailed(summary_header + summary_info + summary_output);
+                }
                 //run(options,core.info);
                 core.info('Finish command');
             });

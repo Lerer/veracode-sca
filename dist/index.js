@@ -10357,6 +10357,14 @@ const syncExistingOpenIssues = () => __awaiter(void 0, void 0, void 0, function*
             else {
                 console.log(`Skipping existing Issue : ${element.title}`);
             }
+            //Pull request decoration
+            core.info('check if we run on a pull request');
+            let pullRequest = process.env.GITHUB_REF;
+            let isPR = pullRequest === null || pullRequest === void 0 ? void 0 : pullRequest.indexOf("pull");
+            if (isPR >= 1) {
+                core.info('We run on a PR, link issue to PR');
+                core.info(JSON.stringify(element));
+            }
         }));
     }
 });
@@ -10581,19 +10589,50 @@ function runAction(options) {
                 execution.stderr.on('data', (data) => {
                     core.error(`stderr: ${data}`);
                 });
-                execution.on('close', (code) => {
+                execution.on('close', (code) => __awaiter(this, void 0, void 0, function* () {
+                    var _a;
                     if (core.isDebug()) {
                         core.info(output);
                     }
-                    core.info(`Scan finished with exit code:  ${code}`);
+                    //Pull request decoration
+                    core.info('check if we run on a pull request');
+                    let pullRequest = process.env.GITHUB_REF;
+                    let isPR = pullRequest === null || pullRequest === void 0 ? void 0 : pullRequest.indexOf("pull");
+                    let summary_message = "";
+                    if (isPR >= 1) {
+                        core.info('We run on a PR, add more messaging');
+                        const context = github.context;
+                        const repository = process.env.GITHUB_REPOSITORY;
+                        const repo = repository.split("/");
+                        const commentID = (_a = context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number;
+                        let pr_header = '<br>![](https://www.veracode.com/themes/veracode_new/library/img/veracode-black-hires.svg)<br>';
+                        summary_message = `Scan finished with exit code: ${code}. Please review created and linked issues`;
+                        try {
+                            const octokit = github.getOctokit(options.github_token);
+                            const { data: comment } = yield octokit.rest.issues.createComment({
+                                owner: repo[0],
+                                repo: repo[1],
+                                issue_number: commentID,
+                                body: pr_header + summary_message,
+                            });
+                            core.info('Adding scan results message as comment to PR #' + commentID);
+                        }
+                        catch (error) {
+                            core.info(error);
+                        }
+                    }
+                    else {
+                        summary_message = `Scan finished with exit code: ${code}. Please review created issues`;
+                    }
+                    //Generate issues
+                    (0, index_1.run)(options, core.info);
+                    core.info(summary_message);
                     // if scan was set to fail the pipeline should fail and show a summary of the scan results
                     if (code != null && code > 0) {
-                        let summary_info = "Veraocde SCA Scan failed with exit code " + code + ". Please review created issues.";
-                        core.setFailed(summary_info);
+                        core.setFailed(summary_message);
                     }
-                    (0, index_1.run)(options, core.info);
                     core.info('Finish command');
-                });
+                }));
             }
             else {
                 const execution = (0, child_process_1.spawn)('sh', ['-c', command], {
@@ -10611,7 +10650,7 @@ function runAction(options) {
                     core.error(`stderr: ${data}`);
                 });
                 execution.on('close', (code) => __awaiter(this, void 0, void 0, function* () {
-                    var _a;
+                    var _b;
                     //core.info(output);
                     core.info(`Scan finished with exit code:  ${code}`);
                     //Pull request decoration
@@ -10621,19 +10660,14 @@ function runAction(options) {
                     if (isPR >= 1) {
                         core.info("This run is part of a PR, should add some PR comment");
                         const context = github.context;
-                        core.info('Context: ' + context);
                         const repository = process.env.GITHUB_REPOSITORY;
-                        core.info('repository: ' + repository);
                         const repo = repository.split("/");
-                        core.info('repo: ' + repo);
-                        const commentID = (_a = context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number;
-                        core.info('commentID: ' + commentID);
+                        const commentID = (_b = context.payload.pull_request) === null || _b === void 0 ? void 0 : _b.number;
                         let commentBody = '<br>![](https://www.veracode.com/themes/veracode_new/library/img/veracode-black-hires.svg)<br>';
                         commentBody += "Veraocde SCA Scan failed with exit code " + code + "\n";
                         commentBody += '\n<details><summary>Veracode SCA Scan details</summary><p>\n';
                         commentBody += output.replace(/    /g, '&nbsp;&nbsp;&nbsp;&nbsp;');
                         commentBody += '</p></details>\n';
-                        //core.info('Comment Body '+commentBody)
                         try {
                             const octokit = github.getOctokit(options.github_token);
                             const { data: comment } = yield octokit.rest.issues.createComment({

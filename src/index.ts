@@ -78,6 +78,19 @@ const syncExistingOpenIssues = async () => {
             } else {
                 console.log(`Skipping existing Issue : ${element.title}`);
             }
+
+            //Pull request decoration
+            core.info('check if we run on a pull request')
+            let pullRequest = process.env.GITHUB_REF
+            let isPR:any = pullRequest?.indexOf("pull")
+            
+            if ( isPR >= 1 ){
+                core.info('We run on a PR, link issue to PR')
+                core.info(JSON.stringify(element))
+            
+            }
+
+
         });
     }
 }

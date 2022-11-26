@@ -71,6 +71,7 @@ const syncExistingOpenIssues = async () => {
             let existingIssueNumber;
             const inExsiting = existingOpenIssues.filter(openIssue => {
                 existingIssueNumber = openIssue.node.number
+                core.info('Issue Number 1: '+existingIssueNumber)
                 return openIssue.node.title === foundIssueTitle;
             })
             if (inExsiting.length===0) {

@@ -68,16 +68,20 @@ const syncExistingOpenIssues = async () => {
         (library as LibraryIssuesCollection).issues.forEach(async element => {
             const foundIssueTitle = element.title;
             core.info(`Checking for issue title [${foundIssueTitle}]`);
+            let existingIssueNumber;
             const inExsiting = existingOpenIssues.filter(openIssue => {
-                core.info("\n"+JSON.stringify(existingOpenIssues))
+                existingIssueNumber = openIssue.node.number
                 return openIssue.node.title === foundIssueTitle;
             })
             if (inExsiting.length===0) {
                 // issue not yet reported
                 const ghResponse = await githubHandler.createIssue(element);
                 console.log(`Created issue: ${element.title}`);
+                core.info("Issue generation response: "+ghResponse)
             } else {
                 console.log(`Skipping existing Issue : ${element.title}`);
+                //existing issue number
+                core.info("Issue number: "+existingIssueNumber)
             }
 
             //Pull request decoration

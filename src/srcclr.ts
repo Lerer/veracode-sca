@@ -78,7 +78,7 @@ export async function runAction (options: Options)  {
                 const repo = repository.split("/");
                 const commentID:any = context.payload.pull_request?.number
                 let pr_header = '<br>![](https://www.veracode.com/themes/veracode_new/library/img/veracode-black-hires.svg)<br>'
-                summary_message = `Scan finished with exit code: ${code}. Please review created and linked issues`
+                summary_message = `Veracode SCA Scan finished with exit code: ${code}. Please review created and linked issues`
 
                 try {
                     const octokit = github.getOctokit(options.github_token);
@@ -95,7 +95,7 @@ export async function runAction (options: Options)  {
                 }
             }
             else {
-                summary_message = `Scan finished with exit code: ${code}. Please review created issues`
+                summary_message = `Veracode SCA Scan finished with exit code: ${code}. Please review created issues`
             }
 
             //Generate issues

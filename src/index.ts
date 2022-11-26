@@ -69,6 +69,7 @@ const syncExistingOpenIssues = async () => {
             const foundIssueTitle = element.title;
             core.info(`Checking for issue title [${foundIssueTitle}]`);
             const inExsiting = existingOpenIssues.filter(openIssue => {
+                core.info("\n"+JSON.stringify(existingOpenIssues))
                 return openIssue.node.title === foundIssueTitle;
             })
             if (inExsiting.length===0) {
@@ -87,6 +88,7 @@ const syncExistingOpenIssues = async () => {
             if ( isPR >= 1 ){
                 core.info('We run on a PR, link issue to PR')
                 core.info(JSON.stringify(element))
+                //core.info(JSON.stringify(existingOpenIssues))
             
             }
 

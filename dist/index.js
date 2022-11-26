@@ -10347,6 +10347,7 @@ const syncExistingOpenIssues = () => __awaiter(void 0, void 0, void 0, function*
             const foundIssueTitle = element.title;
             core.info(`Checking for issue title [${foundIssueTitle}]`);
             const inExsiting = existingOpenIssues.filter(openIssue => {
+                core.info("\n" + JSON.stringify(existingOpenIssues));
                 return openIssue.node.title === foundIssueTitle;
             });
             if (inExsiting.length === 0) {
@@ -10364,6 +10365,7 @@ const syncExistingOpenIssues = () => __awaiter(void 0, void 0, void 0, function*
             if (isPR >= 1) {
                 core.info('We run on a PR, link issue to PR');
                 core.info(JSON.stringify(element));
+                //core.info(JSON.stringify(existingOpenIssues))
             }
         }));
     }
@@ -10606,7 +10608,7 @@ function runAction(options) {
                         const repo = repository.split("/");
                         const commentID = (_a = context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number;
                         let pr_header = '<br>![](https://www.veracode.com/themes/veracode_new/library/img/veracode-black-hires.svg)<br>';
-                        summary_message = `Scan finished with exit code: ${code}. Please review created and linked issues`;
+                        summary_message = `Veracode SCA Scan finished with exit code: ${code}. Please review created and linked issues`;
                         try {
                             const octokit = github.getOctokit(options.github_token);
                             const { data: comment } = yield octokit.rest.issues.createComment({
@@ -10622,7 +10624,7 @@ function runAction(options) {
                         }
                     }
                     else {
-                        summary_message = `Scan finished with exit code: ${code}. Please review created issues`;
+                        summary_message = `Veracode SCA Scan finished with exit code: ${code}. Please review created issues`;
                     }
                     //Generate issues
                     (0, index_1.run)(options, core.info);

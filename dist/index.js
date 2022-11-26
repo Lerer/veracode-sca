@@ -10631,7 +10631,7 @@ function runAction(options) {
                         let commentBody = '<br>![](https://www.veracode.com/themes/veracode_new/library/img/veracode-black-hires.svg)<br>';
                         commentBody += "Veraocde SCA Scan failed with exit code " + code + "\n";
                         commentBody += '\n<details><summary>Veracode SCA Scan details</summary><p>\n';
-                        commentBody += output.replace(/ /g, '&nbsp;&nbsp;&nbsp;&nbsp;');
+                        commentBody += output.replace(/    /g, '&nbsp;&nbsp;&nbsp;&nbsp;');
                         commentBody += '</p></details>\n';
                         //core.info('Comment Body '+commentBody)
                         try {

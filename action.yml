@@ -8,7 +8,7 @@ inputs:
   github_token:
     description: "Authorization token to query and create issues"
     required: true
-    default: ${{ secrets.GITHUB_TOKEN }}
+    default: ${{ github.token }}
   quick:
     description: ""
     required: false

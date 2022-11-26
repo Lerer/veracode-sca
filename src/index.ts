@@ -70,9 +70,7 @@ const syncExistingOpenIssues = async () => {
             core.info(`Checking for issue title [${foundIssueTitle}]`);
             let existingIssueNumber;
             const inExsiting = existingOpenIssues.filter(openIssue => {
-                existingIssueNumber = openIssue.node.number
-                core.info('Issue Number 1: '+existingIssueNumber)
-                return openIssue.node.title === foundIssueTitle;
+                return openIssue.node.title === foundIssueTitle+'###openIssue.node.number';
             })
             if (inExsiting.length===0) {
                 // issue not yet reported
@@ -82,7 +80,7 @@ const syncExistingOpenIssues = async () => {
             } else {
                 console.log(`Skipping existing Issue : ${element.title}`);
                 //existing issue number
-                core.info("Issue number: "+existingIssueNumber)
+                core.info("Issue number: "+inExsiting)
             }
 
             //Pull request decoration

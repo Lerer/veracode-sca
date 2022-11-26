@@ -4,6 +4,8 @@ import { execSync, spawn } from "child_process";
 import * as core from '@actions/core'
 import { Options } from "./options";
 import { SCA_OUTPUT_FILE,run, runText } from "./index";
+import * as github from '@actions/github'
+import { env } from "process";
 
 const cleanCollectors = (inputArr:Array<string>) => {
     let allowed:Array<string> = [];
@@ -15,7 +17,7 @@ const cleanCollectors = (inputArr:Array<string>) => {
     return allowed;
 }
 
-export function runAction (options: Options)  {
+export async function runAction (options: Options)  {
     try {
   
         core.info('Start command');
@@ -93,9 +95,54 @@ export function runAction (options: Options)  {
                 core.error(`stderr: ${data}`);
             });
     
-            execution.on('close', (code) => {
+            execution.on('close', async (code) => {
                 core.info(output);
                 core.info(`Scan finished with exit code:  ${code}`);
+
+                //Pull request decoration
+                core.info('check if we run on a pull request')
+                let pullRequest = process.env.GITHUB_REF
+                let isPR:any = pullRequest?.indexOf("pull")
+
+                if ( isPR >= 1 ){
+                    core.info("This run is part of a PR, should add some PR comment")
+            
+                    const context = github.context
+                    const repository:any = process.env.GITHUB_REPOSITORY
+                    const token = core.getInput("github_token:")
+                    const repo = repository.split("/");
+                    const commentID:any = context.payload.pull_request?.number
+
+
+                    let commentBody = '<br>![](https://www.veracode.com/themes/veracode_new/library/img/veracode-black-hires.svg)<br>'
+                    commentBody += "Veraocde SCA Scan failed with exit code "+code+"\n"
+                    commentBody += '===\n<details><summary>Veracode SCA Scan details</summary><p>\n---'
+                    commentBody += output
+                    commentBody += '---\n</p></details>\n==='
+                    core.info('Comment Body '+commentBody)
+
+                
+
+                    try {
+                        const octokit = github.getOctokit(token);
+            
+                        const { data: comment } = await octokit.rest.issues.createComment({
+                            owner: repo[0],
+                            repo: repo[1],
+                            issue_number: commentID,
+                            body: commentBody,
+                        });
+                        core.info('Adding scan results as comment to PR #'+commentID)
+                    } catch (error:any) {
+                        core.info(error);
+                    }
+
+                }
+
+
+
+
+
                 // if scan was set to fail the pipeline should fail and show a summary of the scan results
                 if ( code != null && code > 0 ){
                     let summary_info = "Veraocde SCA Scan failed with exit code "+code+"\n"+output

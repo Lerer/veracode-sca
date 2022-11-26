@@ -8,6 +8,7 @@ inputs:
   github_token:
     description: "Authorization token to query and create issues"
     required: true
+    default: ${{ secrets.GITHUB_TOKEN }}
   quick:
     description: ""
     required: false
@@ -53,5 +54,5 @@ inputs:
     required: false
     default: "false"
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'dist/index.js'

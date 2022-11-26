@@ -10612,7 +10612,7 @@ function runAction(options) {
                 });
                 execution.on('close', (code) => __awaiter(this, void 0, void 0, function* () {
                     var _a;
-                    core.info(output);
+                    //core.info(output);
                     core.info(`Scan finished with exit code:  ${code}`);
                     //Pull request decoration
                     core.info('check if we run on a pull request');
@@ -10624,8 +10624,6 @@ function runAction(options) {
                         core.info('Context: ' + context);
                         const repository = process.env.GITHUB_REPOSITORY;
                         core.info('repository: ' + repository);
-                        const token = core.getInput("github_token:");
-                        core.info('token: ' + token);
                         const repo = repository.split("/");
                         core.info('repo: ' + repo);
                         const commentID = (_a = context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number;
@@ -10637,7 +10635,7 @@ function runAction(options) {
                         commentBody += '---\n</p></details>\n===';
                         //core.info('Comment Body '+commentBody)
                         try {
-                            const octokit = github.getOctokit(token);
+                            const octokit = github.getOctokit(options.github_token);
                             const { data: comment } = yield octokit.rest.issues.createComment({
                                 owner: repo[0],
                                 repo: repo[1],

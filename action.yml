@@ -7,8 +7,8 @@ branding:
 inputs:
   github_token:
     description: "Authorization token to query and create issues"
-    required: true
     default: ${{ github.token }}
+    required: true
   quick:
     description: ""
     required: false

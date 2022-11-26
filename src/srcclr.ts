@@ -96,7 +96,7 @@ export async function runAction (options: Options)  {
             });
     
             execution.on('close', async (code) => {
-                core.info(output);
+                //core.info(output);
                 core.info(`Scan finished with exit code:  ${code}`);
 
                 //Pull request decoration
@@ -111,8 +111,6 @@ export async function runAction (options: Options)  {
                     core.info('Context: '+context)
                     const repository:any = process.env.GITHUB_REPOSITORY
                     core.info('repository: '+repository)
-                    const token = core.getInput("github_token:")
-                    core.info('token: '+token)
                     const repo = repository.split("/");
                     core.info('repo: '+repo)
                     const commentID:any = context.payload.pull_request?.number
@@ -129,7 +127,7 @@ export async function runAction (options: Options)  {
                 
 
                     try {
-                        const octokit = github.getOctokit(token);
+                        const octokit = github.getOctokit(options.github_token);
             
                         const { data: comment } = await octokit.rest.issues.createComment({
                             owner: repo[0],

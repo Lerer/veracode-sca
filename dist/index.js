@@ -10621,16 +10621,21 @@ function runAction(options) {
                     if (isPR >= 1) {
                         core.info("This run is part of a PR, should add some PR comment");
                         const context = github.context;
+                        core.info('Context: ' + context);
                         const repository = process.env.GITHUB_REPOSITORY;
+                        core.info('repository: ' + repository);
                         const token = core.getInput("github_token:");
+                        core.info('token: ' + token);
                         const repo = repository.split("/");
+                        core.info('repo: ' + repo);
                         const commentID = (_a = context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number;
+                        core.info('commentID: ' + commentID);
                         let commentBody = '<br>![](https://www.veracode.com/themes/veracode_new/library/img/veracode-black-hires.svg)<br>';
                         commentBody += "Veraocde SCA Scan failed with exit code " + code + "\n";
                         commentBody += '===\n<details><summary>Veracode SCA Scan details</summary><p>\n---';
                         commentBody += output;
                         commentBody += '---\n</p></details>\n===';
-                        core.info('Comment Body ' + commentBody);
+                        //core.info('Comment Body '+commentBody)
                         try {
                             const octokit = github.getOctokit(token);
                             const { data: comment } = yield octokit.rest.issues.createComment({

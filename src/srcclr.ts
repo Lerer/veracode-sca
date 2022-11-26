@@ -108,10 +108,15 @@ export async function runAction (options: Options)  {
                     core.info("This run is part of a PR, should add some PR comment")
             
                     const context = github.context
+                    core.info('Context: '+context)
                     const repository:any = process.env.GITHUB_REPOSITORY
+                    core.info('repository: '+repository)
                     const token = core.getInput("github_token:")
+                    core.info('token: '+token)
                     const repo = repository.split("/");
+                    core.info('repo: '+repo)
                     const commentID:any = context.payload.pull_request?.number
+                    core.info('commentID: '+commentID)
 
 
                     let commentBody = '<br>![](https://www.veracode.com/themes/veracode_new/library/img/veracode-black-hires.svg)<br>'
@@ -119,7 +124,7 @@ export async function runAction (options: Options)  {
                     commentBody += '===\n<details><summary>Veracode SCA Scan details</summary><p>\n---'
                     commentBody += output
                     commentBody += '---\n</p></details>\n==='
-                    core.info('Comment Body '+commentBody)
+                    //core.info('Comment Body '+commentBody)
 
                 
 

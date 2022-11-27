@@ -5,6 +5,7 @@ import { LibraryIssuesCollection, ReportedLibraryIssue, SCALibrary, SCAVulnerabi
 import { Label, SEVERITY_LABELS, VERACODE_LABEL } from './labels';
 import { GithubHandler } from './githubRequestHandler';
 import * as core from '@actions/core'
+import { exit } from 'process';
 
 
 export const SCA_OUTPUT_FILE = 'scaResults.json';
@@ -70,6 +71,10 @@ const syncExistingOpenIssues = async () => {
     const lenghtOfLibs = Object.keys(librariesWithIssues).length
     core.info('Libraries with issues found: '+lenghtOfLibs)
 
+    let createIssue
+    let openIssueTitle
+    let openIssueNumber
+
     for (let i = 1; i <= lenghtOfLibs; i++){
         core.info('Library '+i+' - '+JSON.stringify(librariesWithIssues[i]))
 
@@ -80,25 +85,23 @@ const syncExistingOpenIssues = async () => {
             var openIssueLenght = existingOpenIssues.length
             core.info("Open issues found: "+openIssueLenght)
             for (let k = 0; k < openIssueLenght; k++){
-                var openIssueTitle = existingOpenIssues[k]['node']['title']
-                var openIssueNumber = existingOpenIssues[k]['node']['number']
+                openIssueTitle = existingOpenIssues[k]['node']['title']
+                openIssueNumber = existingOpenIssues[k]['node']['number']
                 core.info('Open Isssue: '+openIssueTitle+' --- '+openIssueNumber)
 
                 if ( libraryTitle == openIssueTitle ){
                     core.info('Issue already exists - skipping')
-                }
-                else {
-                    core.info('New issue needs to be created.')
+                    createIssue = false
+                    exit
                 }
             }
-
+            if ( createIssue == false ){
+                core.info('Issue already exists - skipping  --- '+libraryTitle+' ---- '+openIssueTitle)
+            }
+            else {
+                core.info('Issue needs to be created. --- '+libraryTitle)
+            }
         }
- 
-
-
-
-        
-
     }
 
 

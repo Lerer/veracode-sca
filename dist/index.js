@@ -10295,6 +10295,7 @@ const fs_1 = __nccwpck_require__(7147);
 const labels_1 = __nccwpck_require__(7402);
 const githubRequestHandler_1 = __nccwpck_require__(6366);
 const core = __importStar(__nccwpck_require__(2186));
+const process_1 = __nccwpck_require__(7282);
 exports.SCA_OUTPUT_FILE = 'scaResults.json';
 const librariesWithIssues = {};
 let githubHandler;
@@ -10345,6 +10346,9 @@ const syncExistingOpenIssues = () => __awaiter(void 0, void 0, void 0, function*
     //core.info(JSON.stringify(librariesWithIssues))
     const lenghtOfLibs = Object.keys(librariesWithIssues).length;
     core.info('Libraries with issues found: ' + lenghtOfLibs);
+    let createIssue;
+    let openIssueTitle;
+    let openIssueNumber;
     for (let i = 1; i <= lenghtOfLibs; i++) {
         core.info('Library ' + i + ' - ' + JSON.stringify(librariesWithIssues[i]));
         var issueLength = Object.keys(librariesWithIssues[i]['issues']).length;
@@ -10354,15 +10358,20 @@ const syncExistingOpenIssues = () => __awaiter(void 0, void 0, void 0, function*
             var openIssueLenght = existingOpenIssues.length;
             core.info("Open issues found: " + openIssueLenght);
             for (let k = 0; k < openIssueLenght; k++) {
-                var openIssueTitle = existingOpenIssues[k]['node']['title'];
-                var openIssueNumber = existingOpenIssues[k]['node']['number'];
+                openIssueTitle = existingOpenIssues[k]['node']['title'];
+                openIssueNumber = existingOpenIssues[k]['node']['number'];
                 core.info('Open Isssue: ' + openIssueTitle + ' --- ' + openIssueNumber);
                 if (libraryTitle == openIssueTitle) {
                     core.info('Issue already exists - skipping');
+                    createIssue = false;
+                    process_1.exit;
                 }
-                else {
-                    core.info('New issue needs to be created.');
-                }
+            }
+            if (createIssue == false) {
+                core.info('Issue already exists - skipping  --- ' + libraryTitle + ' ---- ' + openIssueTitle);
+            }
+            else {
+                core.info('Issue needs to be created. --- ' + libraryTitle);
             }
         }
     }
@@ -10870,6 +10879,14 @@ module.exports = require("os");
 
 "use strict";
 module.exports = require("path");
+
+/***/ }),
+
+/***/ 7282:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("process");
 
 /***/ }),
 

@@ -67,27 +67,37 @@ const syncExistingOpenIssues = async () => {
 
     core.info(JSON.stringify(librariesWithIssues))
 
-    const lenghtOfLibs = librariesWithIssues.length
+    const lenghtOfLibs = Object.keys(librariesWithIssues).length
     core.info('Libraries with issues found: '+lenghtOfLibs)
 
     for (let i = 0; i <= lenghtOfLibs; i++){
         core.info('Library '+i+' - '+librariesWithIssues[i])
-        var libraryTitle = librariesWithIssues[i]["title"]
-        core.info('Library Title: '+libraryTitle)
-        var openIssueLenght = existingOpenIssues.length
-        core.info("Open issues found: "+openIssueLenght)
-        for (let j = 0; j <= openIssueLenght; j++){
-            var openIssueTitle = existingOpenIssues[j]['node']['title']
-            var openIssueNumber = existingOpenIssues[j]['node']['number']
-            core.info('Open Isssue: '+openIssueTitle+' --- '+openIssueNumber)
 
-            if ( libraryTitle == openIssueTitle ){
-                core.info('Issue already exists - skipping')
+        var issueLength = Object.keys(librariesWithIssues[i].issues).length
+        for ( let j=0; j<= issueLength; j++ ){
+            var libraryTitle = librariesWithIssues[i]['issues']["title"]
+            core.info('Library Title: '+libraryTitle)
+            var openIssueLenght = existingOpenIssues.length
+            core.info("Open issues found: "+openIssueLenght)
+            for (let k = 0; k <= openIssueLenght; k++){
+                var openIssueTitle = existingOpenIssues[k]['node']['title']
+                var openIssueNumber = existingOpenIssues[k]['node']['number']
+                core.info('Open Isssue: '+openIssueTitle+' --- '+openIssueNumber)
+
+                if ( libraryTitle == openIssueTitle ){
+                    core.info('Issue already exists - skipping')
+                }
+                else {
+                    core.info('New issue needs to be created.')
+                }
             }
-            else {
-                core.info('New issue needs to be created.')
-            }
+
         }
+ 
+
+
+
+        
 
     }
 

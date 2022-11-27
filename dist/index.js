@@ -10402,7 +10402,7 @@ const syncExistingOpenIssues = (options) => __awaiter(void 0, void 0, void 0, fu
             }
             else {
                 core.info('Issue needs to be created. --- ' + libraryTitle);
-                const ghResponse = yield githubHandler.createIssue(librariesWithIssues[key]);
+                const ghResponse = yield githubHandler.createIssue(librariesWithIssues[key]['issues'][j]);
                 core.info('Issue creation response: ' + JSON.stringify(ghResponse));
             }
         }

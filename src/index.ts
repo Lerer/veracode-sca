@@ -140,7 +140,7 @@ const syncExistingOpenIssues = async (options:any) => {
             }
             else {
                 core.info('Issue needs to be created. --- '+libraryTitle)
-                const ghResponse = await githubHandler.createIssue(librariesWithIssues[key]);
+                const ghResponse = await githubHandler.createIssue(librariesWithIssues[key]['issues'][j]);
                 core.info('Issue creation response: '+JSON.stringify(ghResponse))
             }
         }

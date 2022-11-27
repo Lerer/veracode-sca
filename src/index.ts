@@ -88,7 +88,11 @@ const syncExistingOpenIssues = async () => {
 
     }
 
-    console.log('Keys: '+numberArray)
+    var numberArrayLenght = numberArray.length
+    for ( let i = 0; i <= numberArrayLenght; i++){
+        core.info(numberArray[i])
+    }
+
 
 
  /*    for (let i = 1; i <= lenghtOfLibs; i++){

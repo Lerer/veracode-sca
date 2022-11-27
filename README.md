@@ -60,6 +60,11 @@ Default Value: __false__
 ### `recursive`
 __Optional__ - run the Veracode SCA scan with `--recursive` 
 
+Default Value: __false__ 
+  
+### `skip_vms`
+__Optional__ - run the Veracode SCA scan with `--skip-vms`  
+
 Default Value: __false__
 
 ## Examples

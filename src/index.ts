@@ -64,23 +64,65 @@ const addIssueToLibrary = (libId:string,lib:SCALibrary,details:ReportedLibraryIs
 
 const syncExistingOpenIssues = async () => {
     const existingOpenIssues = await githubHandler.listExistingOpenIssues();
+
+    const lenghtOfLibs = librariesWithIssues.length
+    core.info('Libraries witrh issues found: '+lenghtOfLibs)
+
+    for (let i = 0; i <= lenghtOfLibs; i++){
+        core.info('Library '+i+' - '+librariesWithIssues[i])
+        var libraryTitle = librariesWithIssues[i]["title"]
+        core.info('Library Title: '+libraryTitle)
+        var openIssueLenght = existingOpenIssues.length
+        core.info("Open issues found: "+openIssueLenght)
+        for (let j = 0; j <= openIssueLenght; j++){
+            var openIssueTitle = existingOpenIssues[j]['node']['title']
+            var openIssueNumber = existingOpenIssues[j]['node']['number']
+            core.info('Open Isssue: '+openIssueTitle+' --- '+openIssueNumber)
+
+            if ( libraryTitle == openIssueTitle ){
+                core.info('Issue already exists - skipping')
+            }
+            else {
+                core.info('New issue needs to be created.')
+            }
+        }
+
+    }
+
+
+
+/*
     for (var library of Object.values(librariesWithIssues)) {
         (library as LibraryIssuesCollection).issues.forEach(async element => {
             const foundIssueTitle = element.title;
             core.info(`Checking for issue title [${foundIssueTitle}]`);
-            let existingIssueNumber;
-            const inExsiting = existingOpenIssues.filter(openIssue => {
-                return openIssue.node.title === foundIssueTitle+'###openIssue.node.number';
+             const inExsiting = existingOpenIssues.filter(openIssue => {
+                return openIssue.node.title === foundIssueTitle
             })
-            if (inExsiting.length===0) {
+
+
+            var openIssues = JSON.parse(existingOpenIssues);
+
+            if (existingOpenIssues == foundIssueTitle ){
+                console.log(`Skipping existing Issue : ${element.title}`);
+                //existing issue number
+                core.info("Issue number: "+existingOpenIssues.)
+
+            }
+            else {
                 // issue not yet reported
                 const ghResponse = await githubHandler.createIssue(element);
                 console.log(`Created issue: ${element.title}`);
-                core.info("Issue generation response: "+ghResponse)
+                core.info("Issue generation response: "+JSON.stringify(ghResponse))
+
+            }
+
+
+
+            if (inExsiting.length===0) {
+                
             } else {
-                console.log(`Skipping existing Issue : ${element.title}`);
-                //existing issue number
-                core.info("Issue number: "+inExsiting)
+                
             }
 
             //Pull request decoration
@@ -98,6 +140,7 @@ const syncExistingOpenIssues = async () => {
 
         });
     }
+    */
 }
 
 const createIssueDetails = (vuln: SCAVulnerability,lib: SCALibrary): ReportedLibraryIssue => {

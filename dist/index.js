@@ -10342,36 +10342,76 @@ const addIssueToLibrary = (libId, lib, details) => {
 };
 const syncExistingOpenIssues = () => __awaiter(void 0, void 0, void 0, function* () {
     const existingOpenIssues = yield githubHandler.listExistingOpenIssues();
-    for (var library of Object.values(librariesWithIssues)) {
-        library.issues.forEach((element) => __awaiter(void 0, void 0, void 0, function* () {
-            const foundIssueTitle = element.title;
-            core.info(`Checking for issue title [${foundIssueTitle}]`);
-            let existingIssueNumber;
-            const inExsiting = existingOpenIssues.filter(openIssue => {
-                return openIssue.node.title === foundIssueTitle + '###openIssue.node.number';
-            });
-            if (inExsiting.length === 0) {
-                // issue not yet reported
-                const ghResponse = yield githubHandler.createIssue(element);
-                console.log(`Created issue: ${element.title}`);
-                core.info("Issue generation response: " + ghResponse);
+    const lenghtOfLibs = librariesWithIssues.length;
+    core.info('Libraries witrh issues found: ' + lenghtOfLibs);
+    for (let i = 0; i <= lenghtOfLibs; i++) {
+        core.info('Library ' + i + ' - ' + librariesWithIssues[i]);
+        var libraryTitle = librariesWithIssues[i]["title"];
+        core.info('Library Title: ' + libraryTitle);
+        var openIssueLenght = existingOpenIssues.length;
+        core.info("Open issues found: " + openIssueLenght);
+        for (let j = 0; j <= openIssueLenght; j++) {
+            var openIssueTitle = existingOpenIssues[j]['node']['title'];
+            var openIssueNumber = existingOpenIssues[j]['node']['number'];
+            core.info('Open Isssue: ' + openIssueTitle + ' --- ' + openIssueNumber);
+            if (libraryTitle == openIssueTitle) {
+                core.info('Issue already exists - skipping');
             }
             else {
-                console.log(`Skipping existing Issue : ${element.title}`);
-                //existing issue number
-                core.info("Issue number: " + inExsiting);
+                core.info('New issue needs to be created.');
             }
-            //Pull request decoration
-            core.info('check if we run on a pull request');
-            let pullRequest = process.env.GITHUB_REF;
-            let isPR = pullRequest === null || pullRequest === void 0 ? void 0 : pullRequest.indexOf("pull");
-            if (isPR >= 1) {
-                core.info('We run on a PR, link issue to PR');
-                core.info(JSON.stringify(element));
-                //core.info(JSON.stringify(existingOpenIssues))
-            }
-        }));
+        }
     }
+    /*
+        for (var library of Object.values(librariesWithIssues)) {
+            (library as LibraryIssuesCollection).issues.forEach(async element => {
+                const foundIssueTitle = element.title;
+                core.info(`Checking for issue title [${foundIssueTitle}]`);
+                 const inExsiting = existingOpenIssues.filter(openIssue => {
+                    return openIssue.node.title === foundIssueTitle
+                })
+    
+    
+                var openIssues = JSON.parse(existingOpenIssues);
+    
+                if (existingOpenIssues == foundIssueTitle ){
+                    console.log(`Skipping existing Issue : ${element.title}`);
+                    //existing issue number
+                    core.info("Issue number: "+existingOpenIssues.)
+    
+                }
+                else {
+                    // issue not yet reported
+                    const ghResponse = await githubHandler.createIssue(element);
+                    console.log(`Created issue: ${element.title}`);
+                    core.info("Issue generation response: "+JSON.stringify(ghResponse))
+    
+                }
+    
+    
+    
+                if (inExsiting.length===0) {
+                    
+                } else {
+                    
+                }
+    
+                //Pull request decoration
+                core.info('check if we run on a pull request')
+                let pullRequest = process.env.GITHUB_REF
+                let isPR:any = pullRequest?.indexOf("pull")
+                
+                if ( isPR >= 1 ){
+                    core.info('We run on a PR, link issue to PR')
+                    core.info(JSON.stringify(element))
+                    //core.info(JSON.stringify(existingOpenIssues))
+                
+                }
+    
+    
+            });
+        }
+        */
 });
 const createIssueDetails = (vuln, lib) => {
     const vulnLibDetails = vuln.libraries[0].details[0];

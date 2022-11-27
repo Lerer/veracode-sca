@@ -10342,12 +10342,12 @@ const addIssueToLibrary = (libId, lib, details) => {
 };
 const syncExistingOpenIssues = () => __awaiter(void 0, void 0, void 0, function* () {
     const existingOpenIssues = yield githubHandler.listExistingOpenIssues();
-    core.info(JSON.stringify(librariesWithIssues));
+    //core.info(JSON.stringify(librariesWithIssues))
     const lenghtOfLibs = Object.keys(librariesWithIssues).length;
     core.info('Libraries with issues found: ' + lenghtOfLibs);
     for (let i = 0; i <= lenghtOfLibs; i++) {
         core.info('Library ' + i + ' - ' + librariesWithIssues[i]);
-        var issueLength = Object.keys(librariesWithIssues[i].issues).length;
+        var issueLength = Object.keys(librariesWithIssues[i]['issues']).length;
         for (let j = 0; j <= issueLength; j++) {
             var libraryTitle = librariesWithIssues[i]['issues']["title"];
             core.info('Library Title: ' + libraryTitle);

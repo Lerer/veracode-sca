@@ -65,7 +65,7 @@ const addIssueToLibrary = (libId:string,lib:SCALibrary,details:ReportedLibraryIs
 const syncExistingOpenIssues = async () => {
     const existingOpenIssues = await githubHandler.listExistingOpenIssues();
 
-    core.info(JSON.stringify(librariesWithIssues))
+    //core.info(JSON.stringify(librariesWithIssues))
 
     const lenghtOfLibs = Object.keys(librariesWithIssues).length
     core.info('Libraries with issues found: '+lenghtOfLibs)
@@ -73,7 +73,7 @@ const syncExistingOpenIssues = async () => {
     for (let i = 0; i <= lenghtOfLibs; i++){
         core.info('Library '+i+' - '+librariesWithIssues[i])
 
-        var issueLength = Object.keys(librariesWithIssues[i].issues).length
+        var issueLength = Object.keys(librariesWithIssues[i]['issues']).length
         for ( let j=0; j<= issueLength; j++ ){
             var libraryTitle = librariesWithIssues[i]['issues']["title"]
             core.info('Library Title: '+libraryTitle)

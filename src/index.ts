@@ -86,32 +86,31 @@ const syncExistingOpenIssues = async () => {
         var issueLength = Object.keys(librariesWithIssues[i]['issues']).length
         core.info(issueLength+' Issues found on Library')
 
-        for ( let j=0; j< issueLength; j++ ){
-            if (librariesWithIssues[i] === undefined ){
-                continue
-            }
-                else{
-                var libraryTitle = librariesWithIssues[i]['issues'][j]['title']
-                core.info('Isuse Title '+j+': '+libraryTitle)
-                var openIssueLenght = existingOpenIssues.length
-                core.info("Open issues found: "+openIssueLenght)
-                for (let k = 0; k < openIssueLenght; k++){
-                    openIssueTitle = existingOpenIssues[k]['node']['title']
-                    openIssueNumber = existingOpenIssues[k]['node']['number']
-                    //core.info('Open Isssue: '+openIssueTitle+' --- '+openIssueNumber)
+        if (librariesWithIssues[i] == undefined ){
+            continue
+        }
 
-                    if ( libraryTitle == openIssueTitle ){
-                        core.info('Issue \n'+libraryTitle+'\n'+openIssueTitle+'\nalready exists - skipping')
-                        createIssue = false
-                        break
-                    }
+        for ( let j=0; j< issueLength; j++ ){
+            var libraryTitle = librariesWithIssues[i]['issues'][j]['title']
+            core.info('Isuse Title '+j+': '+libraryTitle)
+            var openIssueLenght = existingOpenIssues.length
+            core.info("Open issues found: "+openIssueLenght)
+            for (let k = 0; k < openIssueLenght; k++){
+                openIssueTitle = existingOpenIssues[k]['node']['title']
+                openIssueNumber = existingOpenIssues[k]['node']['number']
+                //core.info('Open Isssue: '+openIssueTitle+' --- '+openIssueNumber)
+
+                if ( libraryTitle == openIssueTitle ){
+                    core.info('Issue \n'+libraryTitle+'\n'+openIssueTitle+'\nalready exists - skipping')
+                    createIssue = false
+                    break
                 }
-                if ( createIssue == false ){
-                    core.info('Issue already exists - skipping  --- '+libraryTitle+' ---- '+openIssueTitle)
-                }
-                else {
-                    core.info('Issue needs to be created. --- '+libraryTitle)
-                }
+            }
+            if ( createIssue == false ){
+                core.info('Issue already exists - skipping  --- '+libraryTitle+' ---- '+openIssueTitle)
+            }
+            else {
+                core.info('Issue needs to be created. --- '+libraryTitle)
             }
         }
     }

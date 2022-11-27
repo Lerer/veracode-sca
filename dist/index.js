@@ -10357,8 +10357,6 @@ const syncExistingOpenIssues = (options) => __awaiter(void 0, void 0, void 0, fu
     core.info('check if we run on a pull request');
     let pullRequest = process.env.GITHUB_REF;
     let isPR = pullRequest === null || pullRequest === void 0 ? void 0 : pullRequest.indexOf("pull");
-    let pr_context = github.context;
-    let pr_commentID = pr_context.payload.pull_request.number;
     for (var key in librariesWithIssues) {
         core.info('Library ' + key + ' - ' + librariesWithIssues[key]['lib']['name']);
         var issueLength = Object.keys(librariesWithIssues[key]['issues']).length;
@@ -10382,6 +10380,8 @@ const syncExistingOpenIssues = (options) => __awaiter(void 0, void 0, void 0, fu
                 core.info('Issue already exists - skipping  --- ' + libraryTitle + ' ---- ' + openIssueTitle);
                 if (isPR >= 1) {
                     core.info('We run on a PR, link issue to PR');
+                    let pr_context = github.context;
+                    let pr_commentID = pr_context.payload.pull_request.number;
                     var authToken = 'token ' + options.github_token;
                     const owner = github.context.repo.owner;
                     const repo = github.context.repo.repo;
@@ -10403,6 +10403,7 @@ const syncExistingOpenIssues = (options) => __awaiter(void 0, void 0, void 0, fu
             else {
                 core.info('Issue needs to be created. --- ' + libraryTitle);
                 const ghResponse = yield githubHandler.createIssue(librariesWithIssues[key]);
+                core.info('Issue creation response: ' + JSON.stringify(ghResponse));
             }
         }
     }

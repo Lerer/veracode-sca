@@ -10352,36 +10352,45 @@ const syncExistingOpenIssues = () => __awaiter(void 0, void 0, void 0, function*
     let createIssue;
     let openIssueTitle;
     let openIssueNumber;
-    for (let i = 1; i <= lenghtOfLibs; i++) {
-        if (librariesWithIssues[i]['lib'] == undefined) {
-            continue;
-        }
-        core.info('Library ' + i + ' - ' + librariesWithIssues[i]['lib']['name']);
-        var issueLength = Object.keys(librariesWithIssues[i]['issues']).length;
-        core.info(issueLength + ' Issues found on Library');
-        for (let j = 0; j < issueLength; j++) {
-            var libraryTitle = librariesWithIssues[i]['issues'][j]['title'];
-            core.info('Isuse Title ' + j + ': ' + libraryTitle);
-            var openIssueLenght = existingOpenIssues.length;
-            core.info("Open issues found: " + openIssueLenght);
-            for (let k = 0; k < openIssueLenght; k++) {
-                openIssueTitle = existingOpenIssues[k]['node']['title'];
-                openIssueNumber = existingOpenIssues[k]['node']['number'];
-                //core.info('Open Isssue: '+openIssueTitle+' --- '+openIssueNumber)
-                if (libraryTitle == openIssueTitle) {
-                    core.info('Issue \n' + libraryTitle + '\n' + openIssueTitle + '\nalready exists - skipping');
-                    createIssue = false;
-                    break;
-                }
-            }
-            if (createIssue == false) {
-                core.info('Issue already exists - skipping  --- ' + libraryTitle + ' ---- ' + openIssueTitle);
-            }
-            else {
-                core.info('Issue needs to be created. --- ' + libraryTitle);
-            }
-        }
+    let numberArray = Array;
+    for (var key in librariesWithIssues) {
+        console.log(key);
+        console.log(librariesWithIssues[key]);
     }
+    /*    for (let i = 1; i <= lenghtOfLibs; i++){
+           if (librariesWithIssues[i]['lib'] == undefined ){
+               continue
+           }
+           core.info('Library '+i+' - '+librariesWithIssues[i]['lib']['name'])
+   
+           var issueLength = Object.keys(librariesWithIssues[i]['issues']).length
+           core.info(issueLength+' Issues found on Library')
+   
+   
+           for ( let j=0; j< issueLength; j++ ){
+               var libraryTitle = librariesWithIssues[i]['issues'][j]['title']
+               core.info('Isuse Title '+j+': '+libraryTitle)
+               var openIssueLenght = existingOpenIssues.length
+               core.info("Open issues found: "+openIssueLenght)
+               for (let k = 0; k < openIssueLenght; k++){
+                   openIssueTitle = existingOpenIssues[k]['node']['title']
+                   openIssueNumber = existingOpenIssues[k]['node']['number']
+                   //core.info('Open Isssue: '+openIssueTitle+' --- '+openIssueNumber)
+   
+                   if ( libraryTitle == openIssueTitle ){
+                       core.info('Issue \n'+libraryTitle+'\n'+openIssueTitle+'\nalready exists - skipping')
+                       createIssue = false
+                       break
+                   }
+               }
+               if ( createIssue == false ){
+                   core.info('Issue already exists - skipping  --- '+libraryTitle+' ---- '+openIssueTitle)
+               }
+               else {
+                   core.info('Issue needs to be created. --- '+libraryTitle)
+               }
+           }
+       } */
     /*
         for (var library of Object.values(librariesWithIssues)) {
             (library as LibraryIssuesCollection).issues.forEach(async element => {

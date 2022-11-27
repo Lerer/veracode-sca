@@ -79,8 +79,15 @@ const syncExistingOpenIssues = async () => {
     let createIssue
     let openIssueTitle
     let openIssueNumber
+    let numberArray = Array
 
-    for (let i = 1; i <= lenghtOfLibs; i++){
+    for (var key in librariesWithIssues) {
+        console.log(key);
+        console.log(librariesWithIssues[key]);
+    }
+
+
+ /*    for (let i = 1; i <= lenghtOfLibs; i++){
         if (librariesWithIssues[i]['lib'] == undefined ){
             continue
         }
@@ -113,7 +120,7 @@ const syncExistingOpenIssues = async () => {
                 core.info('Issue needs to be created. --- '+libraryTitle)
             }
         }
-    }
+    } */
 
 
 

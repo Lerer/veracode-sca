@@ -10403,7 +10403,29 @@ const syncExistingOpenIssues = (options) => __awaiter(void 0, void 0, void 0, fu
             else {
                 core.info('Issue needs to be created. --- ' + libraryTitle);
                 const ghResponse = yield githubHandler.createIssue(librariesWithIssues[key]['issues'][j]);
-                core.info('Issue creation response: ' + JSON.stringify(ghResponse));
+                //core.info('Issue creation response: '+JSON.stringify(ghResponse))
+                var issueNumber = ghResponse.data.number;
+                if (isPR >= 1) {
+                    core.info('We run on a PR, link issue to PR');
+                    let pr_context = github.context;
+                    let pr_commentID = pr_context.payload.pull_request.number;
+                    var authToken = 'token ' + options.github_token;
+                    const owner = github.context.repo.owner;
+                    const repo = github.context.repo.repo;
+                    var pr_link = `Veracode issue link to PR: https://github.com/` + owner + `/` + repo + `/pull/` + pr_commentID;
+                    console.log('Adding PR to the issue now.');
+                    yield request('POST /repos/{owner}/{repo}/issues/{issue_number}/comments', {
+                        headers: {
+                            authorization: authToken
+                        },
+                        owner: owner,
+                        repo: repo,
+                        issue_number: issueNumber,
+                        data: {
+                            "body": pr_link
+                        }
+                    });
+                }
             }
         }
     }

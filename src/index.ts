@@ -81,14 +81,14 @@ const syncExistingOpenIssues = async () => {
     let openIssueNumber
 
     for (let i = 1; i <= lenghtOfLibs; i++){
+        if (librariesWithIssues[i]['lib'] == undefined ){
+            continue
+        }
         core.info('Library '+i+' - '+librariesWithIssues[i]['lib']['name'])
 
         var issueLength = Object.keys(librariesWithIssues[i]['issues']).length
         core.info(issueLength+' Issues found on Library')
 
-        if (librariesWithIssues[i] == undefined ){
-            continue
-        }
 
         for ( let j=0; j< issueLength; j++ ){
             var libraryTitle = librariesWithIssues[i]['issues'][j]['title']

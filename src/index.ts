@@ -6,6 +6,9 @@ import { Label, SEVERITY_LABELS, VERACODE_LABEL } from './labels';
 import { GithubHandler } from './githubRequestHandler';
 import * as core from '@actions/core'
 
+const { request } = require('@octokit/request');
+const github = require('@actions/github');
+
 
 export const SCA_OUTPUT_FILE = 'scaResults.json';
 
@@ -28,12 +31,15 @@ export async function run(options:Options, msgFunc: (msg: string) => void) {
     const libraries = scaResJson.records[0].libraries;
 
     vulnerabilities
-        .filter((vul:any) => vul.cvssScore>=options.minCVSSForIssue)
+        //.filter((vul:any) => vul.cvssScore>=options.minCVSSForIssue)
         .forEach((vulr) => {
             //console.log('-------   in each   ------');
             const libref = vulr.libraries[0]._links.ref;
+            //core.info('libref: '+libref)
             const libId = libref.split('/')[4];
+            //core.info('libId: '+libId)
             const lib:SCALibrary = libraries[libId];
+            //core.info('lib: '+JSON.stringify(lib))
             const details = createIssueDetails(vulr,lib);
             addIssueToLibrary(libId,lib,details);
         });
@@ -42,15 +48,17 @@ export async function run(options:Options, msgFunc: (msg: string) => void) {
 
     if (Object.keys(librariesWithIssues).length>0) {
         await verifyLabels();
-        await syncExistingOpenIssues();
+        await syncExistingOpenIssues(options);
 
         // check for failing the step
+        /*
         const failingVul = vulnerabilities.filter(vul => vul.cvssScore>=options.failOnCVSS);
         if (failingVul.length>0) {
             core.setFailed(`Found Vulnerability with CVSS equal or greater than ${options.failOnCVSS}`);
         } else {
             msgFunc(`No 3rd party library found with Vulnerability of CVSS equal or greater than ${options.failOnCVSS}`);
         }
+        */
     }
 
     msgFunc(`Scan finished.\nFull Report Details:   ${scaResJson.records[0].metadata.report}`);
@@ -62,23 +70,104 @@ const addIssueToLibrary = (libId:string,lib:SCALibrary,details:ReportedLibraryIs
     librariesWithIssues[libId] = libWithIssues;
 }
 
-const syncExistingOpenIssues = async () => {
+const syncExistingOpenIssues = async (options:any) => {
     const existingOpenIssues = await githubHandler.listExistingOpenIssues();
-    for (var library of Object.values(librariesWithIssues)) {
-        (library as LibraryIssuesCollection).issues.forEach(async element => {
-            const foundIssueTitle = element.title;
-            core.info(`Checking for issue title [${foundIssueTitle}]`);
-            const inExsiting = existingOpenIssues.filter(openIssue => {
-                return openIssue.node.title === foundIssueTitle;
-            })
-            if (inExsiting.length===0) {
-                // issue not yet reported
-                const ghResponse = await githubHandler.createIssue(element);
-                console.log(`Created issue: ${element.title}`);
-            } else {
-                console.log(`Skipping existing Issue : ${element.title}`);
+
+    const lenghtOfLibs = Object.keys(librariesWithIssues).length
+    core.info('Libraries with issues found: '+lenghtOfLibs)
+
+    let createIssue
+    let openIssueTitle
+    let openIssueNumber
+
+    //Check if we run on a PR
+    core.info('check if we run on a pull request')
+    let pullRequest = process.env.GITHUB_REF
+    let isPR:any = pullRequest?.indexOf("pull")
+
+    for (var key in librariesWithIssues) {
+        core.info('Library '+key+' - '+librariesWithIssues[key]['lib']['name'])
+
+        var issueLength = Object.keys(librariesWithIssues[key]['issues']).length
+        core.info(issueLength+' Issues found on Library')
+
+
+        for ( let j=0; j< issueLength; j++ ){
+            var libraryTitle = librariesWithIssues[key]['issues'][j]['title']
+            core.info('Isuse Title '+j+': '+libraryTitle)
+            var openIssueLenght = existingOpenIssues.length
+            core.info("Open issues found: "+openIssueLenght)
+            for (let k = 0; k < openIssueLenght; k++){
+                openIssueTitle = existingOpenIssues[k]['node']['title']
+                openIssueNumber = existingOpenIssues[k]['node']['number']
+                //core.info('Open Isssue: '+openIssueTitle+' --- '+openIssueNumber)
+
+                if ( libraryTitle == openIssueTitle ){
+                    core.info('Issue \n'+libraryTitle+'\n'+openIssueTitle+'\nalready exists - skipping')
+                    createIssue = false
+                    break
+                }
             }
-        });
+            if ( createIssue == false ){
+                core.info('Issue already exists - skipping  --- '+libraryTitle+' ---- '+openIssueTitle)
+                if ( isPR >= 1 ){
+                    core.info('We run on a PR, link issue to PR')
+                    let pr_context = github.context
+                    let pr_commentID = pr_context.payload.pull_request.number
+
+                    var authToken = 'token ' + options.github_token
+
+                    const owner = github.context.repo.owner;
+                    const repo = github.context.repo.repo;
+                    var pr_link = `Veracode issue link to PR: https://github.com/`+owner+`/`+repo+`/pull/`+pr_commentID
+
+                    console.log('Adding PR to the issue now.')
+                        
+                    await request('POST /repos/{owner}/{repo}/issues/{issue_number}/comments', {
+                        headers: {
+                            authorization: authToken
+                        },
+                        owner: owner,
+                        repo: repo,
+                        issue_number: openIssueNumber,
+                        data: {
+                            "body": pr_link
+                        }
+                    })
+                }
+            }
+            else {
+                core.info('Issue needs to be created. --- '+libraryTitle)
+                const ghResponse = await githubHandler.createIssue(librariesWithIssues[key]['issues'][j]);
+                //core.info('Issue creation response: '+JSON.stringify(ghResponse))
+                var issueNumber = ghResponse.data.number
+                if ( isPR >= 1 ){
+                    core.info('We run on a PR, link issue to PR')
+                    let pr_context = github.context
+                    let pr_commentID = pr_context.payload.pull_request.number
+
+                    var authToken = 'token ' + options.github_token
+
+                    const owner = github.context.repo.owner;
+                    const repo = github.context.repo.repo;
+                    var pr_link = `Veracode issue link to PR: https://github.com/`+owner+`/`+repo+`/pull/`+pr_commentID
+
+                    console.log('Adding PR to the issue now.')
+                        
+                    await request('POST /repos/{owner}/{repo}/issues/{issue_number}/comments', {
+                        headers: {
+                            authorization: authToken
+                        },
+                        owner: owner,
+                        repo: repo,
+                        issue_number: issueNumber,
+                        data: {
+                            "body": pr_link
+                        }
+                    })
+                }
+            }
+        }
     }
 }
 

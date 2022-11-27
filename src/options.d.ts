@@ -10,5 +10,6 @@ export interface Options {
     debug: boolean,
     allowDirty:boolean,
     recursive:boolean,
+    skip_vms:boolean,
     "skip-collectors": Array<string>
 }

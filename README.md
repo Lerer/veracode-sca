@@ -2,33 +2,24 @@
 Veracode Software Composition Analysis Scaning as a GitHub Action with the following actions:
 - Run the Veracode SCA sca similar as the script in textual output mode
 - Automatically create issues from Vulnerabilities based on given CVSS threshold 
-- Fail The action step based on given CVSS threshold
 - Ability to run the scan on a remote repository
 - Ability to run the scan with the `--quick` flag 
-
+  
+## Pull Request Decoration  
+If the action runs on a pull reuqest it will either add a comment with the SRCCLR output to the pulle request or it will automatically link all created GitHub issues to the pull request. This will help your approval process to easily review if the PR can be approved or not.  
+  
 ## Inputs
 > :exclamation: You will need to provide `SRCCLR_API_TOKEN` as environment variables. (See examples below)
 
 ### `github_token`
 
 **Required** - The authorization token to allow the action to create issues.
-
+  
+If the default value `${{ github.token }}` is not working, the toke must be set on the action inouts.    
 You may be able to simply can use the `${{ secrets.GITHUB_TOKEN }}` as a default option - see __[more details](https://docs.github.com/en/actions/security-guides/automatic-token-authentication)__
 
 Otherwise, you may be able create and assign __as secret__ a [Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) and assign it with the required permissions (`repo` scope).
 
-### `min-cvss-for-issue`
-**Optional** - The minimum CVSS for creating an issue from a found vulnerability
-
-Default Value: __0__
-
-### `fail-on-cvss`
-**Optional** - The maximum allowed cvss in found vulnerabilities to pass the step
-
-Default Value: __10__
-> The step will not fail unless you explicitly specify a lower CVSS value 
-
-Value: __0__
 
 ### `create-issues`
 **Optional** - whether to create issues from found vulnerabilities
@@ -95,8 +86,7 @@ jobs:
         uses: veracode/veracode-sca@v1.09
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          create-issues: false 
-          fail-on-cvss: 1     
+          create-issues: false   
 ```
 
 ### Scan the repository   
@@ -129,8 +119,6 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           quick: true
           create-issues: true 
-          fail-on-cvss: 1
-          min-cvss-for-issue: 1
 ```
 ## User Interface
 

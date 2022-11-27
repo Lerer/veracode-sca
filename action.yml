@@ -10,7 +10,7 @@ inputs:
     default: ${{ github.token }}
     required: true
   quick:
-    description: ""
+    description: "Run the SRCCLR with the `--quick` options"
     required: false
     default: "false"
   update_advisor:
@@ -21,14 +21,6 @@ inputs:
     description: "A git URL to work with in case the scan is not for the current repository"
     required: false
     default: ""
-  min-cvss-for-issue:
-    description: "The minimum CVSS value for vulnerability to be added as an issue"
-    required: false
-    default: "0"
-  fail-on-cvss:
-    description: "The maximum allowed cvss in found vulnerabilities to pass the step"
-    required: false
-    default: "10"
   create-issues:
     description: "An attribute to instruct the action to create an issue from found vulnerability or just simple text output"
     required: false
@@ -51,6 +43,10 @@ inputs:
     default: "false"
   recursive:
     description: "Run the SRCCLR with the `--recursive` option"
+    required: false
+    default: "false"
+  skip_vms:
+    description: "Run the SRCCLR with the `--skip-vms` option"
     required: false
     default: "false"
 runs:

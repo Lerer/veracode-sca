@@ -15,8 +15,10 @@ const options: Options = {
     failOnCVSS: parseFloat(core.getInput('fail-on-cvss')) || 10,
     path: core.getInput('path',{trimWhitespace: true}) || '.',
     debug: core.getBooleanInput('debug'),
+    skip_vms: core.getBooleanInput('skip_vms'),
     recursive: core.getBooleanInput('recursive'),
     "skip-collectors": core.getInput('skip-collectors').split(',')
+    
 }
 
 runAction(options);

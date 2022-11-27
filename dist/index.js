@@ -10355,8 +10355,10 @@ const syncExistingOpenIssues = () => __awaiter(void 0, void 0, void 0, function*
     let numberArray = Array;
     for (var key in librariesWithIssues) {
         console.log(key);
-        console.log(librariesWithIssues[key]);
+        var keyNumber = key;
+        numberArray[keyNumber];
     }
+    console.log('Keys: ' + numberArray);
     /*    for (let i = 1; i <= lenghtOfLibs; i++){
            if (librariesWithIssues[i]['lib'] == undefined ){
                continue

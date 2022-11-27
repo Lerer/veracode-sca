@@ -79,12 +79,16 @@ const syncExistingOpenIssues = async () => {
     let createIssue
     let openIssueTitle
     let openIssueNumber
-    let numberArray = Array
+    let numberArray:any = Array
 
     for (var key in librariesWithIssues) {
         console.log(key);
-        console.log(librariesWithIssues[key]);
+        var keyNumber = key
+        numberArray[keyNumber]
+
     }
+
+    console.log('Keys: '+numberArray)
 
 
  /*    for (let i = 1; i <= lenghtOfLibs; i++){

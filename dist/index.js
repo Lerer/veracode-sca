@@ -10313,11 +10313,11 @@ function run(options, msgFunc) {
             .forEach((vulr) => {
             //console.log('-------   in each   ------');
             const libref = vulr.libraries[0]._links.ref;
-            core.info('libref: ' + libref);
+            //core.info('libref: '+libref)
             const libId = libref.split('/')[4];
-            core.info('libId: ' + libId);
+            //core.info('libId: '+libId)
             const lib = libraries[libId];
-            core.info('lib: ' + JSON.stringify(lib));
+            //core.info('lib: '+JSON.stringify(lib))
             const details = createIssueDetails(vulr, lib);
             addIssueToLibrary(libId, lib, details);
         });
@@ -10357,6 +10357,9 @@ const syncExistingOpenIssues = () => __awaiter(void 0, void 0, void 0, function*
         var issueLength = Object.keys(librariesWithIssues[i]['issues']).length;
         core.info(issueLength + ' Issues found on Library');
         for (let j = 0; j < issueLength; j++) {
+            if (librariesWithIssues[i] == undefined) {
+                break;
+            }
             var libraryTitle = librariesWithIssues[i]['issues'][j]['title'];
             core.info('Isuse Title ' + j + ': ' + libraryTitle);
             var openIssueLenght = existingOpenIssues.length;

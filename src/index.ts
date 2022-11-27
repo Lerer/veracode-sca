@@ -65,8 +65,10 @@ const addIssueToLibrary = (libId:string,lib:SCALibrary,details:ReportedLibraryIs
 const syncExistingOpenIssues = async () => {
     const existingOpenIssues = await githubHandler.listExistingOpenIssues();
 
+    core.info(JSON.stringify(librariesWithIssues))
+
     const lenghtOfLibs = librariesWithIssues.length
-    core.info('Libraries witrh issues found: '+lenghtOfLibs)
+    core.info('Libraries with issues found: '+lenghtOfLibs)
 
     for (let i = 0; i <= lenghtOfLibs; i++){
         core.info('Library '+i+' - '+librariesWithIssues[i])

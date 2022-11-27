@@ -81,16 +81,16 @@ const syncExistingOpenIssues = async () => {
         var issueLength = Object.keys(librariesWithIssues[i]['issues']).length
         for ( let j=0; j< issueLength; j++ ){
             var libraryTitle = librariesWithIssues[i]['issues'][j]['title']
-            core.info('Library Title: '+libraryTitle)
+            core.info('Isuse Title: '+libraryTitle)
             var openIssueLenght = existingOpenIssues.length
             core.info("Open issues found: "+openIssueLenght)
             for (let k = 0; k < openIssueLenght; k++){
                 openIssueTitle = existingOpenIssues[k]['node']['title']
                 openIssueNumber = existingOpenIssues[k]['node']['number']
-                core.info('Open Isssue: '+openIssueTitle+' --- '+openIssueNumber)
+                //core.info('Open Isssue: '+openIssueTitle+' --- '+openIssueNumber)
 
                 if ( libraryTitle == openIssueTitle ){
-                    core.info('Issue already exists - skipping')
+                    core.info('Issue \n'+libraryTitle+'\n'+openIssueTitle+'\nalready exists - skipping')
                     createIssue = false
                     exit
                 }

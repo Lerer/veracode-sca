@@ -5,7 +5,9 @@ import { LibraryIssuesCollection, ReportedLibraryIssue, SCALibrary, SCAVulnerabi
 import { Label, SEVERITY_LABELS, VERACODE_LABEL } from './labels';
 import { GithubHandler } from './githubRequestHandler';
 import * as core from '@actions/core'
-import { exit } from 'process';
+
+const { request } = require('@octokit/request');
+const github = require('@actions/github');
 
 
 export const SCA_OUTPUT_FILE = 'scaResults.json';
@@ -46,7 +48,7 @@ export async function run(options:Options, msgFunc: (msg: string) => void) {
 
     if (Object.keys(librariesWithIssues).length>0) {
         await verifyLabels();
-        await syncExistingOpenIssues();
+        await syncExistingOpenIssues(options);
 
         // check for failing the step
         /*
@@ -68,10 +70,8 @@ const addIssueToLibrary = (libId:string,lib:SCALibrary,details:ReportedLibraryIs
     librariesWithIssues[libId] = libWithIssues;
 }
 
-const syncExistingOpenIssues = async () => {
+const syncExistingOpenIssues = async (options:any) => {
     const existingOpenIssues = await githubHandler.listExistingOpenIssues();
-
-    //core.info(JSON.stringify(librariesWithIssues))
 
     const lenghtOfLibs = Object.keys(librariesWithIssues).length
     core.info('Libraries with issues found: '+lenghtOfLibs)
@@ -79,6 +79,13 @@ const syncExistingOpenIssues = async () => {
     let createIssue
     let openIssueTitle
     let openIssueNumber
+
+    //Check if we run on a PR
+    core.info('check if we run on a pull request')
+    let pullRequest = process.env.GITHUB_REF
+    let isPR:any = pullRequest?.indexOf("pull")
+    let pr_context = github.context
+    let pr_commentID = pr_context.payload.pull_request.number
 
     for (var key in librariesWithIssues) {
         core.info('Library '+key+' - '+librariesWithIssues[key]['lib']['name'])
@@ -105,65 +112,38 @@ const syncExistingOpenIssues = async () => {
             }
             if ( createIssue == false ){
                 core.info('Issue already exists - skipping  --- '+libraryTitle+' ---- '+openIssueTitle)
+                if ( isPR >= 1 ){
+                    core.info('We run on a PR, link issue to PR')
+
+                    var authToken = 'token ' + options.github_token
+
+                    const owner = github.context.repo.owner;
+                    const repo = github.context.repo.repo;
+                    var pr_link = `Veracode issue link to PR: https://github.com/`+owner+`/`+repo+`/pull/`+pr_commentID
+
+                    console.log('Adding PR to the issue now.')
+                        
+                    await request('POST /repos/{owner}/{repo}/issues/{issue_number}/comments', {
+                        headers: {
+                            authorization: authToken
+                        },
+                        owner: owner,
+                        repo: repo,
+                        issue_number: openIssueNumber,
+                        data: {
+                            "body": pr_link
+                        }
+                    })
+
+                
+                }
             }
             else {
                 core.info('Issue needs to be created. --- '+libraryTitle)
+                const ghResponse = await githubHandler.createIssue(librariesWithIssues[key]);
             }
         }
     }
-
-
-
-/*
-    for (var library of Object.values(librariesWithIssues)) {
-        (library as LibraryIssuesCollection).issues.forEach(async element => {
-            const foundIssueTitle = element.title;
-            core.info(`Checking for issue title [${foundIssueTitle}]`);
-             const inExsiting = existingOpenIssues.filter(openIssue => {
-                return openIssue.node.title === foundIssueTitle
-            })
-
-
-            var openIssues = JSON.parse(existingOpenIssues);
-
-            if (existingOpenIssues == foundIssueTitle ){
-                console.log(`Skipping existing Issue : ${element.title}`);
-                //existing issue number
-                core.info("Issue number: "+existingOpenIssues.)
-
-            }
-            else {
-                // issue not yet reported
-                const ghResponse = await githubHandler.createIssue(element);
-                console.log(`Created issue: ${element.title}`);
-                core.info("Issue generation response: "+JSON.stringify(ghResponse))
-
-            }
-
-
-
-            if (inExsiting.length===0) {
-                
-            } else {
-                
-            }
-
-            //Pull request decoration
-            core.info('check if we run on a pull request')
-            let pullRequest = process.env.GITHUB_REF
-            let isPR:any = pullRequest?.indexOf("pull")
-            
-            if ( isPR >= 1 ){
-                core.info('We run on a PR, link issue to PR')
-                core.info(JSON.stringify(element))
-                //core.info(JSON.stringify(existingOpenIssues))
-            
-            }
-
-
-        });
-    }
-    */
 }
 
 const createIssueDetails = (vuln: SCAVulnerability,lib: SCALibrary): ReportedLibraryIssue => {

@@ -94,7 +94,7 @@ const syncExistingOpenIssues = async () => {
                 if ( libraryTitle == openIssueTitle ){
                     core.info('Issue \n'+libraryTitle+'\n'+openIssueTitle+'\nalready exists - skipping')
                     createIssue = false
-                    exit
+                    break
                 }
             }
             if ( createIssue == false ){

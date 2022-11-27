@@ -10295,7 +10295,6 @@ const fs_1 = __nccwpck_require__(7147);
 const labels_1 = __nccwpck_require__(7402);
 const githubRequestHandler_1 = __nccwpck_require__(6366);
 const core = __importStar(__nccwpck_require__(2186));
-const process_1 = __nccwpck_require__(7282);
 exports.SCA_OUTPUT_FILE = 'scaResults.json';
 const librariesWithIssues = {};
 let githubHandler;
@@ -10365,7 +10364,7 @@ const syncExistingOpenIssues = () => __awaiter(void 0, void 0, void 0, function*
                 if (libraryTitle == openIssueTitle) {
                     core.info('Issue \n' + libraryTitle + '\n' + openIssueTitle + '\nalready exists - skipping');
                     createIssue = false;
-                    process_1.exit;
+                    break;
                 }
             }
             if (createIssue == false) {
@@ -10880,14 +10879,6 @@ module.exports = require("os");
 
 "use strict";
 module.exports = require("path");
-
-/***/ }),
-
-/***/ 7282:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("process");
 
 /***/ }),
 

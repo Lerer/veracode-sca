@@ -10358,7 +10358,7 @@ const syncExistingOpenIssues = () => __awaiter(void 0, void 0, void 0, function*
         core.info(issueLength + ' Issues found on Library');
         for (let j = 0; j < issueLength; j++) {
             if (librariesWithIssues[i] == undefined) {
-                break;
+                continue;
             }
             var libraryTitle = librariesWithIssues[i]['issues'][j]['title'];
             core.info('Isuse Title ' + j + ': ' + libraryTitle);

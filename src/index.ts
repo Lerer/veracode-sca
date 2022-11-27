@@ -88,7 +88,7 @@ const syncExistingOpenIssues = async () => {
 
         for ( let j=0; j< issueLength; j++ ){
             if (librariesWithIssues[i] == undefined ){
-                break
+                continue
             }
             var libraryTitle = librariesWithIssues[i]['issues'][j]['title']
             core.info('Isuse Title '+j+': '+libraryTitle)

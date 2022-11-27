@@ -29,7 +29,7 @@ export async function run(options:Options, msgFunc: (msg: string) => void) {
     const libraries = scaResJson.records[0].libraries;
 
     vulnerabilities
-        .filter((vul:any) => vul.cvssScore>=options.minCVSSForIssue)
+        //.filter((vul:any) => vul.cvssScore>=options.minCVSSForIssue)
         .forEach((vulr) => {
             //console.log('-------   in each   ------');
             const libref = vulr.libraries[0]._links.ref;
@@ -37,7 +37,7 @@ export async function run(options:Options, msgFunc: (msg: string) => void) {
             const libId = libref.split('/')[4];
             core.info('libId: '+libId)
             const lib:SCALibrary = libraries[libId];
-            core.info('lib: '+lib)
+            core.info('lib: '+JSON.stringify(lib))
             const details = createIssueDetails(vulr,lib);
             addIssueToLibrary(libId,lib,details);
         });
@@ -49,12 +49,14 @@ export async function run(options:Options, msgFunc: (msg: string) => void) {
         await syncExistingOpenIssues();
 
         // check for failing the step
+        /*
         const failingVul = vulnerabilities.filter(vul => vul.cvssScore>=options.failOnCVSS);
         if (failingVul.length>0) {
             core.setFailed(`Found Vulnerability with CVSS equal or greater than ${options.failOnCVSS}`);
         } else {
             msgFunc(`No 3rd party library found with Vulnerability of CVSS equal or greater than ${options.failOnCVSS}`);
         }
+        */
     }
 
     msgFunc(`Scan finished.\nFull Report Details:   ${scaResJson.records[0].metadata.report}`);

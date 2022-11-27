@@ -10346,14 +10346,14 @@ const syncExistingOpenIssues = () => __awaiter(void 0, void 0, void 0, function*
     const lenghtOfLibs = Object.keys(librariesWithIssues).length;
     core.info('Libraries with issues found: ' + lenghtOfLibs);
     for (let i = 1; i <= lenghtOfLibs; i++) {
-        core.info('Library ' + i + ' - ' + librariesWithIssues[i]);
+        core.info('Library ' + i + ' - ' + JSON.stringify(librariesWithIssues[i]));
         var issueLength = Object.keys(librariesWithIssues[i]['issues']).length;
-        for (let j = 0; j <= issueLength; j++) {
-            var libraryTitle = librariesWithIssues[i]['issues']["title"];
+        for (let j = 0; j < issueLength; j++) {
+            var libraryTitle = librariesWithIssues[i]['issues'][j]['title'];
             core.info('Library Title: ' + libraryTitle);
             var openIssueLenght = existingOpenIssues.length;
             core.info("Open issues found: " + openIssueLenght);
-            for (let k = 0; k <= openIssueLenght; k++) {
+            for (let k = 0; k < openIssueLenght; k++) {
                 var openIssueTitle = existingOpenIssues[k]['node']['title'];
                 var openIssueNumber = existingOpenIssues[k]['node']['number'];
                 core.info('Open Isssue: ' + openIssueTitle + ' --- ' + openIssueNumber);

@@ -79,34 +79,16 @@ const syncExistingOpenIssues = async () => {
     let createIssue
     let openIssueTitle
     let openIssueNumber
-    let numberArray:any = Array
 
     for (var key in librariesWithIssues) {
-        console.log(key);
-        var keyNumber = key
-        numberArray[keyNumber]
+        core.info('Library '+key+' - '+librariesWithIssues[key]['lib']['name'])
 
-    }
-
-    var numberArrayLenght = numberArray.length
-    for ( let i = 0; i <= numberArrayLenght; i++){
-        core.info(numberArray[i])
-    }
-
-
-
- /*    for (let i = 1; i <= lenghtOfLibs; i++){
-        if (librariesWithIssues[i]['lib'] == undefined ){
-            continue
-        }
-        core.info('Library '+i+' - '+librariesWithIssues[i]['lib']['name'])
-
-        var issueLength = Object.keys(librariesWithIssues[i]['issues']).length
+        var issueLength = Object.keys(librariesWithIssues[key]['issues']).length
         core.info(issueLength+' Issues found on Library')
 
 
         for ( let j=0; j< issueLength; j++ ){
-            var libraryTitle = librariesWithIssues[i]['issues'][j]['title']
+            var libraryTitle = librariesWithIssues[key]['issues'][j]['title']
             core.info('Isuse Title '+j+': '+libraryTitle)
             var openIssueLenght = existingOpenIssues.length
             core.info("Open issues found: "+openIssueLenght)
@@ -128,7 +110,7 @@ const syncExistingOpenIssues = async () => {
                 core.info('Issue needs to be created. --- '+libraryTitle)
             }
         }
-    } */
+    }
 
 
 

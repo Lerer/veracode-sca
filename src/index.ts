@@ -33,8 +33,11 @@ export async function run(options:Options, msgFunc: (msg: string) => void) {
         .forEach((vulr) => {
             //console.log('-------   in each   ------');
             const libref = vulr.libraries[0]._links.ref;
+            core.info('libref: '+libref)
             const libId = libref.split('/')[4];
+            core.info('libId: '+libId)
             const lib:SCALibrary = libraries[libId];
+            core.info('lib: '+lib)
             const details = createIssueDetails(vulr,lib);
             addIssueToLibrary(libId,lib,details);
         });

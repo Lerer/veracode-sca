@@ -61,9 +61,9 @@ export async function runAction (options: Options)  {
           });
 
           execution.on('close', async (code) => {
-            //if (core.isDebug()){
+            if (core.isDebug()){
                 core.info(output);
-            //}
+            }
 
             //Pull request decoration
             core.info('check if we run on a pull request')

@@ -10313,8 +10313,11 @@ function run(options, msgFunc) {
             .forEach((vulr) => {
             //console.log('-------   in each   ------');
             const libref = vulr.libraries[0]._links.ref;
+            core.info('libref: ' + libref);
             const libId = libref.split('/')[4];
+            core.info('libId: ' + libId);
             const lib = libraries[libId];
+            core.info('lib: ' + lib);
             const details = createIssueDetails(vulr, lib);
             addIssueToLibrary(libId, lib, details);
         });
@@ -10649,9 +10652,9 @@ function runAction(options) {
                 });
                 execution.on('close', (code) => __awaiter(this, void 0, void 0, function* () {
                     var _a;
-                    //if (core.isDebug()){
-                    core.info(output);
-                    //}
+                    if (core.isDebug()) {
+                        core.info(output);
+                    }
                     //Pull request decoration
                     core.info('check if we run on a pull request');
                     let pullRequest = process.env.GITHUB_REF;

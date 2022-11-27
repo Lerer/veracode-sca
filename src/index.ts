@@ -70,7 +70,7 @@ const syncExistingOpenIssues = async () => {
     const lenghtOfLibs = Object.keys(librariesWithIssues).length
     core.info('Libraries with issues found: '+lenghtOfLibs)
 
-    for (let i = 0; i <= lenghtOfLibs; i++){
+    for (let i = 1; i <= lenghtOfLibs; i++){
         core.info('Library '+i+' - '+librariesWithIssues[i])
 
         var issueLength = Object.keys(librariesWithIssues[i]['issues']).length

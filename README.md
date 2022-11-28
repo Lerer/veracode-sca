@@ -1,22 +1,24 @@
 # Veracode Software Composition Analysis
-Veracode Software Composition Analysis Scaning as a GitHub Action with the following actions:
-- Run the Veracode SCA sca similar as the script in textual output mode
-- Automatically create issues from Vulnerabilities based on given CVSS threshold 
+Veracode Software Composition Analysis (agent-based scan) as a GitHub Action with the following actions:
+- Run the Veracode SCA similar as the script in textual output mode
+- Ability to create issues for identified vulnerabilities without creating duplicates
 - Ability to run the scan on a remote repository
 - Ability to run the scan with the `--quick` flag 
   
 ## Pull Request Decoration  
-If the action runs on a pull reuqest it will either add a comment with the SRCCLR output to the pulle request or it will automatically link all created GitHub issues to the pull request. This will help your approval process to easily review if the PR can be approved or not.  
+If the action runs on a pull request, it will either add a comment with the scan output to the PR or it will automatically link all created GitHub issues to the PR. This will help your review process to see if the PR can be approved or not.
   
 ## Inputs
-> :exclamation: You will need to provide `SRCCLR_API_TOKEN` as environment variables. (See examples below)
+:exclamation: You will need to provide `SRCCLR_API_TOKEN` as an environment variable (see examples below).
+
+:exclamation: If using an org-level agent, you will need to provide `SRCCLR_WORKSPACE_SLUG` as an environment variable.
 
 ### `github_token`
 
 **Required** - The authorization token to allow the action to create issues.
   
-If the default value `${{ github.token }}` is not working, the toke must be set on the action inouts.    
-You may be able to simply can use the `${{ secrets.GITHUB_TOKEN }}` as a default option - see __[more details](https://docs.github.com/en/actions/security-guides/automatic-token-authentication)__
+If the default value `${{ github.token }}` is not working, the token must be set on the action inputs.    
+You may be able to simply use `${{ secrets.GITHUB_TOKEN }}` as a default option - see __[more details](https://docs.github.com/en/actions/security-guides/automatic-token-authentication)__
 
 Otherwise, you may be able create and assign __as secret__ a [Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) and assign it with the required permissions (`repo` scope).
 
@@ -38,7 +40,7 @@ This attribute is useful in scenarios where the actual code is not in the root o
 Default Value: __`.`__ (repository root folder)
 
 ### `quick`
-__Optional__ - run the Veracode SCA scan with the `--quick` 
+__Optional__ - run the Veracode SCA scan with `--quick` 
 
 Default Value: __false__
 
@@ -71,6 +73,8 @@ Default Value: __false__
 
 ### Scan your repository with textual output
 
+Run a scan but do not create issues for identified vulnerabilities.
+
 ```yaml
 on: 
   schedule:
@@ -80,11 +84,12 @@ on:
 jobs:
   veracode-sca-task:
     runs-on: ubuntu-latest
-    name: Scan remote repository for Issues
+    name: Scan repository with Veracode SCA
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        
       - name: Run Veracode SCA
         env:
           SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
@@ -94,9 +99,9 @@ jobs:
           create-issues: false   
 ```
 
-### Scan the repository   
+### Scan the local repository   
 
-Scan can the local repository. Fail the step and create issues if found vulnerability with CVSS greater than 1
+Run a quick scan on the repository and create issues for all identified vulnerabilities.
 
 
 ```yaml
@@ -110,16 +115,16 @@ on:
 jobs:
   veracode-sca-task:
     runs-on: ubuntu-latest
-    name: Scan repository for Issues
+    name: Scan repository with Veracode SCA
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        
       - name: Run Veracode SCA
         env:
           SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
         uses: veracode/veracode-sca@v2.0.64
-
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           quick: true

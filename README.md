@@ -1,8 +1,8 @@
 # Veracode Software Composition Analysis
-Veracode Software Composition Analysis agent-based scan as a GitHub Action with the following actions:
+Veracode Software Composition Analysis (agent-based scan) as a GitHub Action with the following actions:
 - Run the Veracode SCA similar as the script in textual output mode
-- Ability to create issues for identified vulnerabilities withtou creating duplicates
-- Ability to run the scan on a remote or local repository
+- Ability to create issues for identified vulnerabilities without creating duplicates
+- Ability to run the scan on a remote repository
 - Ability to run the scan with the `--quick` flag 
   
 ## Pull Request Decoration  

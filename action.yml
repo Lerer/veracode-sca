@@ -45,7 +45,7 @@ inputs:
     description: "Run the SRCCLR with the `--recursive` option"
     required: false
     default: "false"
-  skip_vms:
+  skip-vms:
     description: "Run the SRCCLR with the `--skip-vms` option"
     required: false
     default: "false"

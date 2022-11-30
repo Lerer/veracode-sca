@@ -64,7 +64,7 @@ __Optional__ - run the Veracode SCA scan with `--recursive`
 
 Default Value: __false__ 
   
-### `skip_vms`
+### `skip-vms`
 __Optional__ - run the Veracode SCA scan with `--skip-vms`  
 
 Default Value: __false__

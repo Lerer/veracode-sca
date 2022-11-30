@@ -10081,7 +10081,7 @@ const options = {
     failOnCVSS: parseFloat(core.getInput('fail-on-cvss')) || 10,
     path: core.getInput('path', { trimWhitespace: true }) || '.',
     debug: core.getBooleanInput('debug'),
-    skip_vms: core.getBooleanInput('skip_vms'),
+    "skip-vms": core.getBooleanInput('skip-vms'),
     recursive: core.getBooleanInput('recursive'),
     "skip-collectors": core.getInput('skip-collectors').split(',')
 };
@@ -10632,8 +10632,9 @@ function runAction(options) {
             if (skip.length > 0) {
                 skipCollectorsAttr = `--skip-collectors ${skip.toString()} `;
             }
+            const skipVMS = options["skip-vms"];
             const commandOutput = options.createIssues ? `--json=${index_1.SCA_OUTPUT_FILE}` : '';
-            extraCommands = `${extraCommands}${options.recursive ? '--recursive ' : ''}${options.quick ? '--quick ' : ''}${options.allowDirty ? '--allow-dirty ' : ''}${options.updateAdvisor ? '--update-advisor ' : ''}${options.skip_vms ? '--skip-vms ' : ''}${options.debug ? '--debug ' : ''}${skipCollectorsAttr}`;
+            extraCommands = `${extraCommands}${options.recursive ? '--recursive ' : ''}${options.quick ? '--quick ' : ''}${options.allowDirty ? '--allow-dirty ' : ''}${options.updateAdvisor ? '--update-advisor ' : ''}${skipVMS ? '--skip-vms ' : ''}${options.debug ? '--debug ' : ''}${skipCollectorsAttr}`;
             const command = `curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ${extraCommands} ${commandOutput}`;
             core.info(command);
             if (options.createIssues) {

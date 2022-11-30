@@ -16,7 +16,7 @@ const options: Options = {
     "skip-collectors": [],
     allowDirty: false,
     recursive:false,
-    skip_vms:false
+    "skip-vms":false
 }
 
 runAction(options);

@@ -63,22 +63,6 @@ export async function runAction (options: Options)  {
 
           execution.on('close', async (code) => {
             core.info('Create issue "true" - on close')
-            //store output files as artifacts
-            const artifact = require('@actions/artifact');
-            const artifactClient = artifact.create()
-            const artifactName = 'Veracode Agent Based SCA Results';
-            const files = [
-                'scaResults.json'
-            ]
-
-            const rootDirectory = process.cwd()
-            const options = {
-                continueOnError: true
-            }
-
-            const uploadResult = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options)
-
-        
             if (core.isDebug()){
                 core.info(output);
             }
@@ -124,6 +108,26 @@ export async function runAction (options: Options)  {
             if ( code != null && code > 0 ){
                 core.setFailed(summary_message)
             }
+
+                        //store output files as artifacts
+                        core.info('Store json Results as Artefact')
+                        const artifact = require('@actions/artifact');
+                        const artifactClient = artifact.create()
+                        const artifactName = 'Veracode Agent Based SCA Results';
+                        const files = [
+                            'scaResults.json'
+                        ]
+            
+                        const rootDirectory = process.cwd()
+                        const options = {
+                            continueOnError: true
+                        }
+            
+                        const uploadResult = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options)
+
+
+
+
             core.info('Finish command');
          });
 

@@ -16,7 +16,7 @@ If the action runs on a pull request, it will either add a comment with the scan
 ## Artifacts  
 The run will store 2 different types of artifacts.  
 If `create-issues` is set to true the artifact will be the json output stored as `scaResults.json`.  
-If `create-issues` is set to false the artifact will be the json output stored as `scaResults.txt`.  
+If `create-issues` is set to false the artifact will be the text output stored as `scaResults.txt`.  
 For both the artifact name will be `Veracode Agent Based SCA Results`.  
   
 ### `github_token`

@@ -119,11 +119,11 @@ export async function runAction (options: Options)  {
                         ]
             
                         const rootDirectory = process.cwd()
-                        const options = {
+                        const artefactOptions = {
                             continueOnError: true
                         }
             
-                        const uploadResult = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options)
+                        const uploadResult = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, artefactOptions)
 
 
 

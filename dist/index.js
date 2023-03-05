@@ -18087,6 +18087,7 @@ const child_process_1 = __nccwpck_require__(2081);
 const core = __importStar(__nccwpck_require__(5127));
 const index_1 = __nccwpck_require__(4925);
 const github = __importStar(__nccwpck_require__(3134));
+const fs_1 = __nccwpck_require__(7147);
 const cleanCollectors = (inputArr) => {
     let allowed = [];
     for (var input of inputArr) {
@@ -18177,7 +18178,7 @@ function runAction(options) {
                         core.setFailed(summary_message);
                     }
                     //store output files as artifacts
-                    core.info('Store json Results as Artefact');
+                    core.info('Store json Results as Artifact');
                     const artifact = __nccwpck_require__(1413);
                     const artifactClient = artifact.create();
                     const artifactName = 'Veracode Agent Based SCA Results';
@@ -18211,6 +18212,25 @@ function runAction(options) {
                     var _b;
                     //core.info(output);
                     core.info(`Scan finished with exit code:  ${code}`);
+                    //write output to file
+                    (0, fs_1.writeFile)('scaResults.txt', output, (err) => {
+                        if (err)
+                            throw err;
+                        console.log('The file has been saved!');
+                    });
+                    //store output files as artifacts
+                    core.info('Store json Results as Artifact');
+                    const artifact = __nccwpck_require__(1413);
+                    const artifactClient = artifact.create();
+                    const artifactName = 'Veracode Agent Based SCA Results';
+                    const files = [
+                        'scaResults.txt'
+                    ];
+                    const rootDirectory = process.cwd();
+                    const artefactOptions = {
+                        continueOnError: true
+                    };
+                    const uploadResult = yield artifactClient.uploadArtifact(artifactName, files, rootDirectory, artefactOptions);
                     //Pull request decoration
                     core.info('check if we run on a pull request');
                     let pullRequest = process.env.GITHUB_REF;

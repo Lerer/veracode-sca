@@ -6,6 +6,8 @@ import { Options } from "./options";
 import { SCA_OUTPUT_FILE,run, runText } from "./index";
 import * as github from '@actions/github'
 import { env } from "process";
+import { writeFile } from 'fs';
+
 
 const cleanCollectors = (inputArr:Array<string>) => {
     let allowed:Array<string> = [];
@@ -110,7 +112,7 @@ export async function runAction (options: Options)  {
             }
 
             //store output files as artifacts
-            core.info('Store json Results as Artefact')
+            core.info('Store json Results as Artifact')
             const artifact = require('@actions/artifact');
             const artifactClient = artifact.create()
             const artifactName = 'Veracode Agent Based SCA Results';
@@ -155,6 +157,33 @@ export async function runAction (options: Options)  {
             execution.on('close', async (code) => {
                 //core.info(output);
                 core.info(`Scan finished with exit code:  ${code}`);
+
+                //write output to file
+                writeFile('scaResults.txt', output, (err) => {
+                    if (err) throw err;
+                    console.log('The file has been saved!');
+                });
+
+                //store output files as artifacts
+                core.info('Store json Results as Artifact')
+                const artifact = require('@actions/artifact');
+                const artifactClient = artifact.create()
+                const artifactName = 'Veracode Agent Based SCA Results';
+                const files = [
+                    'scaResults.txt'
+                ]
+                
+                const rootDirectory = process.cwd()
+                const artefactOptions = {
+                    continueOnError: true
+                }
+                
+                const uploadResult = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, artefactOptions)
+            
+
+
+
+
 
                 //Pull request decoration
                 core.info('check if we run on a pull request')

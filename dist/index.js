@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
@@ -10042,6 +10043,53 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
+/***/ 8521:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core = __importStar(__nccwpck_require__(5127));
+const srcclr_1 = __nccwpck_require__(6970);
+const options = {
+    quick: core.getBooleanInput('quick'),
+    updateAdvisor: core.getBooleanInput('update_advisor'),
+    minCVSSForIssue: parseFloat(core.getInput('min-cvss-for-issue')) || 0,
+    url: core.getInput('url'),
+    github_token: core.getInput('github_token', { required: true }),
+    createIssues: core.getBooleanInput('create-issues'),
+    allowDirty: core.getBooleanInput('allow-dirty'),
+    failOnCVSS: parseFloat(core.getInput('fail-on-cvss')) || 10,
+    path: core.getInput('path', { trimWhitespace: true }) || '.',
+    debug: core.getBooleanInput('debug'),
+    "skip-vms": core.getBooleanInput('skip-vms'),
+    recursive: core.getBooleanInput('recursive'),
+    "skip-collectors": core.getInput('skip-collectors').split(',')
+};
+(0, srcclr_1.runAction)(options);
+
+
+/***/ }),
+
 /***/ 5404:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -10520,6 +10568,260 @@ exports.VERACODE_LABEL = {
 
 /***/ }),
 
+/***/ 6970:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.runAction = void 0;
+const child_process_1 = __nccwpck_require__(2081);
+const core = __importStar(__nccwpck_require__(5127));
+const index_1 = __nccwpck_require__(4925);
+const github = __importStar(__nccwpck_require__(3134));
+const cleanCollectors = (inputArr) => {
+    let allowed = [];
+    for (var input of inputArr) {
+        if (input && collectors.indexOf(input.trim().toLowerCase()) > -1) {
+            allowed.push(input.trim().toLowerCase());
+        }
+    }
+    return allowed;
+};
+function runAction(options) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            core.info('Start command');
+            let extraCommands = '';
+            if (options.url.length > 0) {
+                extraCommands = `--url ${options.url} `;
+            }
+            else {
+                extraCommands = `${options.path} `;
+            }
+            const skip = cleanCollectors(options["skip-collectors"]);
+            let skipCollectorsAttr = '';
+            if (skip.length > 0) {
+                skipCollectorsAttr = `--skip-collectors ${skip.toString()} `;
+            }
+            const skipVMS = options["skip-vms"];
+            const commandOutput = options.createIssues ? `--json=${index_1.SCA_OUTPUT_FILE}` : '';
+            extraCommands = `${extraCommands}${options.recursive ? '--recursive ' : ''}${options.quick ? '--quick ' : ''}${options.allowDirty ? '--allow-dirty ' : ''}${options.updateAdvisor ? '--update-advisor ' : ''}${skipVMS ? '--skip-vms ' : ''}${options.debug ? '--debug ' : ''}${skipCollectorsAttr}`;
+            const command = `curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ${extraCommands} ${commandOutput}`;
+            core.info(command);
+            if (options.createIssues) {
+                core.info('Starting the scan');
+                const execution = (0, child_process_1.spawn)('sh', ['-c', command], {
+                    stdio: "pipe",
+                    shell: false
+                });
+                execution.on('error', (data) => {
+                    core.error(data);
+                });
+                let output = '';
+                execution.stdout.on('data', (data) => {
+                    output = `${output}${data}`;
+                });
+                execution.stderr.on('data', (data) => {
+                    core.error(`stderr: ${data}`);
+                });
+                execution.on('close', (code) => __awaiter(this, void 0, void 0, function* () {
+                    var _a;
+                    core.info('Create issue "true" - on close');
+                    if (core.isDebug()) {
+                        core.info(output);
+                    }
+                    //Pull request decoration
+                    core.info('check if we run on a pull request');
+                    let pullRequest = process.env.GITHUB_REF;
+                    let isPR = pullRequest === null || pullRequest === void 0 ? void 0 : pullRequest.indexOf("pull");
+                    let summary_message = "";
+                    if (isPR >= 1) {
+                        core.info('We run on a PR, add more messaging');
+                        const context = github.context;
+                        const repository = process.env.GITHUB_REPOSITORY;
+                        const repo = repository.split("/");
+                        const commentID = (_a = context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number;
+                        let pr_header = '<br>![](https://www.veracode.com/themes/veracode_new/library/img/veracode-black-hires.svg)<br>';
+                        summary_message = `Veracode SCA Scan finished with exit code: ${code}. Please review created and linked issues`;
+                        try {
+                            const octokit = github.getOctokit(options.github_token);
+                            const { data: comment } = yield octokit.rest.issues.createComment({
+                                owner: repo[0],
+                                repo: repo[1],
+                                issue_number: commentID,
+                                body: pr_header + summary_message,
+                            });
+                            core.info('Adding scan results message as comment to PR #' + commentID);
+                        }
+                        catch (error) {
+                            core.info(error);
+                        }
+                    }
+                    else {
+                        summary_message = `Veracode SCA Scan finished with exit code: ${code}. Please review created issues`;
+                    }
+                    //Generate issues
+                    (0, index_1.run)(options, core.info);
+                    core.info(summary_message);
+                    // if scan was set to fail the pipeline should fail and show a summary of the scan results
+                    if (code != null && code > 0) {
+                        core.setFailed(summary_message);
+                    }
+                    //store output files as artifacts
+                    core.info('Store json Results as Artefact');
+                    const artifact = __nccwpck_require__(2715);
+                    const artifactClient = artifact.create();
+                    const artifactName = 'Veracode Agent Based SCA Results';
+                    const files = [
+                        'scaResults.json'
+                    ];
+                    const rootDirectory = process.cwd();
+                    const artefactOptions = {
+                        continueOnError: true
+                    };
+                    const uploadResult = yield artifactClient.uploadArtifact(artifactName, files, rootDirectory, artefactOptions);
+                    core.info('Finish command');
+                }));
+            }
+            else {
+                const execution = (0, child_process_1.spawn)('sh', ['-c', command], {
+                    stdio: "pipe",
+                    shell: false
+                });
+                execution.on('error', (data) => {
+                    core.error(data);
+                });
+                let output = '';
+                execution.stdout.on('data', (data) => {
+                    output = `${output}${data}`;
+                });
+                execution.stderr.on('data', (data) => {
+                    core.error(`stderr: ${data}`);
+                });
+                execution.on('close', (code) => __awaiter(this, void 0, void 0, function* () {
+                    var _b;
+                    //core.info(output);
+                    core.info(`Scan finished with exit code:  ${code}`);
+                    //Pull request decoration
+                    core.info('check if we run on a pull request');
+                    let pullRequest = process.env.GITHUB_REF;
+                    let isPR = pullRequest === null || pullRequest === void 0 ? void 0 : pullRequest.indexOf("pull");
+                    if (isPR >= 1) {
+                        core.info("This run is part of a PR, should add some PR comment");
+                        const context = github.context;
+                        const repository = process.env.GITHUB_REPOSITORY;
+                        const repo = repository.split("/");
+                        const commentID = (_b = context.payload.pull_request) === null || _b === void 0 ? void 0 : _b.number;
+                        let commentBody = '<br>![](https://www.veracode.com/themes/veracode_new/library/img/veracode-black-hires.svg)<br>';
+                        commentBody += "Veraocde SCA Scan failed with exit code " + code + "\n";
+                        commentBody += '\n<details><summary>Veracode SCA Scan details</summary><p>\n';
+                        commentBody += output.replace(/    /g, '&nbsp;&nbsp;&nbsp;&nbsp;');
+                        commentBody += '</p></details>\n';
+                        try {
+                            const octokit = github.getOctokit(options.github_token);
+                            const { data: comment } = yield octokit.rest.issues.createComment({
+                                owner: repo[0],
+                                repo: repo[1],
+                                issue_number: commentID,
+                                body: commentBody,
+                            });
+                            core.info('Adding scan results as comment to PR #' + commentID);
+                        }
+                        catch (error) {
+                            core.info(error);
+                        }
+                    }
+                    // if scan was set to fail the pipeline should fail and show a summary of the scan results
+                    if (code != null && code > 0) {
+                        let summary_info = "Veraocde SCA Scan failed with exit code " + code + "\n" + output;
+                        core.setFailed(summary_info);
+                    }
+                    //run(options,core.info);
+                    core.info('Finish command');
+                }));
+            }
+        }
+        catch (error) {
+            if (error instanceof Error) {
+                core.info('Running scan failed.');
+                //const output = stdout.toString();
+                core.info(error.message);
+                //core.setFailed(error.message);
+            }
+            else {
+                core.setFailed("unknown error");
+                console.log(error);
+            }
+        }
+    });
+}
+exports.runAction = runAction;
+const collectors = [
+    "maven",
+    "gradle",
+    "ant",
+    "jar",
+    "sbt",
+    "glide",
+    "go get",
+    "go mod",
+    "godep",
+    "dep",
+    "govendor",
+    "trash",
+    "pip",
+    "pipenv",
+    "bower",
+    "yarn",
+    "npm",
+    "cocoapods",
+    "gem",
+    "composer",
+    "makefile",
+    "dll",
+    "msbuilddotnet",
+];
+
+
+/***/ }),
+
+/***/ 2715:
+/***/ ((module) => {
+
+module.exports = eval("require")("@actions/artifact");
+
+
+/***/ }),
+
 /***/ 2431:
 /***/ ((module) => {
 
@@ -10533,6 +10835,14 @@ module.exports = eval("require")("encoding");
 
 "use strict";
 module.exports = require("assert");
+
+/***/ }),
+
+/***/ 2081:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("child_process");
 
 /***/ }),
 
@@ -10698,7 +11008,7 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nccwpck_require__(4925);
+/******/ 	var __webpack_exports__ = __nccwpck_require__(8521);
 /******/ 	module.exports = __webpack_exports__;
 /******/ 	
 /******/ })()

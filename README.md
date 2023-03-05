@@ -14,7 +14,7 @@ If the action runs on a pull request, it will either add a comment with the scan
 :exclamation: If using an org-level agent, you will need to provide `SRCCLR_WORKSPACE_SLUG` as an environment variable.
   
 ## Artifacts  
-The run will store 2 diferent types of artifacts.  
+The run will store 2 different types of artifacts.  
 If `create-issues` is set to true the artifact will be the json output stored as `scaResults.json`.  
 If `create-issues` is set to false the artifact will be the json output stored as `scaResults.txt`.  
 For both the artifact name will be `Veracode Agent Based SCA Results`.  
@@ -99,7 +99,7 @@ jobs:
       - name: Run Veracode SCA
         env:
           SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
-        uses: veracode/veracode-sca@v2.0.65
+        uses: veracode/veracode-sca@v2.1.6
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           create-issues: false   
@@ -130,7 +130,7 @@ jobs:
       - name: Run Veracode SCA
         env:
           SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
-        uses: veracode/veracode-sca@v2.0.65
+        uses: veracode/veracode-sca@v2.1.6
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           quick: true

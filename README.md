@@ -12,7 +12,13 @@ If the action runs on a pull request, it will either add a comment with the scan
 :exclamation: You will need to provide `SRCCLR_API_TOKEN` as an environment variable (see examples below).
 
 :exclamation: If using an org-level agent, you will need to provide `SRCCLR_WORKSPACE_SLUG` as an environment variable.
-
+  
+## Artifacts  
+The run will store 2 diferent types of artifacts.  
+If `create-issues` is set to true the artifact will be the json output stored as `scaResults.json`.  
+If `create-issues` is set to false the artifact will be the json output stored as `scaResults.txt`.  
+For both the artifact name will be `Veracode Agent Based SCA Results`.  
+  
 ### `github_token`
 
 **Required** - The authorization token to allow the action to create issues.

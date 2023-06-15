@@ -18,6 +18,7 @@ const options: Options = {
     "skip-vms": core.getBooleanInput('skip-vms'),
     "no-graphs": core.getBooleanInput('no-graphs'),
     recursive: core.getBooleanInput('recursive'),
+    debug1: core.getBooleanInput('debug1'),
     "skip-collectors": core.getInput('skip-collectors').split(',')
     
 }

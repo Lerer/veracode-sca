@@ -9,7 +9,6 @@ import * as core from '@actions/core'
 const { request } = require('@octokit/request');
 const github = require('@actions/github');
 
-
 export const SCA_OUTPUT_FILE = 'scaResults.json';
 
 const librariesWithIssues:any = {};

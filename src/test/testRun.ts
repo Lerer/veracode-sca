@@ -17,8 +17,7 @@ const options: Options = {
     allowDirty: false,
     recursive:false,
     "skip-vms":false,
-    "no-graphs":false,
-    debug1:false
+    "no-graphs":false
 }
 
 runAction(options);

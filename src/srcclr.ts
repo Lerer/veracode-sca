@@ -38,7 +38,7 @@ export async function runAction (options: Options)  {
         const skipVMS = options["skip-vms"]
 
         const commandOutput = options.createIssues ? `--json=${SCA_OUTPUT_FILE}` : ''; 
-        extraCommands = `${extraCommands}${options.recursive?'--recursive ':''}${options.quick? '--quick ':''}${options.allowDirty? '--allow-dirty ':''}${options.updateAdvisor? '--update-advisor ':''}${skipVMS? '--skip-vms ':''}${options.debug? '--debug ':''}${skipCollectorsAttr}`;
+        extraCommands = `${extraCommands}${options.recursive?'--recursive ':''}${options.quick? '--quick ':''}${options.allowDirty? '--allow-dirty ':''}${options.updateAdvisor? '--update-advisor ':''}${skipVMS? '--skip-vms ':''}${options["no-graphs"]? '--no-graphs ':''}${options.debug? '--debug ':''}${skipCollectorsAttr}`;
         const command = `curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ${extraCommands} ${commandOutput}`;
         core.info(command);
 

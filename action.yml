@@ -49,6 +49,10 @@ inputs:
     description: "Run the SRCCLR with the `--skip-vms` option"
     required: false
     default: "false"
+  no-graphs:
+    description: "Run the SRCCLR with the `--no-graphs` option"
+    required: false
+    default: "false"
 runs:
   using: 'node16'
   main: 'dist/index.js'

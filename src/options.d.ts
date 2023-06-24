@@ -11,5 +11,8 @@ export interface Options {
     allowDirty:boolean,
     recursive:boolean,
     "skip-vms":boolean,
+    "no-graphs":boolean,
     "skip-collectors": Array<string>
 }
+
+

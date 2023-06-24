@@ -16,6 +16,7 @@ const options: Options = {
     path: core.getInput('path',{trimWhitespace: true}) || '.',
     debug: core.getBooleanInput('debug'),
     "skip-vms": core.getBooleanInput('skip-vms'),
+    "no-graphs": core.getBooleanInput('no-graphs'),
     recursive: core.getBooleanInput('recursive'),
     "skip-collectors": core.getInput('skip-collectors').split(',')
     

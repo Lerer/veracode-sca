@@ -75,6 +75,11 @@ __Optional__ - run the Veracode SCA scan with `--skip-vms`
 
 Default Value: __false__
 
+### `no-graphs`
+__Optional__ - do not include dependency graphs in the JSON output.
+
+Default Value: __false__
+
 ## Examples
 
 ### Scan your repository with textual output

@@ -42,7 +42,7 @@ jobs:
           appname: 'GitHub SCA Action'
           createprofile: false
           filepath: 'app.zip'
-          timeout: 30
+          scantimeout: 30
           vid: '${{ secrets.API_ID }}'
           vkey: '${{ secrets.API_KEY }}'
 

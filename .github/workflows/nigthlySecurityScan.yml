@@ -2,12 +2,8 @@ name: Veracode Security Scan
 
 on: 
   pull_request:
-    paths-ignore:
-      - "README.md"
-      - "**.json"
-      - "action.yml"
     branches:
-      - default
+      - main
   schedule:
     - cron: 0 4 * * *
   workflow_dispatch:

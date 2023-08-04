@@ -1,3 +1,5 @@
+name: Veracode Security Scan
+
 on: 
   pull_request:
     paths-ignore:

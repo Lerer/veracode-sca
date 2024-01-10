@@ -202,10 +202,10 @@ export async function runAction (options: Options)  {
 
 
                     let commentBody = '<br>![](https://www.veracode.com/themes/veracode_new/library/img/veracode-black-hires.svg)<br>'
-                    commentBody += "Veraocde SCA Scan finished with exit code "+code+"\n"
+                    commentBody += "<pre>Veraocde SCA Scan finished with exit code "+code+"\n"
                     commentBody += '\n<details><summary>Veracode SCA Scan details</summary><p>\n'
                     commentBody += output.replace(/    /g, '&nbsp;&nbsp;&nbsp;&nbsp;');
-                    commentBody += '</p></details>\n'
+                    commentBody += '</p></details>\n</pre>'
 
 
                 

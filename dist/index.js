@@ -38660,10 +38660,10 @@ function runAction(options) {
                         const repo = repository.split("/");
                         const commentID = (_b = context.payload.pull_request) === null || _b === void 0 ? void 0 : _b.number;
                         let commentBody = '<br>![](https://www.veracode.com/themes/veracode_new/library/img/veracode-black-hires.svg)<br>';
-                        commentBody += "Veraocde SCA Scan finished with exit code " + code + "\n";
+                        commentBody += "<pre>Veraocde SCA Scan finished with exit code " + code + "\n";
                         commentBody += '\n<details><summary>Veracode SCA Scan details</summary><p>\n';
                         commentBody += output.replace(/    /g, '&nbsp;&nbsp;&nbsp;&nbsp;');
-                        commentBody += '</p></details>\n';
+                        commentBody += '</p></details>\n</pre>';
                         try {
                             const octokit = github.getOctokit(options.github_token);
                             const { data: comment } = yield octokit.rest.issues.createComment({
